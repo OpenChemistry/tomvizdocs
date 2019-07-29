@@ -43,11 +43,19 @@ We welcome contributions to the code base, but sometimes it is preferable to
 add local operators. On startup the application looks for a `tomviz` directory
 as a folder in your home directory, if found that directory is scanned for
 operators. These will be added to the `Custom Transforms` menu, and will look
-just like builtin operators.
+just like builtin operators (empty menu shown below with option to import).
+
+![Custom transforms menu](img/custom_transforms.png)
 
 The default name will match that of the Python file, i.e. `my_thing.py` would
-be added as `my_thing` to the menu. If you add a JSON file with the same name
-you can customize the appearance further, and even add some input interface.
+be added as `my_thing` to the menu. You should only import a transform once,
+all this really does is add the Python file to the `tomviz` directory in your
+home directory, i.e. `~/tomviz/my_thing.py`. When developing a custom transform
+it is preferable to simply copy your code to that directory, and edit it in
+place. You will need to close and reopen Tomviz in order to see new changes.
+
+If you add a JSON file with the same name you can customize the appearance
+further, and even add some input interface.
 
 ``` json
 {

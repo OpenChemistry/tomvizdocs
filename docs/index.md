@@ -1,4 +1,4 @@
-# Welcome to the Tomviz Documentation
+# Introduction
 
 The main site is at [tomviz.org](https://tomviz.org/). This site serves as a home
 for online documentation of the desktop application, and related documentation.
@@ -19,6 +19,13 @@ The Tomviz application supports all phases of your tomography workflow:
  * Analysis
  * Visualization
 
+The application is shown below with some data loaded and a couple of different
+representations of the data (volume render and isosurface). The integrated
+histogram-color-opacity editor is at the top-right, and the pipeline at the
+top-left.
+
+![The Tomviz application](img/tomviz_screenshot.png)
+
 You can download the latest release (first block) or the latest builds (second
 block) if you want to check out the latest improvements at the risk of less
 stability. For Windows the installer is the simplest method, but the zip file
@@ -33,7 +40,7 @@ In addition to this new documentation resource there several other tutorials:
 
  * [Tutorial on the Visualization of Volumetric Data](https://doi.org/10.1017/S1551929517001213)
  * [A basic user guide for 3D reconstruction](https://tomviz.org/wp-content/uploads/2017/03/TomvizBasicUserGuide.pdf)
- * [Slides from a course presented at Frontiers of Electron Tomography](https://cryos.github.io/tomviztutorial/#/)
+ * [Slides from a course presented at Kitware course week](https://openchemistry.github.io/tomviztutorial/)
 
 If you know of other available material that should be featured please let us
 know.
