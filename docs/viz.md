@@ -271,6 +271,13 @@ Besides it, 2D transfer function provides more selectivity for some data sets. A
 <a name="datatransforms"></a>
 ## Data Transforms
 
+Data transforms were implemented as operators in C++ or Python. They can be applied to the data directlry, while some of them provide graphical interfaces. The operators source code can be viewed and edited from the ```Context``` menu. Most of the operators make extensive use of NumPy.
+
+All the operators execute in a background thread. During the execution, application remains interactive, and users can still edit the pipeline.
+
+All the operators can be easily accessed from the ```Data Transforms``` menu, as shown below.
+
+<img src="img/data_transform_menu.png" height="300">
 
 <!--*********************** Section 5 Segmentation ***********************-->
 <a name="segmentation"></a>
