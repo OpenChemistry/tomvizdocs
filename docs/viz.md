@@ -277,12 +277,17 @@ All the operators execute in a background thread. During the execution, applicat
 
 All the operators can be easily accessed from the ```Data Transforms``` menu, as shown below.
 
-<img src="img/data_transform_menu.png" height="300">
+<img src="img/data_transform_menu.png" height="400">
 
 <!--*********************** Section 5 Segmentation ***********************-->
 <a name="segmentation"></a>
 ## Segmentation
 
+Tomviz uses [ITK](https://itk.org/) (Segmentation and Registration Toolkit) to segment data in various ways. For examples, topological segmentation, data labeling, summarization, and etc.
+
+All the available segmentation methods can be accessed through the ```Segmentation``` menu, as shown below.
+
+<img src="img/segmentation_menu.png" height="250">
 
 <!--*********************** Section 6 Exporting Data ***********************-->
 <a name="exportingdata"></a>
