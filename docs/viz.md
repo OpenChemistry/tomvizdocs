@@ -2,13 +2,13 @@
 
 ## Table of Contents
 1. [Introduction](#introduction)
+    1. [Load Data](#loaddata)
 2. [Volume Rendering](#volumerendering)
 3. [Data Transforms](#datatransforms)
 4. [Segmentation](#segmentation)
 5. [Exporting Data](#exportingdata)
 
-<a name="introduction"></a>
-## Introduction
+## Introduction<a name="introduction"></a>
 
 Tomviz visualizes the resulting data set at the end of each processing pipeline, where normally several operations have been applied. However, if no operators have been applied, the original data will be visualized.
 
@@ -28,9 +28,10 @@ Typical datasets may have following relationship between attributes and sizes.
 | 512<sup>3</sup> | 134,217,728   | 128.00 MB   | 512 MB     |
 | 103<sup>3</sup> | 1,073,741,824 | 1,024.00 MB | 4096 MB    |
 
+<a name="loaddata"></a>
 ### Load data
 
-In this
+In this subsection, loading methods for three data categories, which are single data file, stack of images and raw data set, are being introduced.
 
 #### Single data file
 
