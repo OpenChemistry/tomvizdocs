@@ -2,13 +2,19 @@
 
 ## Table of Contents
 1. [Introduction](#introduction)
-    1. [Load Data](#loaddata)
-2. [Volume Rendering](#volumerendering)
-3. [Data Transforms](#datatransforms)
-4. [Segmentation](#segmentation)
-5. [Exporting Data](#exportingdata)
+    1. [Load data](#loaddata)
+    2. [Save Results](#saveresults)
+    3. [Recover and load state](#recoverstate)
+2. [Visualization Techniques](#visualizationtechniques)
+    1. [Available visualization modules](#vizmodules)
+    2. [Default view of loaded data](#defaultview)
+3. [Volume Rendering](#volumerendering)
+4. [Data Transforms](#datatransforms)
+5. [Segmentation](#segmentation)
+6. [Exporting Data](#exportingdata)
 
-## Introduction<a name="introduction"></a>
+<a name="introduction"></a>
+## Introduction
 
 Tomviz visualizes the resulting data set at the end of each processing pipeline, where normally several operations have been applied. However, if no operators have been applied, the original data will be visualized.
 
@@ -18,7 +24,7 @@ During the process, Tomviz saves the pipeline every five minutes. This can be re
 
 <img src="img/tomviz_start_end_pipeline.png" width="600">
 
-Typical datasets may have following relationship between attributes and sizes.
+Typical datasets may have following relationships between attributes and sizes.
 
 | Volume          | Voxels        | Size (char) | Size (int) |
 |  :---           |  :---         |    :---     | :---       |
@@ -31,83 +37,104 @@ Typical datasets may have following relationship between attributes and sizes.
 <a name="loaddata"></a>
 ### Load data
 
-In this subsection, loading methods for three data categories, which are single data file, stack of images and raw data set, are being introduced.
+In this subsection, loading methods for three data categories, single data file, stack of images and raw data set, are being introduced.
 
 #### Single data file
 
-Loading single data set is straight forward, simply select ```Open Data``` from the ```File``` menu, as indicated in image below.
+Loading single data set is straight forward, simply select ```Open Data``` from the ```File``` menu, as indicated in screenshot below.
 
-<img src="img/tomviz_open_data.png" width="200" height="300">
+<img src="img/tomviz_open_data.png" height="250">
 
 #### Image stacks
 
-Loading image stacks takes similar efforts as loading single data file. Select ```Open Stack``` from ```File```, and then choose the images you would like to include in the pop-up window, as indicated in screenshots below.
+Loading image stacks takes a little bit more efforts than loading single data file. After selecting ```Open Stack``` from the ```File``` menu, check all the images you would like to include in the pop-up window, as indicated in screenshots below.
 
-<img src="img/tomviz_open_stack.png" width="200" height="300">
+<img src="img/tomviz_open_stack.png" height="250">
 
-<img src="img/tomviz_stack_dialog.png" height="300">
+<img src="img/tomviz_stack_dialog.png" height="250">
 
 #### Reading a raw file
 
-Users can read raw files by defining data dimensions, type, endianness, and etc, as indicated below.
+Users can also choose to read raw files by defining data dimensions, type, endianness, and etc, as indicated below.
 
-<img src="img/raw_reader.png" height="300">
+<img src="img/raw_reader.png" height="250">
 
-### Save data
+<a name="saveresults"></a>
+### Save results
 
 #### Save data
 
-Users can save the data by either clicking the ```Save Data``` button from ```File```, or using short-cut ```Ctrl+S```.
+Users can save the data by either clicking the ```Save Data``` button from ```File``` (as shown below), or simply using the keyboard short-cut ```Ctrl+S```.
 
-<img src="img/tomviz_save_data.png" width="200" height="300">
+<img src="img/tomviz_save_data.png" height="250">
 
 #### Save state
 
 Similary to saving data, users can save the state by clicking the ```Save State``` button from ```File```.
 
-<img src="img/tomviz_save_state.png" width="200" height="300">
+<img src="img/tomviz_save_state.png" height="250">
 
+<a name="recoverstate"></a>
 ### Recover and load state
 
 #### Recover state
 
-<img src="img/tomviz_recover.png" width="200" height="300">
+Tomviz saves the pipeline every five minutes, users can recover the previous states by simply allowing the Tomviz to load them.
+
+<img src="img/tomviz_recover.png" width="600">
 
 #### Load state
 
-<img src="img/tomviz_load_state.png" width="200" height="300">
+When there is no prompt, users can manually load and recover previous states by selecting ```Load State``` from ```File```.
 
+<img src="img/tomviz_load_state.png" height="250">
+
+<a name="visualizationtechniques"></a>
 ## Visualization techniques
 
 In this section, we will go over some available techniques and explain the important parameters. Most of the techniques are GPU accelerated, which requires a good graphics card that has at least 1GB memory.
 
+<a name="vizmodules"></a>
 ### Available visualization modules
 
 <img src="img/viz_modules.png" width="300">
 
-Visualization modules were implemented and optimized using C++ and GLSL (GLslang) to take full advantage of hardware accelerations. These modules are also available from the visulization menu.
+Visualization modules were implemented and optimized using C++ and GLSL (GLslang) to take full advantage of hardware accelerations. These modules are available from the visulization menu.
 
-<img src="img/viz_menu.png" width="200">
+<img src="img/viz_menu.png" height="250">
 
-### Default view of loaded data
+<a name="defaultview"></a>
+### Views of loaded data
 
-A set of visualization modules come preset when loading any datasets, as shown in the image below. Default color map, plasma,is used. Histogram is calculated in background thread and then displayed when ready in the top-right. Default pipeline is constructed with two modules; outline, which shows the extent of the data; and a slice, which shows the slice through the center of data.
+A set of visualization modules come pre-set when loading any datasets, as shown in the image below. Default color map, plasma,is used. Histogram is calculated in the background thread and then displayed when ready in the top-right.
+
+Default pipeline is constructed with two modules; outline, which shows the extent of the data; and a slice, which shows the slice going through the center of data.
+
+All the default settings can be modified later.
 
 <img src="img/default_view.png" width="600">
 
 #### Palette and background colors
 
-Palette can be easily modified with several presets. Tips: balck blackground is recommended in some situations on monitors; white is preferred for print, web pages and etc. to highlight samples.
+Palette can be easily modified with several presets.
 
 <img src="img/palette.png" width="200">
 
+Tips: balck blackground is recommended in some situations on monitors; white is preferred for print, web pages and etc. to highlight samples.
+
 #### Color maps
+
+As introduced, ```Plasma``` is the default color map. But users can always choose others from the menu.
 
 <img src="img/colormaps.png" height="250">
 
-<img src="img/colormap2.png" height="250">
+For example, below shows the same data set with ```Viridis``` color map.
+
+<img src="img/colormap2.png" width="600">
 
 #### Contour
+
+Users can choose to display the contour at a certain level by sliding the threshold bar (red line in images below). Two options, which are specular and values, are supported.
 
 ##### Specular
 
@@ -121,6 +148,8 @@ Palette can be easily modified with several presets. Tips: balck blackground is 
 
 #### Slice
 
+A 2D lice of data can be displayed separately from a 3D dataset. The slice can be a standard orthogonal slice, or a slice with any arbitrary angles.
+
 ##### Orthogonal slice
 
 <img src="img/orthogonal_slice.png" width="600">
@@ -131,13 +160,21 @@ Palette can be easily modified with several presets. Tips: balck blackground is 
 
 #### Outline
 
+Several tools are available to understand the outline of the loaded data set.
+
 ##### Grid and axes
+
+Grid and axes generated a bounding box with grids and axes, which help users understand the size of the data set.
 
 <img src="img/outline.png" width="600">
 
 ##### Ruler
 
+Rulers are manually defined by users where the start and end points of the ruler is set on specific places of the data set. The length of the ruler is then displayed, as shown in image below.
+
 <img src="img/ruler.png" width="600">
+
+##### Threshold
 
 <img src="img/threshold.png" width="600">
 
