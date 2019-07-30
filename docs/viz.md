@@ -9,10 +9,13 @@
     1. [Available visualization modules](#vizmodules)
     2. [Default view of loaded data](#defaultview)
 3. [Volume Rendering](#volumerendering)
+    1. [Display options](#displayoptions)
+    2. [Rendering properties](#renderingproperties)
 4. [Data Transforms](#datatransforms)
 5. [Segmentation](#segmentation)
 6. [Exporting Data](#exportingdata)
 
+<!--*********************** Section 1 Introduction ***********************-->
 <a name="introduction"></a>
 ## Introduction
 
@@ -134,13 +137,9 @@ For example, below shows the same data set with ```Viridis``` color map.
 
 #### Contour
 
-Users can choose to display the contour at a certain level by sliding the threshold bar (red line in images below). Two options, which are specular and values, are supported.
-
-##### Specular
+Users can choose to display the isocontour at a certain level by either sliding the red line on top inside the histogram, or within the bottom-right ```Properties``` section. Specular lighting is used when displaying contours. Several examples with different levels of isocontours are shown below.
 
 <img src="img/contour.png" width="600">
-
-##### Values
 
 <img src="img/contour2.png" width="600">
 
@@ -176,18 +175,108 @@ Rulers are manually defined by users where the start and end points of the ruler
 
 ##### Threshold
 
+Users can choose to display only the voxels that are within a certain set of min and max values. The bounds can be set inside the bottom-right ```Properties``` section, as shown below.
+
 <img src="img/threshold.png" width="600">
 
 <img src="img/threshold2.png" width="600">
 
+<!--*********************** Section 3 Volume Rendering ***********************-->
 <a name="volumerendering"></a>
 ## Volume Rendering
 
+Tomviz volume rendering utilizes GPU memory to upload volume to card and provides powerful techniques that traces paths of rays. It supports different options such as changing color map, modifying the opacity transfer function, transfer modes, interpolation, blending, lighting, jittering, and etc. The volume rendering with default settings can look like the image below.
+
+<img src="img/volume_render.png" width="600">
+
+<a name="displayoptions"></a>
+### Display options
+
+#### Opacity
+
+Different opacities can be set by dragging the pink ring within the histogram; the higher the more opaque, and the lower the more transparent. An example shown below illustrates when setting voxels with values smaller than around 10,000 are set to compeletly transparent. In contrast to the default rendering shown above, the "outside blue bounding box" now disappears.
+
+<img src="img/volume_render2.png" width="600">
+
+#### Background color
+
+Blackground color can be set by right clicking inside the render view and choosing ```Background color``` in the prompt menu. Both customized and pre-selected colors are available. Images below show two examples of the same dataset with black and white background colors.
+
+<img src="img/volume_render_black.png" width="600">
+
+<img src="img/volume_render_white.png" width="600">
+
+#### Empty space
+
+<img src="img/volume_render_outline.png" width="600">
+
+#### Cropping
+
+Cropping can be easily accessed from ```Crop``` within the ```Data Transform``` menu.
+
+<img src="img/volume_render_crop_menu.png" width="600">
+
+After selecting ```Crop```, a prompt will pop up and ask for the start and end values for cropping. Users can type the exact numbers manually, or dragging the little round dots inside the render view. The numbers inside the pop-up window will change according as the user drags the sliding dots.
+
+<img src="img/volume_render_crop1.png" width="600">
+
+<img src="img/volume_render_crop2.png" width="600">
+
+When the desired values are set, simply click on ```Apply``` to finish the cropping.
+
+<img src="img/volume_render_crop3.png" width="600">
+
+<a name="renderingproperties"></a>
+### Rendering Properties
+
+All the available rendering properties live in the bottom left of the window, as shown in image below. It includes many volume rendering properties, which would affect rendering in different ways.
+
+<img src="img/volume_props.png" height="250">
+
+Below we list several results to illustrate the rendering under different properties.
+
+#### Default
+
+<img src="img/volume_default.png" width="400">
+
+#### No jittering
+
+<img src="img/volume_no_jitter.png" width="400">
+
+#### Lighting
+
+<img src="img/volume_lighting.png" width="400">
+
+#### Max intensity
+
+<img src="img/volume_max.png" width="400">
+
+#### 1D transfer
+
+1D transfer function highlights gradients
+
+<img src="img/volume_1d_transfer.png" width="400">
+
+#### 2D transfer
+
+Just like 1D transfer function, 2D transfer also highlights the gradients.
+
+<img src="img/volume_2d_transfer.png" width="400">
+
+Besides it, 2D transfer function provides more selectivity for some data sets. As shown below, users can select a box in the 2D histogram.
+
+<img src="img/volume_2d_transfer2.png" width="400">
+
+<!--*********************** Section 4 Data Transforms ***********************-->
 <a name="datatransforms"></a>
 ## Data Transforms
 
+
+<!--*********************** Section 5 Segmentation ***********************-->
 <a name="segmentation"></a>
 ## Segmentation
 
+
+<!--*********************** Section 6 Exporting Data ***********************-->
 <a name="exportingdata"></a>
 ## Exporting Data
