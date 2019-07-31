@@ -14,6 +14,13 @@
 4. [Data Transforms](#datatransforms)
 5. [Segmentation](#segmentation)
 6. [Exporting Data](#exportingdata)
+    1. [Save data](#savedata)
+    2. [Export screenshot](#exportscreenshot)
+    3. [Export movie](#exportmovie)
+    4. [Export to web](#exporttoweb)
+    5. [Export mesh for 3D printing](#exportmesh)
+    6. [Export image from slice](#exportimage)
+7. [Summary](#summary)
 
 <!--*********************** Section 1 Introduction ***********************-->
 <a name="introduction"></a>
@@ -292,3 +299,64 @@ All the available segmentation methods can be accessed through the ```Segmentati
 <!--*********************** Section 6 Exporting Data ***********************-->
 <a name="exportingdata"></a>
 ## Exporting Data
+
+Resulting data can be exported via many ways, which includes saving data to standard formats; taking screenshots or animations of the render view; creating an interactive scene for web browsers; exporting geometry for 3D printing and generating images of slices.
+
+<a name="savedata"></a>
+### Save data
+
+Saving data can be accessed via ```File``` menu, simply clikc on ```Save Data```. Alternatively users can also simply press ```Ctrl+S```.
+
+<img src="img/tomviz_save_data.png" height="250">
+
+In the pop-up window, choose one of the standard formats that you want to save your data as.
+
+<img src="img/save_data_formats.png" width="400">
+
+We recommend EMD (HDF5 based) for saving data. Because it supports all the data types that are used in Tomviz, and can save units in all three dimensions. However, note that it may not be as widely supported.
+
+Besides EMD, TIFF is often the most diverse type to export to. Although it supports limited types that are used in Tomviz due to limited support for units and dimensions, it is open and widely supported by many other packages.
+
+<a name="exportscreenshot"></a>
+### Export screenshot
+
+From the same ```File``` menu, you can choose ```Export Screenshot``` option. Inside the prompt window, specify size, which supports a number of image formats. And then override palette, it is recommended to use transparent backgrounds.
+
+<img src="img/export_screenshot.png" height="250">
+
+<a name="exportmovie"></a>
+### Export movie
+
+Exporting movie supports common movie formats. Same as before, ```Export Movie``` can be accessed from ```File```. In the pop-up window, set the resolution or override color palette when needed.
+
+<img src="img/save_movie.png" height="250">
+
+<a name="exporttoweb"></a>
+### Export to web
+
+When exporting to web, different types of data may need different settings. When generating images, there is no need for WebGL or any other special settings for the brower. However, when exporting geometry based data where actual data is exported, it is often needed to downsample the result, which also provides better interactivity inside browsers. And when generating data for viewer option, it is better exported to larger website, since by default the whole dataset will be exported to a single HTML page.
+
+<img src="img/export_web.png" width="400">
+
+An example after successfully exporting the data to web may look like
+
+<img src="img/export_web_eg.png" height="300">
+
+<a name="exportmesh"></a>
+### Export mesh for 3D printing
+
+Isocontours of the data set with a specific level can be exported to mesh by right-clicking on ```Contour``` inside the ```Pipelines``` section, as shown below, and then choosing ```Export as Mesh```. Define the settings such as the saving address, etc, to complete the process.
+
+<img src="img/export_mesh.png" width="400">
+
+<a name="exportimage"></a>
+### Export image from slice
+
+A certain slice of data (either orthogonal or with arbitrary angles) that goes through the data can be saved as an image. Similar to the process when exporting to mesh, simply right-click on the slice that you want to export, and select ```Export as image```.
+
+<img src="img/export_image.png" width="400">
+
+<a name="summary"></a>
+## Summary
+
+This tutorial covered how to work with and visualize volume data, which includes data transforms, segmentation and many other options for contours generation, volume rendering, and etc. Different visualization types can be combined and the resulting data set can be exported via various formats and different media types.
