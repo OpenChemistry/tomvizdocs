@@ -2,7 +2,7 @@
 
 ## Introduction
 
-In general, there are two types of data; volumes and tilt series. Volumes are from tomography or sectioning. And tilt series are projection series with angles. For each kind of data, specialized tools are provided in Tomviz. More specifically, ```Data Transforms``` and ```Segmentation``` menu have tools for volumes, while ```Tomography``` menu provides tools for tilt series. Users can also add their own tools to ```Custom Transforms``` menu.
+In general, there are two types of data; volumes and tilt series. Volumes are from tomography or sectioning. And tilt series are projection series with angles. For each kind of data, specialized tools are provided in Tomviz. More specifically, <code>Data Transforms</code> and <code>Segmentation</code> menu have tools for volumes, while <code>Tomography</code> menu provides tools for tilt series. Users can also add their own tools to <code>Custom Transforms</code> menu.
 
 ## Tilt Series
 
@@ -10,7 +10,7 @@ Application comes bundled with a sample tilt series. It will automatically set t
 
 ### Loading sample tilt series
 
-Image below is a screenshot when loading sample tilt series. Simply select ```Star Nanopartical (Tilt Series)``` within the ```Sample Data``` menu.
+Image below is a screenshot when loading sample tilt series. Simply select <code>Star Nanopartical (Tilt Series)</code> within the <code>Sample Data</code> menu.
 
 ![Open sample tilt series](img/tomviz_load_tilt.png)
 
@@ -20,7 +20,7 @@ After loading, the Tomviz window should look like
 
 ### Creating a tilt series
 
-Loaded data can be treated as tilt series by selecting ```Mark Data As Tilt Series``` from ```Tomography``` menu, as shown below.
+Loaded data can be treated as tilt series by selecting <code>Mark Data As Tilt Series</code> from <code>Tomography</code> menu, as shown below.
 
 ![Create tilt series](img/create_tilt_series.png)
 
@@ -28,13 +28,13 @@ The range of both start and end image number with its corresponding angles are n
 
 ![Create tilt series by range](img/set_by_range.png)
 
-Or, more precisely, each image can be set individually, by choosing ```Set Individually``` from the menu.
+Or, more precisely, each image can be set individually, by choosing <code>Set Individually</code> from the menu.
 
 ![Create tilt series custom](img/set_individually.png)
 
 ## Aligning Data
 
-Data alignment can be accessed through the ```Tomography``` menu. In the menu, some automated alignment algorithms are available. Users can also choose to make manual alignments.
+Data alignment can be accessed through the <code>Tomography</code> menu. In the menu, some automated alignment algorithms are available. Users can also choose to make manual alignments.
 
 ### Image data alignment
 
@@ -82,13 +82,13 @@ Pre-reconstruction pipelines are recommended before reconstruction. The pipeline
 
 ### Reconstruction menu
 
-Available reconstructions can be found in ```Tomography``` menu. Most of them are developed in Python, with only one in C++.
+Available reconstructions can be found in <code>Tomography</code> menu. Most of them are developed in Python, with only one in C++.
 
 ![Reconstruction menu](img/reco_menu.png)
 
 ### Weighted back projection
 
-One of the most useful techniques in reconstruction is weighted back projection. To use it in Tomviz, after selecting it from ```Tomography``` menu, enter the parameters shown and then the reconstruction can start running.
+One of the most useful techniques in reconstruction is weighted back projection. To use it in Tomviz, after selecting it from `Tomography` menu, enter the parameters shown and then the reconstruction can start running.
 
 ![Weighted back projection](img/weighted_back_proj.png)
 
@@ -98,7 +98,7 @@ An example of the reconstruction result is shown below.
 
 ### Save the reconstruction data
 
-The reconstructed data is shown as a child dataset of the original data in Tomviz. User can highlight it by clicking on it. The data can be saved by going to the ```File``` menu and selecting ```Save Data```, as shown in the screenshot below.
+The reconstructed data is shown as a child dataset of the original data in Tomviz. User can highlight it by clicking on it. The data can be saved by going to the <code>File</code> menu and selecting <code>Save Data</code>, as shown in the screenshot below.
 
 ![Save data](img/tomviz_save_data.png)
 
