@@ -5,11 +5,7 @@ written in Python, with some developed in C++. There are a couple of ways to imp
 
 ## Simple Operator
 
-This operator can be found by clicking on `Data Tansforms -> Custom Transform`.
-It is one of the simplest transforms possible where all simple operators define
-the `transform_scalars` function, import the necessary modules, and then get the
-data as an array. This array can be treated like any NumPy array, operated on,
-and once ready the output should be set to make it visible to the application.
+This operator can be found by clicking on <code>Data Tansforms -> Custom Transform</code>. It is one of the simplest transforms possible where all simple operators define the <code>transform_scalars</code> function, import the necessary modules, and then get the data as an array. This array can be treated like any NumPy array, operated on, and once ready the output should be set to make it visible to the application.
 
 ``` python
 def transform_scalars(dataset):
@@ -33,7 +29,7 @@ clicking apply will apply the code in the editor leaving the dialog open,
 clicking OK will apply the transform and close the dialog. The Python code is
 not saved permanently, saving a state file will save custom Python.
 
-## Subclassing tomviz.operators.Operator
+### Subclassing tomviz.operators.Operator
 
 Tomviz provides an operator base class that can be used to implement a Python operator. To create an operator simply subclass and provide an implementation of the
 'transform_scalars' method.
@@ -48,11 +44,11 @@ class MyOperator(tomviz.operators.Operator):
 
 ```
 
-## Subclassing tomviz.operators.CancelableOperator
+### Subclassing tomviz.operators.CancelableOperator
 
 To implement an operator that can be canceled the operator should be derived
-from ```tomviz.operators.CancelableOperator```. This provides an additional
-property called ```canceled``` that can be used to determine if the operator
+from <code>tomviz.operators.CancelableOperator</code>. This provides an additional
+property called <code>canceled</code> that can be used to determine if the operator
 execution have been canceled by the user. The data should be processed in chunks
 so that this property can be periodically checked to break out of the execution
 if necessary.
@@ -68,11 +64,9 @@ class MyCancelableOperator(tomviz.operators.CancelableOperator):
 
 ```
 
-## Operator progress
+### Operator progress
 
-Instances of ```tomviz.operators.Operator``` have a ```progress``` attribute that can be used to
-report the progress of an operator. The maximum number of steps the operator will report is held
-in the ```progress.maximum``` property and the current progress can be updated using ```progress.value = currrent_value```. A status message can also be set on the progress object to give further feedback to the user ```progress.message = msg```
+Instances of <code>tomviz.operators.Operator</code> have a <code>progress</code> attribute that can be used to report the progress of an operator. The maximum number of steps the operator will report is held in the <code>progress.maximum</code> property and the current progress can be updated using <code>progress.value = currrent_value</code>. A status message can also be set on the progress object to give further feedback to the user <code>progress.message = msg</code>
 
 ```python
 
@@ -87,7 +81,7 @@ class MyProgressOperator(tomviz.operators.Operator):
         self.progress.value = current_progress
 ```
 
-## Generating the user interface automatically
+### Generating the user interface automatically
 
 Python operators can take zero or more parameters that govern their operation.
 Initializing these parameter values is typically done through a dialog box
@@ -101,37 +95,33 @@ The JSON file consists of a few key/value pairs at the top level of the JSON tre
 * `label` - The displayed name of the operator as it should appear in the user
 interface. No restrictions.
 * `description` - Text that describes what the operator does. No restrictions.
-* `parameters` - A JSON array of parameters.
+* <code>parameters</code> - A JSON array of parameters.
 
-An item in the `parameter` array is itself a JSON object consisting of several
-name/value pairs.
+An item in the <code>parameter</code> array is itself a JSON object consisting of several name/value pairs.
 
 * `name` - The name of the parameter. This must be a valid Python variable name.
 * `label` - The displayed name of the parameter in the user interface. No
 restrictions.
-* `type` - Parameter type. Currently supported types are:
-    * `bool` - Boolean type. Valid values are `true` or `false`.
-    * `int` - Integral type. Valid values are in the range of a C integer.
+* <code>type</code> - Parameter type. Currently supported types are:
+    * `bool` - Boolean type. Valid values are <code>true</code> or <code>false</code>.
+    * <code>int</code> - Integral type. Valid values are in the range of a C integer.
     * `double` - Floating-point type. Valid values are in the range of a C double.
     * `enumeration` - Provides a set of options. Possible values are listed in
-    an `options` key/value pair (described below)
+    an <code>options</code> key/value pair (described below)
     * `xyz_header` - Special type used as a hint for the UI to add the headers
     "X", "Y", and "Z" above columns for 3-element parameters representing
     coordinates.
     * `file` - Provides the ability to browse for a file path.
     * `directory` - Provides the ability to browse for a directory path.
-* `default` - Default value for the parameter. Must be a number or boolean JSON
-value `true` or `false`. The default for a multi-element `int` or `double`
-parameter is an array of one or more ints or doubles.
+* <code>default</code> - Default value for the parameter. Must be a number or boolean JSON
+value <code>true</code> or <code>false</code>. The default for a multi-element <code>int</code> or `double` parameter is an array of one or more ints or doubles.
 * `minimum` - Sets the minimum value that a parameter may be. An array of
 values specifies the component-wise minimum of a multi-element parameter.
 * `maximum` - Like the `minimum`, but sets the maximum value that a parameter
 may be.
-* `precision` - Optional number of digits past the decimal for `double`
+* <code>precision</code> - Optional number of digits past the decimal for `double`
 parameters.
-* `options` - An array of JSON objects, each of which contains a single key/value
-pair where the key is the name of the option and the value is an integer index
-of the options.
+* <code>options</code> - An array of JSON objects, each of which contains a single key/value pair where the key is the name of the option and the value is an integer index of the options.
 
 Examples of parameter descriptions:
 
@@ -146,7 +136,7 @@ Examples of parameter descriptions:
 }
 ```
 
-`int`
+<code>int</code>
 ```
 {
   "name" : "iterations",
@@ -157,7 +147,7 @@ Examples of parameter descriptions:
 }
 ```
 
-Multi-element `int`
+Multi-element <code>int</code>
 ```
 {
   "name" : "shift",
@@ -208,7 +198,7 @@ Multi-element `double`
 }
 ```
 
-## Defining Operator Results and Child Data Sets
+### Defining Operator Results and Child Data Sets
 
 In addition to transforming the current data set, operators may produce
 additional data sets. The additional data sets are described in the top-level
@@ -228,7 +218,7 @@ a single child data set is supported.
 
 The `name` key of each result and child data set must be unique.
 
-## Creating Operator Results and Child Data Sets
+### Creating Operator Results and Child Data Sets
 
 In the operator Python code, results and child data sets are set in a
 dictionary returned by the `transform_scalars` function. This dictionary consists
@@ -238,7 +228,7 @@ data objects are VTK objects created in the Python operator code. See
 `ConnectedComponents.py` for an example of how to return both a result and
 child data set.
 
-## Command line execution of pipeline
+### Command line execution of pipeline
 
 An operator pipeline can be executed from a Python command line. The data
 source must be in EMD format. The execution is driven using a state file containing
@@ -262,14 +252,13 @@ Current restrictions/issues:
 - Spacing and units are copied from input data source.
 - No support for child data.
 
-## Custom Operators
+### Custom Operators
 
 Tomviz comes with a number of operators, many of which are developed in Python.
 We welcome contributions to the code base, but sometimes it is preferable to
 add local operators. On startup the application looks for a `tomviz` directory
 as a folder in your home directory, if found that directory is scanned for
-operators. These will be added to the `Custom Transforms` menu, and will look
-just like builtin operators (empty menu shown below with option to import).
+operators. These will be added to the <code>Custom Transforms</code> menu, and will look just like builtin operators (empty menu shown below with option to import).
 
 ![Custom transforms menu](img/custom_transforms.png)
 
@@ -290,3 +279,53 @@ further, and even add some input interface.
   "description" : "Apply my special operation to the data...",
 }
 ```
+
+## Import operators
+
+After creating a custom operator, it can be added via importing custom transforms, which can be easily accessed through ```Custom Transform``` menu, as shown below.
+
+![Custom Transforms](img/custom_transforms.png)
+
+Besides importing them in Tomviz application, users can also copy the suitable Python or JSON scripts into ```~/tomviz``` or ```~/.tomviz``` directory.
+
+## Apply operators
+
+After importing or copying the customer operator ```test```, it will show up in the ```Custom Transform``` menu.
+
+![Custom Transforms](img/custom_transforms_test.png)
+
+```test``` can be applied just as normally as other built-in operators. After loading the example dataset, click on ```test```, the result will be displayed in ```RenderView1``` if everything goes well.
+![Custom Transforms](img/custom_transforms_applied.png)
+
+### User Input for Operators
+
+After creating a custom operator, the next question is how to modify various user inputs; for example, the chunk size in the ```test``` operator of the previous section. The good news is that users don't have to edit the code every time. On the other hand, JSON scripts can be used for increased control, as shown below.
+```JSON
+{
+  "name": "Fancy Square Root",
+  "label": "Classy Square Root",
+  "description": "This is the fanciest square root operator, it does it all...",
+  "parameters": [
+    {
+      "name": "number_of_chunks",
+      "label": "Number of Chunks",
+      "type": "int",
+      "default": 10,
+      "minimum": 1,
+      "maximum": 1000
+    }
+  ]
+}
+```
+
+Now that you can import ```Classy Square Root``` in Tomviz
+
+![Custom Transforms](img/custom_transforms_fancier.png)
+
+A user interface which takes user inputs for the operator will pop up. In our case the only user input is ```Number of Chunks```, with default value being 10.
+
+![Custom Transforms](img/custom_transforms_fancier2.png)
+
+Click on ```Apply``` when ready. Result will be displayed as usual in the ```RenderView1```.
+
+![Custom Transforms](img/custom_transforms_fancier3.png)
