@@ -1,11 +1,18 @@
 # Operators
 
 Operators are the core of the data processing pipeline. They are predominantly
-written in Python, with some developed in C++. There are a couple of ways to implement a Python operator. Most operators take a volume as an input, do some operations on that volume, and output a volume. In Python these are typically viewed as NumPy arrays, where they are a view of the native C++ memory used by Tomviz.
+written in Python, with some developed in C++. Most operators take a volume as
+an input, do some operations on that volume, and output a volume. In Python
+these are typically viewed as NumPy arrays where they are a view of the native
+C++ memory used by Tomviz.
 
 ## Simple Operator
 
-This operator can be found by clicking on <code>Data Tansforms -> Custom Transform</code>. It is one of the simplest transforms possible where all simple operators define the <code>transform_scalars</code> function, import the necessary modules, and then get the data as an array. This array can be treated like any NumPy array, operated on, and once ready the output should be set to make it visible to the application.
+This operator can be found by clicking on `Data Tansforms -> Custom Transform`.
+It is one of the simplest transforms possible where all simple operators define
+the `transform_scalars` function, import the necessary modules, and then get the
+data as an array. This array can be treated like any NumPy array, operated on,
+and once ready the output should be set to make it visible to the application.
 
 ``` python
 def transform_scalars(dataset):
@@ -24,15 +31,16 @@ def transform_scalars(dataset):
     utils.set_array(dataset, result)
 ```
 
-The dialog in Tomviz enables editing of  Python transforms in the source tab,
+The dialog in Tomviz enables editing of Python transforms in the source tab,
 clicking apply will apply the code in the editor leaving the dialog open,
 clicking OK will apply the transform and close the dialog. The Python code is
 not saved permanently, saving a state file will save custom Python.
 
 ### Subclassing tomviz.operators.Operator
 
-Tomviz provides an operator base class that can be used to implement a Python operator. To create an operator simply subclass and provide an implementation of the
-'transform_scalars' method.
+Tomviz provides an operator base class that can be used to implement a Python
+operator. To create an operator simply subclass and provide an implementation of
+the `transform_scalars` method.
 
 ```python
 
@@ -47,8 +55,8 @@ class MyOperator(tomviz.operators.Operator):
 ### Subclassing tomviz.operators.CancelableOperator
 
 To implement an operator that can be canceled the operator should be derived
-from <code>tomviz.operators.CancelableOperator</code>. This provides an additional
-property called <code>canceled</code> that can be used to determine if the operator
+from `tomviz.operators.CancelableOperator`. This provides an additional
+property called `canceled` that can be used to determine if the operator
 execution have been canceled by the user. The data should be processed in chunks
 so that this property can be periodically checked to break out of the execution
 if necessary.
@@ -66,7 +74,12 @@ class MyCancelableOperator(tomviz.operators.CancelableOperator):
 
 ### Operator progress
 
-Instances of <code>tomviz.operators.Operator</code> have a <code>progress</code> attribute that can be used to report the progress of an operator. The maximum number of steps the operator will report is held in the <code>progress.maximum</code> property and the current progress can be updated using <code>progress.value = currrent_value</code>. A status message can also be set on the progress object to give further feedback to the user <code>progress.message = msg</code>
+Instances of `tomviz.operators.Operator` have a `progress` attribute that can be
+used to report the progress of an operator. The maximum number of steps the
+operator will report is held in the `progress.maximum` property and the current
+progress can be updated using `progress.value = currrent_value`. A status
+message can also be set on the progress object to give further feedback to the
+user `progress.message = msg`.
 
 ```python
 
@@ -89,39 +102,44 @@ presented prior to running the operator. The simplest way to define the user
 interface is to describe the parameters in a JSON file that accompanies the
 Python script.
 
-The JSON file consists of a few key/value pairs at the top level of the JSON tree:
+The JSON file consists of a few key/value pairs at the top level of the JSON
+tree:
 
 * `name` - The name of the operator. The name should not contain spaces.
 * `label` - The displayed name of the operator as it should appear in the user
 interface. No restrictions.
 * `description` - Text that describes what the operator does. No restrictions.
-* <code>parameters</code> - A JSON array of parameters.
+* `parameters` - A JSON array of parameters.
 
-An item in the <code>parameter</code> array is itself a JSON object consisting of several name/value pairs.
+An item in the `parameter` array is itself a JSON object consisting of several
+name-value pairs.
 
 * `name` - The name of the parameter. This must be a valid Python variable name.
 * `label` - The displayed name of the parameter in the user interface. No
 restrictions.
-* <code>type</code> - Parameter type. Currently supported types are:
-    * `bool` - Boolean type. Valid values are <code>true</code> or <code>false</code>.
-    * <code>int</code> - Integral type. Valid values are in the range of a C integer.
+* `type` - Parameter type. Currently supported types are:
+    * `bool` - Boolean type. Valid values are `true` or `false`.
+    * `int` - Integral type. Valid values are in the range of a C integer.
     * `double` - Floating-point type. Valid values are in the range of a C double.
     * `enumeration` - Provides a set of options. Possible values are listed in
-    an <code>options</code> key/value pair (described below)
+    an `options` key/value pair (described below)
     * `xyz_header` - Special type used as a hint for the UI to add the headers
     "X", "Y", and "Z" above columns for 3-element parameters representing
     coordinates.
     * `file` - Provides the ability to browse for a file path.
     * `directory` - Provides the ability to browse for a directory path.
-* <code>default</code> - Default value for the parameter. Must be a number or boolean JSON
-value <code>true</code> or <code>false</code>. The default for a multi-element <code>int</code> or `double` parameter is an array of one or more ints or doubles.
+* `default` - Default value for the parameter. Must be a number or boolean JSON
+value `true` or `false`. The default for a multi-element `int` or `double`
+parameter is an array of one or more ints or doubles.
 * `minimum` - Sets the minimum value that a parameter may be. An array of
 values specifies the component-wise minimum of a multi-element parameter.
 * `maximum` - Like the `minimum`, but sets the maximum value that a parameter
 may be.
-* <code>precision</code> - Optional number of digits past the decimal for `double`
+* `precision` - Optional number of digits past the decimal for `double`
 parameters.
-* <code>options</code> - An array of JSON objects, each of which contains a single key/value pair where the key is the name of the option and the value is an integer index of the options.
+* `options` - An array of JSON objects, each of which contains a single
+key-value pair where the key is the name of the option and the value is an
+integer index of the options.
 
 Examples of parameter descriptions:
 
@@ -136,7 +154,7 @@ Examples of parameter descriptions:
 }
 ```
 
-<code>int</code>
+`int`
 ```
 {
   "name" : "iterations",
@@ -147,7 +165,7 @@ Examples of parameter descriptions:
 }
 ```
 
-Multi-element <code>int</code>
+Multi-element `int`
 ```
 {
   "name" : "shift",
@@ -211,27 +229,27 @@ Result JSON objects have three key/value pairs:
     * `label` - The displayed name of the result in the UI.
 More than one result may be produced by the operator.
 * `children` - An array of JSON objects describing child data sets produced by
-the operator. Child data sets are similar to results, but are special in that they
-must be image data to which additional operators may be applied. A child data set
-is described with the same key/value pairs as `results` objects. Currently, only
-a single child data set is supported.
+the operator. Child data sets are similar to results, but are special in that
+they must be image data to which additional operators may be applied. A child
+data set is described with the same key/value pairs as `results` objects.
+Currently, only a single child data set is supported.
 
 The `name` key of each result and child data set must be unique.
 
 ### Creating Operator Results and Child Data Sets
 
-In the operator Python code, results and child data sets are set in a
-dictionary returned by the `transform_scalars` function. This dictionary consists
-of key/value pairs where the name is the `name` value of the result or child
-data set and the value is the result or child data object. Results and child
+In the operator Python code, results and child data sets are set in a dictionary
+returned by the `transform_scalars` function. This dictionary consists of
+key/value pairs where the name is the `name` value of the result or child
+dataset and the value is the result or child data object. Results and child
 data objects are VTK objects created in the Python operator code. See
 `ConnectedComponents.py` for an example of how to return both a result and
-child data set.
+child dataset.
 
 ### Command line execution of pipeline
 
-An operator pipeline can be executed from a Python command line. The data
-source must be in EMD format. The execution is driven using a state file containing
+An operator pipeline can be executed from a Python command line. The data source
+must be in EMD format. The execution is driven using a state file containing
 the operator pipeline. To install the command line package run the following:
 
 ```bash
@@ -258,7 +276,8 @@ Tomviz comes with a number of operators, many of which are developed in Python.
 We welcome contributions to the code base, but sometimes it is preferable to
 add local operators. On startup the application looks for a `tomviz` directory
 as a folder in your home directory, if found that directory is scanned for
-operators. These will be added to the <code>Custom Transforms</code> menu, and will look just like builtin operators (empty menu shown below with option to import).
+operators. These will be added to the `Custom Transforms` menu, and will look
+just like builtin operators (empty menu shown below with option to import).
 
 ![Custom transforms menu](img/custom_transforms.png)
 
@@ -282,24 +301,34 @@ further, and even add some input interface.
 
 ## Import operators
 
-After creating a custom operator, it can be added via importing custom transforms, which can be easily accessed through ```Custom Transform``` menu, as shown below.
+After creating a custom operator, it can be added by importing it as a custom
+transform, which can be accessed through `Custom Transform` menu.
 
 ![Custom Transforms](img/custom_transforms.png)
 
-Besides importing them in Tomviz application, users can also copy the suitable Python or JSON scripts into ```~/tomviz``` or ```~/.tomviz``` directory.
+In addition to importing the Python code, users can also copy the Python scripts
+or JSON metadata into the `~/tomviz` or `~/.tomviz` directory.
 
 ## Apply operators
 
-After importing or copying the customer operator ```test```, it will show up in the ```Custom Transform``` menu.
+After importing or copying the customer operator `test`, it will show up in
+the `Custom Transform` menu.
 
 ![Custom Transforms](img/custom_transforms_test.png)
 
-```test``` can be applied just as normally as other built-in operators. After loading the example dataset, click on ```test```, the result will be displayed in ```RenderView1``` if everything goes well.
+The `test` operator can be applied just like any other built-in operator.
+After loading the example dataset, click on `test`, the result will be
+displayed in the main render window.
+
 ![Custom Transforms](img/custom_transforms_applied.png)
 
 ### User Input for Operators
 
-After creating a custom operator, the next question is how to modify various user inputs; for example, the chunk size in the ```test``` operator of the previous section. The good news is that users don't have to edit the code every time. On the other hand, JSON scripts can be used for increased control, as shown below.
+Once you have a custom operator you may want to accept user input. For example
+instead of hard-coding the chunk size in `test` we could let the user set it.
+JSON metadata can specify what input a script accepts, and a Qt user interface
+will be generated at runtime. An example of a single input is shown below:
+
 ```JSON
 {
   "name": "Fancy Square Root",
@@ -318,14 +347,17 @@ After creating a custom operator, the next question is how to modify various use
 }
 ```
 
-Now that you can import ```Classy Square Root``` in Tomviz
+Now that you can run `Classy Square Root` from the `Custom Transforms` menu.
 
 ![Custom Transforms](img/custom_transforms_fancier.png)
 
-A user interface which takes user inputs for the operator will pop up. In our case the only user input is ```Number of Chunks```, with default value being 10.
+The interface is generated based on the objects in the `parameters` array. In
+this case the input control for ```Number of Chunks``` is shown with a default
+value of 10.
 
 ![Custom Transforms](img/custom_transforms_fancier2.png)
 
-Click on ```Apply``` when ready. Result will be displayed as usual in the ```RenderView1```.
+You can click on `OK` when ready, and the result will be displayed in the
+application.
 
 ![Custom Transforms](img/custom_transforms_fancier3.png)

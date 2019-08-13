@@ -1,20 +1,18 @@
-# Advanced
-
-## Introduction
+# External Pipelines
 
 Tomviz includes a number of functions and algorithms, if those do not satisfy
 your needs there is also support for extensions. These include custom operators
 and file formats, which are primarily implemented using Python scripts and JSON
-to describe user interface elemens. These are introduced in the
+to describe user interface elements. These are introduced in the
 [operators](operator.md) section.
 
 The data processing pipeline is central to Tomviz, and each operator is a
 self-contained unit operating on the data. It is possible to run these operators
 interactively in the application, in a Docker container as part of the
 application, and in an external pipeline runner. This section covers running
-operators in exernal pipelines.
+operators in external pipelines.
 
-## External Pipelines
+## Configuration
 
 Tomviz usually runs pipelines in a background thread (```Threaded```)
 interactively in the application. This can be changed to ```Docker``` in
@@ -31,7 +29,7 @@ selected source the next time the pipeline executes.
 
 ![Pipeline Settings](img/pulling_docker.png)
 
-### Running pipelines
+### Running Pipelines
 
 We recommend that you create a virtual environment, and install requirements
 into that environment. The steps are shown below:
