@@ -7,7 +7,6 @@ markdown_extensions:
   - pymdownx.caret
   - pymdownx.critic
   - pymdownx.details
-  - pymdownx.inlinehilite
   - pymdownx.magiclink
   - pymdownx.mark
   - pymdownx.smartsymbols
@@ -19,3 +18,14 @@ markdown_extensions:
 copyright: '<font color=#666>Content is available under </font><a href="https://creativecommons.org/licenses/by/4.0/" title="CC-BY 4.0">CC-BY 4.0</a></font>'
 extra_javascript:
   - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'
+nav:
+  - 'index.md'
+  - 'data.md'
+  - 'visualization.md'
+  - 'analysis.md'
+  - 'alignment.md'
+  - 'reconstruction.md'
+  - Advanced:
+    - 'operator.md'
+    - 'pipelines.md'
+    - 'acquisition.md'
