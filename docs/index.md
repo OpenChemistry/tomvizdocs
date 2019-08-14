@@ -7,6 +7,23 @@ page. The project is developed primarily in C++, with a data pipeline that offer
 Python or C++ operators. The GUI is Qt-based, and the code is distributed under
 the [3-clause BSD license](https://tomviz.org/licensing/).
 
+## About
+
+The Tomviz project was founded by
+[Marcus D. Hanwell](https://kitware.com/marcus-hanwell/) and
+[Utkarsh Ayachit](https://kitware.com/utkarsh-ayachit/) at
+[Kitware](https://kitware.com/),
+[David A. Muller](http://muller.research.engineering.cornell.edu/) at
+[Cornell University](https://www.cornell.edu/), and
+[Robert Hovden](http://www.roberthovden.com/) at the
+[University of Michigan](https://www.engin.umich.edu/) under DOE Office of
+Science contract DE-SC0011385. If you find it useful in your research we would
+appreciate you citing [tomviz.org](https://tomviz.org/). It is developed by a
+large group of developers, collaborators and users in the community, and
+contributions are welcome through the main
+[Github project page](https://github.com/openchemistry/tomviz). This page offers
+a complete list of contributors, older releases, issue tracking, and more.
+
 ## Getting Started
 
 The Tomviz application supports all phases of your tomography workflow:
