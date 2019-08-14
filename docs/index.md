@@ -11,13 +11,13 @@ the [3-clause BSD license](https://tomviz.org/licensing/).
 
 The Tomviz application supports all phases of your tomography workflow:
 
- * Acquisition
+ * [Acquisition](acquisition.md)
  * Preprocessing
- * Alignment
- * Reconstruction
- * Segmentation
- * Analysis
- * Visualization
+ * [Alignment](alignment.md)
+ * [Reconstruction](reconstruction.md)
+ * [Segmentation](analysis.md)
+ * [Analysis](analysis.md)
+ * [Visualization](visualization.md)
 
 The application is shown below with some data loaded and a couple of different
 representations of the data (volume render and isosurface). The integrated
