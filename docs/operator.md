@@ -361,3 +361,49 @@ You can click on `OK` when ready, and the result will be displayed in the
 application.
 
 ![Custom Transforms](img/custom_transforms_fancier3.png)
+
+###  Accessing multiple channels
+
+It is possible for a dataset to contain multiple channels. Operators can access
+these channels by passing extra parameters to the `utils.get_scalars` or
+`utils.get_array` functions to specify the channel of interest.  The channels can
+be accessed by index or by name. The example below loops through the channels by
+index and sums them up.
+
+```python
+
+def transform_scalars(dataset):
+    """Define this method for Python operators that
+    transform the input array"""
+
+    from tomviz import utils
+    import numpy as np
+
+    channel_sum = None
+    # Iterate through the channels adding them up.
+    for i in range(0, utils.get_number_of_channels(dataset)):
+        if channel_sum is None:
+            channel_sum = utils.get_array(dataset, index=i)
+        else:
+            channel_sum += utils.get_array(dataset, index=i)
+
+    utils.set_array(dataset, channel_sum)
+
+```
+
+To access a particular channel by name, the `name` parameter can be specified. In
+the example below, the channel named `'Tiff Scalars'` is extracted from the dataset.
+
+```python
+
+def transform_scalars(dataset):
+    """Define this method for Python operators that
+    transform the input array"""
+
+    from tomviz import utils
+    import numpy as np
+
+    array = utils.get_array(dataset, name='Tiff Scalars')
+    utils.set_array(dataset, array)
+
+```
