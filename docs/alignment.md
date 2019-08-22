@@ -96,3 +96,11 @@ indication that the tilt axis is not well aligned.
 It is possible to select independent color maps for the reconstruction previews.
 
 ![Tilt axis dialog](img/tilt_axis_color.png)
+
+Additionally, it is possible to align a tilt series that uses a
+vertical axis of rotation rather than a horizontal one.
+This can be done by selecting "XDT (Vertical)" from the "Orientation"
+combo box. The lines will then be rotated, and the tilt series may be
+manually aligned as before.
+
+![Tilt axis dialog](img/tilt_axis_orientation.png)
