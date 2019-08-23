@@ -2,6 +2,7 @@ site_name: Tomviz Documentation
 theme:
   name: material
   logo: img/tomviz_logo.png
+  favicon: img/tomviz_favicon.png
 markdown_extensions:
   - pymdownx.arithmatex
   - pymdownx.betterem:
