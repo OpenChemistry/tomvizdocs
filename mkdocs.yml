@@ -1,5 +1,7 @@
 site_name: Tomviz Documentation
-theme: material
+theme:
+  name: material
+  logo: img/tomviz_logo.png
 markdown_extensions:
   - pymdownx.arithmatex
   - pymdownx.betterem:
@@ -18,6 +20,8 @@ markdown_extensions:
 copyright: '<font color=#666>Content is available under </font><a href="https://creativecommons.org/licenses/by/4.0/" title="CC-BY 4.0">CC-BY 4.0</a></font>'
 extra_javascript:
   - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'
+extra_css:
+  - 'stylesheets/extra.css'
 nav:
   - 'index.md'
   - 'data.md'
