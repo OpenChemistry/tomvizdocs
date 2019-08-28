@@ -382,7 +382,8 @@ def transform_scalars(dataset):
 ```
 
 It is also possible to iterate through all channels using the `utils.arrays` function.
-The example below loops through the channels and sums them up.
+The example below loops through the channels and sums them up. Note that the call
+to `utils.set_array(...)` will always update the active channel.
 
 
 ```python
@@ -393,7 +394,7 @@ def transform_scalars(dataset):
 
     channel_sum = None
     # Iterate through the channels adding them up.
-    for (name, channel) in utils.array(dataset):
+    for (name, channel) in utils.arrays(dataset):
         if channel_sum is None:
             channel_sum = channel
         else:
