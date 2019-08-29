@@ -365,45 +365,41 @@ application.
 ###  Accessing multiple channels
 
 It is possible for a dataset to contain multiple channels. Operators can access
-these channels by passing extra parameters to the `utils.get_scalars` or
-`utils.get_array` functions to specify the channel of interest.  The channels can
-be accessed by index or by name. The example below loops through the channels by
-index and sums them up.
+these channels by passing the channel name to `utils.get_scalars` or
+`utils.get_array` functions to specify the channel of interest.
+
+In the example below, the channel named `'Tiff Scalars'` is extracted from the dataset.
 
 ```python
 
 def transform_scalars(dataset):
-    """Define this method for Python operators that
-    transform the input array"""
-
-    from tomviz import utils
-    import numpy as np
-
-    channel_sum = None
-    # Iterate through the channels adding them up.
-    for i in range(0, utils.get_number_of_channels(dataset)):
-        if channel_sum is None:
-            channel_sum = utils.get_array(dataset, index=i)
-        else:
-            channel_sum += utils.get_array(dataset, index=i)
-
-    utils.set_array(dataset, channel_sum)
-
-```
-
-To access a particular channel by name, the `name` parameter can be specified. In
-the example below, the channel named `'Tiff Scalars'` is extracted from the dataset.
-
-```python
-
-def transform_scalars(dataset):
-    """Define this method for Python operators that
-    transform the input array"""
-
     from tomviz import utils
     import numpy as np
 
     array = utils.get_array(dataset, name='Tiff Scalars')
     utils.set_array(dataset, array)
+
+```
+
+It is also possible to iterate through all channels using the `utils.arrays` function.
+The example below loops through the channels and sums them up. Note that the call
+to `utils.set_array(...)` will always update the active channel.
+
+
+```python
+
+def transform_scalars(dataset):
+    from tomviz import utils
+    import numpy as np
+
+    channel_sum = None
+    # Iterate through the channels adding them up.
+    for (name, channel) in utils.arrays(dataset):
+        if channel_sum is None:
+            channel_sum = channel
+        else:
+            channel_sum += channel
+
+    utils.set_array(dataset, channel_sum)
 
 ```
