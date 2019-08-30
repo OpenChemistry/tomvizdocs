@@ -32,6 +32,63 @@ Users can also choose to read raw files by defining data dimensions, type, endia
 
 ![Open data](img/raw_reader.png)
 
+#### HDF5 Formats
+
+##### HDF5 Subsampling
+Tomviz utilizes the
+[hyperslab selection](https://support.hdfgroup.org/HDF5/Tutor/select.html)
+features of HDF5, so that HDF5 files may be read with subsampling.
+
+After opening any kind of HDF5 file (includes EMD, Data Exchange, or
+any generic HDF5 file), the data may be reloaded and resampled by
+right-clicking the original dataset in the pipeline and selecting
+"Reload and Resample", as shown below.
+
+![Reload and Resample Context Menu](img/resample_context_menu.png)
+
+A dialog will then appear which allows the user to specify volume
+bounds and a stride (applied to all three axes). The dialog
+also conveniently provides an estimated memory usage of the dataset
+at the bottom.
+
+![HDF5 Subsample Dialog](img/hdf5_subsample_dialog.png)
+
+Once accepted, the dataset will immediately reload with the new
+subsample settings.
+
+The subsample dialog will also appear if a user attempts to open a
+very large HDF5 dataset, so that the user may subsample the dataset
+before the initial reading.
+
+##### EMD
+Tomviz supports reading and writing both volumes and tilt series with
+the [EMD format](https://emdatasets.com/format/). For tilt series
+datasets, Tomviz expects the first axis to define the angles.
+
+As an extension of the EMD format, Tomviz also supports writing multiple
+scalar arrays and reading them back in. The active scalar is always
+written as the "data" dataset in the EMD data group. All other scalars
+are written by name in a "tomviz\_scalars" group in the EMD data group.
+
+##### Data Exchange
+Tomviz supports reading volumes from
+[Scientific Data Exchange format](https://doi.org/10.1107/S160057751401604X)
+files.
+
+When opening an HDF5 file, Tomviz will check to see if a dataset
+exists in the path "/exchange/data". If it does, the dataset will
+be loaded into Tomviz as a volume.
+
+Volumes in Tomviz that are saved as a generic HDF5 file will be written
+in the Data Exchange format.
+
+##### Generic HDF5 File
+If an HDF5 file is opened that does not appear to be a format Tomviz
+recognizes, Tomviz will locate all three-dimensional datasets in the
+file. If only one three-dimensional dataset exists, Tomviz will load
+that dataset as a volume. If more than one exists, a dialog will appear
+asking the user to choose a dataset to load.
+
 ### Save results
 
 #### Save data
