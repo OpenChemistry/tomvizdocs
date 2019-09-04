@@ -99,7 +99,7 @@ It is possible to select independent color maps for the reconstruction previews.
 
 Additionally, it is possible to align a tilt series that uses a
 vertical axis of rotation rather than a horizontal one.
-This can be done by selecting "XDT (Vertical)" from the "Orientation"
+This can be done by selecting "X-ray (Vertical)" from the "Orientation"
 combo box. The lines will then be rotated, and the tilt series may be
 manually aligned as before.
 
