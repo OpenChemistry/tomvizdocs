@@ -222,7 +222,7 @@ additional data sets. The additional data sets are described in the top-level
 JSON with the following keys:
 
 * `results` - An array of JSON objects describing the outputs produced by the
-operator. Results are additional data objects produced when the operator is run.
+operator. Results are additional datasets produced when the operator is run.
 Result JSON objects have three key/value pairs:
     * `name` - The name of the result
     * `label` - The displayed name of the result in the UI.
@@ -230,7 +230,7 @@ More than one result may be produced by the operator.
 * `children` - An array of JSON objects describing child data sets produced by
 the operator. Child data sets are similar to results, but are special in that
 they must be image data to which additional operators may be applied. A child
-data set is described with the same key/value pairs as `results` objects.
+dataset is described with the same key/value pairs as `results` datasets.
 Currently, only a single child data set is supported.
 
 The `name` key of each result and child data set must be unique.
@@ -240,8 +240,8 @@ The `name` key of each result and child data set must be unique.
 In the operator Python code, results and child data sets are set in a dictionary
 returned by the `transform` function. This dictionary consists of
 key/value pairs where the name is the `name` value of the result or child
-dataset and the value is the result or child data object. Results and child
-data objects are datasets created in the Python operator code.
+dataset and the value is the result or child dataset. Results and child
+datasets are created in the Python operator code.
 
 ### Command line execution of pipeline
 
