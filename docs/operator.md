@@ -10,25 +10,24 @@ C++ memory used by Tomviz.
 
 This operator can be found by clicking on `Data Tansforms -> Custom Transform`.
 It is one of the simplest transforms possible where all simple operators define
-the `transform_scalars` function, import the necessary modules, and then get the
+the `transform` function, import the necessary modules, and then get the
 data as an array. This array can be treated like any NumPy array, operated on,
 and once ready the output should be set to make it visible to the application.
 
 ``` python
-def transform_scalars(dataset):
+def transform(dataset):
     """Python operators that transforms the input array"""
 
-    from tomviz import utils
     import numpy as np
 
     # Get the current volume as a numpy array.
-    array = utils.get_array(dataset)
+    array = dataset.active_scalars
 
     # This is where you operate on your data, here we square root it.
     result = np.sqrt(array)
 
     # This is where the transformed data is set, it will display in tomviz.
-    utils.set_array(dataset, result)
+    dataset.active_scalars = result
 ```
 
 The dialog in Tomviz enables editing of Python transforms in the source tab,
@@ -40,14 +39,14 @@ not saved permanently, saving a state file will save custom Python.
 
 Tomviz provides an operator base class that can be used to implement a Python
 operator. To create an operator simply subclass and provide an implementation of
-the `transform_scalars` method.
+the `transform` method.
 
 ```python
 
 import tomviz.operators
 
 class MyOperator(tomviz.operators.Operator):
-    def transform_scalars(self, data):
+    def transform(self, dataset):
         # Do work here
 
 ```
@@ -66,7 +65,7 @@ if necessary.
 import tomviz.operators
 
 class MyCancelableOperator(tomviz.operators.CancelableOperator):
-    def transform_scalars(self, data):
+    def transform(self, dataset):
          while(not self.canceled):
             # Do work here
 
@@ -87,7 +86,7 @@ import tomviz.operators
 
 class MyProgressOperator(tomviz.operators.Operator):
     current_progress = 0
-    def transform_scalars(self, data):
+    def transform(self, dataset):
         self.progress.maximum = 100
         # Do work here
         current_progress += 1
@@ -239,10 +238,10 @@ The `name` key of each result and child data set must be unique.
 ### Creating Operator Results and Child Data Sets
 
 In the operator Python code, results and child data sets are set in a dictionary
-returned by the `transform_scalars` function. This dictionary consists of
+returned by the `transform` function. This dictionary consists of
 key/value pairs where the name is the `name` value of the result or child
 dataset and the value is the result or child data object. Results and child
-data objects are VTK objects created in the Python operator code. See
+data objects are datasets created in the Python operator code. See
 `ConnectedComponents.py` for an example of how to return both a result and
 child dataset.
 
@@ -365,41 +364,41 @@ application.
 ###  Accessing multiple channels
 
 It is possible for a dataset to contain multiple channels. Operators can access
-these channels by passing the channel name to `utils.get_scalars` or
-`utils.get_array` functions to specify the channel of interest.
+these channels by passing the channel name to the `dataset.scalars()`
+function to specify the channel of interest.
 
 In the example below, the channel named `'Tiff Scalars'` is extracted from the dataset.
 
 ```python
 
-def transform_scalars(dataset):
-    from tomviz import utils
+def transform(dataset):
     import numpy as np
 
-    array = utils.get_array(dataset, name='Tiff Scalars')
-    utils.set_array(dataset, array)
+    array = dataset.scalars(name='Tiff Scalars')
+    dataset.active_scalars = array
 
 ```
 
-It is also possible to iterate through all channels using the `utils.arrays` function.
+It is also possible to iterate through the channels one at a time using the
+`dataset.scalars_names` property along with the `dataset.scalars()` function.
 The example below loops through the channels and sums them up. Note that the call
-to `utils.set_array(...)` will always update the active channel.
+to `dataset.active_scalars = ...` will always update the active channel.
 
 
 ```python
 
-def transform_scalars(dataset):
-    from tomviz import utils
+def transform(dataset):
     import numpy as np
 
     channel_sum = None
     # Iterate through the channels adding them up.
-    for (name, channel) in utils.arrays(dataset):
+    for name in dataset.scalars_names:
+        channel = dataset.scalars(name)
         if channel_sum is None:
             channel_sum = channel
         else:
             channel_sum += channel
 
-    utils.set_array(dataset, channel_sum)
+    dataset.active_scalars = channel_sum
 
 ```
