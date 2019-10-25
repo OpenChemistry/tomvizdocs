@@ -241,9 +241,7 @@ In the operator Python code, results and child data sets are set in a dictionary
 returned by the `transform` function. This dictionary consists of
 key/value pairs where the name is the `name` value of the result or child
 dataset and the value is the result or child data object. Results and child
-data objects are datasets created in the Python operator code. See
-`ConnectedComponents.py` for an example of how to return both a result and
-child dataset.
+data objects are datasets created in the Python operator code.
 
 ### Command line execution of pipeline
 
