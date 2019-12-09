@@ -30,7 +30,9 @@ nav:
   - 'analysis.md'
   - 'alignment.md'
   - 'reconstruction.md'
+  - Operators:
+    - 'operators_catalog.md'
+    - 'operators_development.md'
   - Advanced:
-    - 'operator.md'
     - 'pipelines.md'
     - 'acquisition.md'
