@@ -36,3 +36,4 @@ nav:
   - Advanced:
     - 'pipelines.md'
     - 'acquisition.md'
+    - 'interactive.md'
