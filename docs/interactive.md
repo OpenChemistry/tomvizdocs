@@ -1,11 +1,11 @@
 # Interactive Python Console
 
-Tomviz provides a Python console and interactive API that can be using to build up
-and interact with pipelines from within Python. The Python console can be enable
+Tomviz provides a Python console and interactive API that can be used to build up
+and interact with pipelines from within Python. The Python console can be enabled
 using the View menu.
 
 
-# Load a state file
+# Loading a state file
 
 ```python
 >>>
@@ -93,11 +93,12 @@ Python 3.7.5 (default, Nov 20 2019, 09:21:52)
 >>> view.save_screenshot('/tmp/screen.png')
 ```
 
-Controlling output image. The `palette`, `width` and `height` keyword arguments
-can be using to control the output image saved. The `palette` argument can take
-one of the values from the following `Enum` controlling the image background, the
-default in `Current`, which will use the current palette used by the Tomviz
-application.
+## Controlling output image
+
+The `palette`, `width` and `height` keyword arguments can be using to control the
+output image saved. The `palette` argument can take one of the values from the
+following `Enum` controlling the image background, the default in `Current`,
+which will use the current palette used by the Tomviz application.
 
 ``` python
 class Palette(Enum):
