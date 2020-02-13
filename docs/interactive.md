@@ -8,22 +8,16 @@ using the View menu.
 # Loading a state file
 
 ```python
->>>
-Python 3.7.5 (default, Nov 20 2019, 09:21:52)
-[GCC 9.2.1 20191008] on linux
 >>> from tomviz import state
->>> state.load('/home/cjh/tmp/test.tvsm')
+>>> state.load('test.tvsm')
 >>>
 ```
 
 # Executing the pipeline
 
 ```python
->>>
-Python 3.7.5 (default, Nov 20 2019, 09:21:52)
-[GCC 9.2.1 20191008] on linux
 >>> from tomviz import state
->>> state.load('/home/cjh/tmp/test.tvsm')
+>>> state.load('test.tvsm')
 >>> state.pipelines[0].execute()
 >>>
 ```
@@ -31,12 +25,9 @@ Python 3.7.5 (default, Nov 20 2019, 09:21:52)
 # Creating a data source
 
 ```python
->>>
-Python 3.7.5 (default, Nov 20 2019, 09:21:52)
-[GCC 9.2.1 20191008] on linux
 >>> from tomviz import state
 >>> ds = state.DataSource(
-            fileNames=['/home/cjh/data/TestData3D/SMALL_PtCu_NanoParticle.tif']
+            fileNames=['SMALL_PtCu_NanoParticle.tif']
     )
 >>> p = state.Pipeline(ds)
 >>> state.pipelines.append(p)
@@ -46,12 +37,9 @@ Python 3.7.5 (default, Nov 20 2019, 09:21:52)
 # Adding an operator
 
 ```python
->>>
-Python 3.7.5 (default, Nov 20 2019, 09:21:52)
-[GCC 9.2.1 20191008] on linux
 >>> from tomviz import state
 >>> ds = state.DataSource(
-        fileNames=['/home/cjh/data/TestData3D/SMALL_PtCu_NanoParticle.tif']
+        fileNames=['SMALL_PtCu_NanoParticle.tif']
     )
 >>> p = state.Pipeline(ds)
 >>> state.pipelines.append(p)
@@ -64,12 +52,9 @@ Python 3.7.5 (default, Nov 20 2019, 09:21:52)
 # Adding a Module
 
 ```python
->>>
-Python 3.7.5 (default, Nov 20 2019, 09:21:52)
-[GCC 9.2.1 20191008] on linux
 >>> from tomviz import state
 >>> ds = state.DataSource(
-        fileNames=['/home/cjh/data/TestData3D/SMALL_PtCu_NanoParticle.tif']
+        fileNames=['SMALL_PtCu_NanoParticle.tif']
     )
 >>> p = state.Pipeline(ds)
 >>> state.pipelines.append(p)
@@ -82,15 +67,12 @@ Python 3.7.5 (default, Nov 20 2019, 09:21:52)
 # Taking a screen shot
 
 ```python
->>>
-Python 3.7.5 (default, Nov 20 2019, 09:21:52)
-[GCC 9.2.1 20191008] on linux
 >>> from tomviz import state
->>> state.load('/home/cjh/tmp/test.tvsm')
+>>> state.load('test.tvsm')
 >>> state.pipelines[0].execute()
 >>> from tomviz.views import active_view
 >>> view = active_view()
->>> view.save_screenshot('/tmp/screen.png')
+>>> view.save_screenshot('screen.png')
 ```
 
 ## Controlling output image
@@ -119,7 +101,7 @@ invocation would be used:
 >>>
 >>> from tomviz import views
 >>> view = views.active_view()
->>> view.save_screenshot('/tmp/screen.png',
+>>> view.save_screenshot('screen.png',
                          palette=views.Pallete.TransparentBackground)
 >>>
 ```
