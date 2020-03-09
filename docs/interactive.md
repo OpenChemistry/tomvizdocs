@@ -65,14 +65,14 @@ You can accessing the active view in the following way:
 
 ```python
 >>> from tomviz import state
->>> active = state.active_view()
+>>> active = state.active_view
 ```
 
 You can also get a list of all views in the following way:
 
 ```python
 >>> from tomviz import state
->>> views = state.views()
+>>> views = state.views
 ```
 
 # Controlling the camera
@@ -81,7 +81,7 @@ A view has a camera associate with it:
 
 ```python
 >>> from tomviz import state
->>> active = state.active_view()
+>>> active = state.active_view
 >>> camera = active.camera
 ```
 
@@ -115,7 +115,7 @@ Here is an example of rolling the camera in the active view.
 
 ```python
 >>> from tomviz import state
->>> active = state.active_view()
+>>> active = state.active_view
 >>> active.camera.roll = 45
 ```
 
@@ -125,7 +125,7 @@ Here is an example of rolling the camera in the active view.
 >>> from tomviz import state
 >>> state.load('test.tvsm')
 >>> state.pipelines[0].execute()
->>> view = state.active_view()
+>>> view = state.active_view
 >>> view.save_screenshot('screen.png')
 ```
 
@@ -154,7 +154,7 @@ invocation would be used:
 ```python
 >>>
 >>> from tomviz import views
->>> view = views.active_view()
+>>> view = views.active_view
 >>> view.save_screenshot('screen.png',
                          palette=views.Pallete.TransparentBackground)
 ```
