@@ -99,9 +99,34 @@ Users can save the data by either clicking the ```Save Data``` button from ```Fi
 
 #### Save state
 
-Similarly to saving data, users can save the state by clicking the ```Save State``` button from ```File```.
+Similarly to saving data, users can save the state by clicking the ```Save State As``` button from ```File```.
 
-![Save state](img/tomviz_save_state.png)
+![Save state as](img/tomviz_save_state_as.png)
+
+Once a state file has been saved or loaded, ```Save State``` can be used
+to overwrite the same state file. For more information about the types
+of state files, see [here](#state-files).
+
+#### State files
+
+Two types of state files are available in tomviz:
+
+1. Full state files (`.tvh5` files)
+2. Light state files (`.tvsm` files)
+
+The full state files save both the state of the program and the data
+into a single file, which is in HDF5 format. Both input and output data
+are saved in the file, so that pipelines do not need to be re-ran when
+the file is opened.
+
+The light state files only save the state of the program, and they
+use relative file paths on the file system to load the input data.
+When a light state file is loaded, all of the pipelines are re-ran
+to produce the output data.
+
+Full state files are useful for moving the tomviz state between file
+systems and computers. Light state files are useful for saving progress
+on a single computer.
 
 ### Recover and load state
 
@@ -116,6 +141,11 @@ Tomviz saves the pipeline every five minutes, users can recover the previous sta
 When there is no prompt, users can manually load and recover previous states by selecting ```Load State``` from ```File```.
 
 ![Load state](img/tomviz_load_state.png)
+
+Both full state files and light state files may be loaded from this menu.
+Once a state file has been loaded, it may be overwritten via
+```Save State```. For more information about the types of state files,
+see [here](#state-files).
 
 ## Exporting Data
 
