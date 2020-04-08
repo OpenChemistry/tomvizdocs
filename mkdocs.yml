@@ -30,6 +30,7 @@ nav:
   - 'analysis.md'
   - 'alignment.md'
   - 'reconstruction.md'
+  - 'templates.md'
   - Operators:
     - 'operators_catalog.md'
     - 'operators_development.md'
