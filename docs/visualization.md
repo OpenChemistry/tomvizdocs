@@ -128,6 +128,25 @@ panel shown.
 
 ![Threshold](img/threshold2.png)
 
+### Clip
+
+Clipping planes can be added to the data in order to clip any applied `Slice`,
+`Volume`, or `Contour` modules. The default is an orthogonal plane, but the its
+direction can be changed and the plane can be inverted to allow for clipping
+from all directions.
+
+![Inverted clip plane](img/inverted_clip_plane.png)
+
+The direction can be set to `Custom` to clip at any angle, and the plane color
+and opacity can also be changed to fit your needs.
+
+![Nonortho clip plane](img/nonortho_clip_plane.png)
+
+Planes and arrows can also be toggled off for clearer views of the clipped data.
+
+![Hidden clip planes](img/hidden_clip_planes.png)
+
+
 ## Volume Rendering
 
 Tomviz uses volume rendering provided by VTK that utilizes graphics processing
