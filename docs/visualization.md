@@ -131,9 +131,9 @@ panel shown.
 ### Clip
 
 Clipping planes can be added to the data in order to clip any applied `Slice`,
-`Volume`, or `Contour` modules. The default is an orthogonal plane, but the its
+`Volume`, or `Contour` modules. The default is an orthogonal plane, but its
 direction can be changed and the plane can be inverted to allow for clipping
-from all directions.
+from any direction.
 
 ![Inverted clip plane](img/inverted_clip_plane.png)
 
