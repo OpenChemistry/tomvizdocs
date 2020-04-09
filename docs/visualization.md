@@ -89,6 +89,11 @@ set by the color map.
 
 ![Contour](img/contour3.png)
 
+If multiple scalars are available on the data, the user is able to select both
+the scalars to contour by, and the scalars to color by.
+
+![Contour](img/contour_color_by.png)
+
 ### Slice
 
 Slices through the data can be added with the `Slice` module. The default is to
@@ -220,7 +225,7 @@ for the shadows and surface to offer the additional depth shown below.
 
 The `Max Intensity` blending mode (`Composite` is default) enables you to see
 the core of the structure more easily. In this case there is a lot more high
-intensity that is typically hidden. 
+intensity that is typically hidden.
 
 ![Volume render max intensity](img/volume_max.png)
 
