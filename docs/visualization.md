@@ -152,6 +152,51 @@ Planes and arrows can also be toggled off for clearer views of the clipped data.
 ![Hidden clip planes](img/hidden_clip_planes.png)
 
 
+## Color Bar and Opacity Editor
+
+![Histogram Widget](img/histogram_widget.png)
+
+The color map, histogram, and opacity function are combined in the widget in
+the top-right corner of the application display. The color map works primarily
+with the [slice module](#slice) and [volume rendering](#volume-rendering), and
+the opacity function works primarily with [volume rendering](#volume-rendering).
+
+The rectangular bar at the bottom is the color bar. New nodes can be added by
+clicking the color bar, nodes can be deleted via the "Delete" key, they can be
+moved by dragging them, and they can be re-colored by double left-clicking
+them.
+
+The line at the top represents the opacity function. New nodes may be added by
+clicking on the function, they may be deleted via the "Delete" key, and they
+may be moved by dragging them. Nodes can be dragged up (more opaque) and down
+(less opaque) and side-to-side to change the scalar value to which they apply.
+
+### Color Space
+
+The color space may be changed by selecting the gear icon on the right side of
+the histogram.
+
+### Brightness and Contrast
+
+The brightness and contrast may be edited by selecting the grayscale icon on
+the right side of the histogram. This is primarily intended for grayscale
+color maps, but can be used for other color maps as well.
+
+![Brightness and Contrast Editor](img/brightness_and_contrast_editor.png)
+
+![Brightness and Contrast Original](img/brightness_and_contrast_original.png)
+
+Adjusting the brightness shifts the color bar and opacity left and right.
+Adjusting the contrast makes the color bar and opacity widths shrink and expand.
+
+The "Auto" button may be pressed to automatically adjust the brightness and
+contrast to the data range based on certain thresholds.
+
+![Brightness and Contrast Auto](img/brightness_and_contrast_auto.png)
+
+Repeatedly pressing the "Auto" button increases the threshold that is used,
+and thus increases the contrast as well.
+
 ## Volume Rendering
 
 Tomviz uses volume rendering provided by VTK that utilizes graphics processing
@@ -164,16 +209,11 @@ renderer with the default color map and opacity look like the image below.
 
 ### Color Map and Opacity
 
-The color map, histogram, opacity function combined widget in the top-right of
-the application display is closely integrated with the volume renderer. The grey
-circles along the rectangular color bar at the bottom can be double-clicked to
-edit the color. The line at the top can be left-clicked to add new nodes to the
-opacity function, which are colored magenta when active. They can be dragged up
-(more opaque) and down (less opaque) and side-to-side to change the scalar
-value to which they apply.
+The combined [color map, histogram, opacity function widget](#color-bar-and-opacity-editor)
+is closely integrated with the volume renderer.
 
 The screenshot below shows the impact on the volume renderer of adding an
-additional node, and setting it to zero such that all values below about
+opacity node, and setting it to zero such that all values below about
 10,000 are fully transparent. This tends to remove most of the "background"
 values that dominate in the default image with just two nodes. The transparency
 linearly interpolates between points
