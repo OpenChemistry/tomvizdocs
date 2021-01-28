@@ -346,3 +346,26 @@ where to save the image, and it will be exported as a flat image sharing the
 dimensions of that slice through the volume in the case of orthogonal slices.
 
 ![Export mesh from slice](img/export_image.png)
+
+
+## Image Viewer Mode
+
+Under the "View" menu, there is an option to enter "Image Viewer Mode".
+
+Image viewer mode essentially sets up the main window, the modules, and the
+view so that the user can more easily scroll through and visualize the data
+as a stack of images.
+
+![Image Viewer Mode](img/image_viewer_mode.png)
+
+Enabling image viewer mode does the following:
+
+1. Sets the projection to orthographic
+2. Sets the interaction mode to 2D
+3. Resets the view direction to -Z
+4. Finds a slice module, or creates one. Show it, and hide all other modules.
+5. Zooms the camera so the slice fits the window
+6. Places a slider below the render window for selecting the slice to view
+
+When image viewer mode is disabled, most of the settings and the view will
+be restored to what they were before image viewer mode was enabled.
