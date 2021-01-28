@@ -265,6 +265,29 @@ of scalar value and gradient magnitude.
 
 ![Volume render 2D transfer](img/volume_2d_transfer2.png)
 
+### Visualizing RGB Volumes
+
+When multi-component image data is loaded (see [Merging Data](data.md#merging-data)
+for an example), the volume visualization will by default display the magnitude
+of the data.
+
+If 3-component image data is loaded, a "Use RGBA Mapping" checkbox will
+appear in the volume panel. If this setting is checked, then the three
+components of the data will be mapped to the red, green and blue channels,
+respecitvely, and the color map will be ignored. The magnitude of the 3
+channels is then used alongside the opacity editor to compute the opacity of
+the volume.
+
+If checked, an RGBA Mapping Range will appear below it.
+
+![Volume RGBA Mapping Options](img/volume_rgba_mapping_options.png)
+
+This indicates the data range that will get mapped to the RGB range.
+The sliders can be adjusted to remove noise from the visualization
+in order to primarily display the true signal.
+
+![Volume RGBA Mapping](img/volume_rgba_mapping.png)
+
 ## Exporting Visualizations
 
 Tomviz offers a number of options to export the visualizations created in the

@@ -89,6 +89,29 @@ file. If only one three-dimensional dataset exists, Tomviz will load
 that dataset as a volume. If more than one exists, a dialog will appear
 asking the user to choose a dataset to load.
 
+#### Merging Data
+If two or more data sources with identical dimensions are loaded into tomviz,
+the user may merge them together to create either a multi-array data source,
+or a multi-component data source.
+
+This is done by selecting all of the data sources that should be merged, and
+then right-clicking one of them to display the context menu.
+
+![Merge data context menu](img/merge_data_context_menu.png)
+
+Selecting to merge the data results in a dialog to indicate whether to merge
+the images as arrays or as components:
+
+![Merge data select](img/merge_data_select.png)
+
+If the images are merged as arrays, one array can be viewed at a time by
+changing the "Active Scalars" in the properties panel.
+
+If the images are merged as components, the components will be visualized
+simultaneously. In the volume module, this is done by displaying the
+magnitude of the components. Additionally, 3-component data [can be mapped
+to RGB channels in the volume module](visualization.md#visualizing-rgb-volumes).
+
 ### Save results
 
 #### Save data
