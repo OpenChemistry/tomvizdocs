@@ -42,3 +42,66 @@ The operator can be found under the `Data Transform` menu.
 - Pore size distribution table: the fraction of the total volume that can be filled by spheres with the a certain radius
 - If the `save_to_file` parameter is set to `True`, the quantities above will also be saved to disk inside `output_folder`. The following files are created:
     - `pore_size_distribution.csv`
+
+
+## FXI Workflow
+
+### Running
+
+The `FXI Workflow` operator uses [tomopy](https://tomopy.readthedocs.io/en/latest/) to perform a reconstruction as needed in the [Full Field X-ray Imaging](https://www.bnl.gov/nsls2/beamlines/beamline.php?r=18-ID) workflow. The operator has a custom UI that allows the user to generate and visualize reconstructions of a single slice with different rotation centers, so that a reasonable rotation center for the full reconstruction may be chosen. Since both the operator and the UI require tomopy, the `FXI Workflow` operator may only be used if Tomviz was downloaded from [conda-forge](https://anaconda.org/conda-forge/tomviz), and tomopy was installed in that conda environment.
+
+The operator can be found under the `Tomography` menu.
+
+To visualize reconstructions of a slice with different rotation centers, first set the various options in the `Test Rotation Centers` group and then click the `Test Rotations` button. This will run the `test_rotations()` function in the script with the selected parameters. After the reconstructions are generated, the left side of the dialog will display the reconstruction for the selected slice at the selected rotation. Use the `Rotation` slider bar in the `Rotations Preview Settings` group to scroll through and identify the rotation center with the clearest reconstruction. After a reasonable estimated rotation center is found, a more precise rotation center may be identified by narrowing the "Start" and "Stop" window, clicking `Test Rotations`, and scrolling through the reconstructions again. The colormap and `Min`/`Max` may also be edited to improve the contrast of the image.
+
+![Test Rotation Centers](img/fxi_workflow_test_rotation_centers.png)
+
+The settings for the reconstruction operation may be found in the `Reconstruction` group. If test rotations were visualized, the `Rotation Center` will automatically be set to match the rotation center of the current preview on the left side of the dialog. Select the start and stop slices, and then click `OK`. This will run the `transform()` function in the script with the selected parameters. A "Reconstruction" dataset will be created as the output, to which further processing and visualization can be performed. For the reconstruction of the example above, after performing a circle mask, followed by adding a "Volume" visualization module, and editing the color opacity histogram at the top of the application, the following is displayed:
+
+![Reconstruction](img/fxi_workflow_reconstruction_output.png)
+
+### Adding Custom Parameters
+
+The `FXI Workflow` operator also allows custom parameters to be added to the UI, which will be passed to the relevant functions when they are called. Custom parameters for the reconstruction can be added as follows:
+
+1\. Save the `FXI Workflow` script by selecting the `FXI Workflow` operator, clicking on the `Script` tab, and clicking the `Save Script` button below the script. The name does not matter, but save it with a `.py` extension in the default directory that appears in order for Tomviz to automatically load it on start-up.
+
+![Save Script Button](img/fxi_workflow_save_script_button.png)
+
+This will save both the script and a `.json` description file alongside it.
+
+2\. Navigate to the directory where the script was saved and open the `.json` file that was saved next to it (it should have the same name as the saved script except with a `.json` extension). In the `parameters` list, add a new parameter by following the example of the other parameters there (see detailed documentation of the `.json` file in [Operator Development](operators_development.md#generating-the-user-interface-automatically)). The new parameter must have a unique name, and this name will be used as an argument in the `transform()` python function. See the `custom_int` parameter in the example below.
+
+![Description.json Custom Int](img/fxi_workflow_custom_int.png)
+
+3\. Save the `.json` file. Next, either click on `Custom Transforms`->`Import Custom Transform...` and select the python script, or restart Tomviz if the file was saved in its default directory. The operator should appear under the `Custom Transforms` menu. Select it. There should be a new group in the `Reconstruction` group named `Additional Parameters`, and the extra parameter with the provided label should be there. In this case, the extra parameter is "Custom Int".
+
+![Custom Int Dialog](img/fxi_workflow_custom_int_dialog.png)
+
+4\. The new parameter needs to be added as an argument to the `transform()` function. Select the "Script" tab, find the `transform()` function, and add an argument with the same name as the newly added parameter (`custom_int`, in the above example). When "Apply" or "OK" is clicked, the operator will begin, and the extra parameter will be passed into the `transform()` function as that argument. Save the script one more time so that it includes the new argument.
+
+In the `FXI Workflow` operator, new parameters may also be added to the `Test Rotation Centers` group, which will be passed to the `test_rotations()` function in the script. To do so, follow the same instructions as above, except that in the `.json` file, provide a `tag` key to the parameter with a value of `test_rotations`, like so:
+
+![Test Rotations Double](img/fxi_workflow_test_rotations_double.png)
+
+The added parameter should appear within the `Test Rotation Centers` group within a newly visible `Additional Parameters` group, like so:
+
+![Test Rotations Double UI](img/fxi_workflow_test_rotations_double_ui.png)
+
+Select the "Script" tab, find the `test_rotations()` function, and add an argument with the same name as the newly added parameter (`custom_float`, in the above example). When "Test Rotations" is clicked, the extra parameter will be passed into the `test_rotations()` function as that argument. Save the script one more time so that it includes the new argument.
+
+This process may be repeated to add any number of extra parameters to either the reconstruction operation or the "Test Rotations" feature.
+
+### Test Rotation Parameters
+- `Start (double)`: the starting value of the rotation centers to generate
+- `Stop (double)`: the final value of the rotation centers to generate
+- `Steps (int)`: the number of evenly spaced samples to generate over the [`Start`, `Stop`] interval
+- `Slice (int)`: the index of the slice to reconstruct using the rotation centers
+
+### Reconstruction Parameters
+- `Rotation Center (double)`: the rotation center to use for the reconstruction. If test rotations were previewed, this will automatically be set to match the current rotation center being previewed.
+- `Slice Start (int)`: the starting index of the slices to reconstruct (defaults to 0)
+- `Slice Stop (int)`: the final index of the slices to reconstruct (defaults to the last slice)
+
+### Output
+- `reconstruction`: the reconstruction output
