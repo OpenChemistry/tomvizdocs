@@ -45,6 +45,14 @@ using the View menu.
 >>> p.dataSource.operators.append(o)
 ```
 
+# Changing an operator's arguments
+
+```python
+>>> from tomviz import state
+>>> p = state.pipelines[0]
+>>> p.dataSource.operators[o].arguments.sigma = 4.0
+```
+
 # Adding a Module
 
 ```python
