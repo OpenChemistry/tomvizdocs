@@ -105,3 +105,83 @@ This process may be repeated to add any number of extra parameters to either the
 
 ### Output
 - `reconstruction`: the reconstruction output
+
+## Manual Manipulation
+
+The manual manipulation operator allows the user to visually manipulate a
+volume, and then apply those visual transformations to the underlying voxels.
+One use case is to manually register one volume with another.
+
+### Running
+
+To perform manual manipulation, first ensure that the data source to be
+manipulated is selected in the pipeline view.
+
+Next, select "Data Transforms" -> "Manual Manipulation". The operator dialog
+should appear, and a red outline will be rendered in the view.
+
+![Manual Manipulation Original](img/manual_manipulation_original.png)
+
+The red outline indicates the region where the voxels will lie after the
+operation has completed. Input voxels outside of this region will either
+be zeroed out (in the rotation step), or wrapped around to the other side
+(in the shift step).
+
+All three types of interaction (translation, rotation, and scaling) may be
+enabled/disabled via their respective checkboxes. Translation may be
+performed by either middle-clicking and dragging the volume, or by
+left-clicking and dragging the middle handle. Rotation may be performed
+by left-clicking and dragging a face. Scaling may be performed by either
+left-clicking and dragging a face handle (for non-fixed aspect ratio scaling),
+or by right-clicking and dragging the volume (for fixed aspect ratio scaling).
+
+![Manual Manipulation Interactions](img/manual_manipulation_interactions.png)
+
+Once the volume is suitably transformed, click the "OK" button. The voxels
+will then be transformed via rotation, shift, and scaling.
+
+![Manual Manipulation Output](img/manual_manipulation_output.png)
+
+The manual manipulation operator also provides the ability
+to assign a reference data source. If a reference data source is selected,
+the center of the reference data source will be moved to match the center
+of the moving data source. This is especially valuable if the data sources
+are different sizes, as it will allow for a more visually intuitive alignment.
+
+![Manual Manipulation Reference](img/manual_manipulation_reference.png)
+
+If "Align voxels with reference?" is checked, then the moving data source
+will be cropped, padded, and resampled so that the voxels align with the
+reference data source.
+
+Alternatively, if "Align voxels with reference?" is checked, but the
+reference data source is "None", the values of the reference spacing
+and shape may be entered manually. These values will then be used to
+determine the cropping, padding, and resampling that is needed.
+
+### Parameters
+
+- `Shift (int)`: the shift to apply to the voxels. In the custom Manual
+Manipulation widget, this is expressed instead as a double representing
+the shift in physical units. This is converted (including rounding) to
+integer shift. The shift is applied after rotation, and before any
+reference alignment.
+- `Rotate (double)`: the rotations to perform about the center of the
+volume in YXZ ordering (the same ordering that VTK uses internally).
+Rotation is performed before any other operation.
+- `Scale (double)`: the scaling to apply to the volume. This does not
+affect the voxels (unless "Align with Reference" is checked - see the
+"Reference Spacing" parameter for details). It is instead an attribute
+on the data source.
+- `Align with Reference (bool)`: whether to align the voxels of the
+output volume with a reference spacing and shape
+- `Reference Spacing (double)`: the reference spacing target.
+Resampling will be performed to transform the volume's spacing to the
+reference spacing. This will only be applied if "Align with Reference"
+is `True`.
+- `Reference Shape (int)`: the reference shape target. Cropping/padding
+will be performed to transform the volume's shape to the reference
+shape. This will only be applied if "Align with Reference" is `True`.
+
+### Output
+- the resulting volume from the transformations
