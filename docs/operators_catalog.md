@@ -185,3 +185,75 @@ shape. This will only be applied if "Align with Reference" is `True`.
 
 ### Output
 - the resulting volume from the transformations
+
+## Registration
+
+The registration operator may be used to automatically align one volume with
+another via voxel transformations. The transformation that is performed is
+rigid; it consists only of a translation and rotation.
+
+### Setup
+
+This operator requires ITK Elastix, which is currently not being bundled with
+tomviz. As such, ITK Elastix must be installed in the tomviz python environment
+manually. This is possible if tomviz was installed from conda-forge or built
+locally.
+
+ITK Elastix has wheels on PyPI, which were designed to work correctly within
+conda environments. Thus, whether tomviz was installed via conda-forge or
+built locally, running `pip install itk-elastix` should install it correctly.
+This may also upgrade the environment's ITK libraries via PyPI, which should
+work fine as well.
+
+### Running
+
+To perform registration, first ensure that the data source to be
+registered is selected in the pipeline view.
+
+Next, select "Data Transforms" -> "Registration". The operator dialog
+with the various options should appear.
+
+![Registration Options](img/registration_options.png)
+
+Ensure that the `Fixed Dataset` is set correctly to the fixed volume,
+and modify the various options as needed. Click "OK", and registration
+will be performed.
+
+![Registration Output](img/registration_output.png)
+
+ITK Elastix ensures that the output voxels will be aligned with the
+reference voxels.
+
+### Parameters
+- `Fixed Dataset (bool)`: the reference volume to which the input volume
+should be registered.
+- `Max Number of Iterations (int)`: the maximum number of iterations for
+ITK Elastix to use in each resolution.
+- `Number of Resolutions (int)`: the number of resolutions for ITK Elastix
+to use.
+- `Disable Rotation (bool)`: whether to perform a translation-only
+registration.
+- `Interpolation (enum)`: The interpolator that is used during optimization.
+Valid options are: `NearestNeighborInterpolator`, `LinearInterpolator`,
+`BSplineInterpolator`, and `BSplineInterpolatorFloat`.
+- `BSpline Interpolation Order (int)`: the order of the B-spline polynomial
+(only used if a BSpline interpolator is selected).
+- `Resample Interpolator (enum)`: The interpolator that is used to generate
+the final result. Valid options are: `FinalNearestNeighborInterpolator`,
+`FinalLinearInterpolator`, `FinalBSplineInterpolator`, and
+`FinalBSplineInterpolatorFloat`.
+- `Resample BSpline Interpolation Order (int)`: the order of the resample
+B-spline polynomial (only used if a resample BSpline interpolator is
+selected).
+- `Min Histogram Value (double)`: the threshold below which voxels will be
+masked out before performing registration. This may be used to mask out
+noise.
+- `Max Histogram Value (double)`: the threshold above which voxels will be
+masked out before performing registration. This may be used to mask out
+noise.
+- `Show Elastix console output (bool)`: whether or not to display the console
+output from Elastix.
+
+### Output
+- the resulting volume from the registration
+
