@@ -105,3 +105,155 @@ This process may be repeated to add any number of extra parameters to either the
 
 ### Output
 - `reconstruction`: the reconstruction output
+
+## Manual Manipulation
+
+The manual manipulation operator allows the user to visually manipulate a
+volume, and then apply those visual transformations to the underlying voxels.
+One use case is to manually register one volume with another.
+
+### Running
+
+To perform manual manipulation, first ensure that the data source to be
+manipulated is selected in the pipeline view.
+
+Next, select "Data Transforms" -> "Manual Manipulation". The operator dialog
+should appear, and a red outline will be rendered in the view.
+
+![Manual Manipulation Original](img/manual_manipulation_original.png)
+
+The red outline indicates the region where the voxels will lie after the
+operation has completed. Input voxels outside of this region will either
+be zeroed out (in the rotation step), or wrapped around to the other side
+(in the shift step).
+
+All three types of interaction (translation, rotation, and scaling) may be
+enabled/disabled via their respective checkboxes. Translation may be
+performed by either middle-clicking and dragging the volume, or by
+left-clicking and dragging the middle handle. Rotation may be performed
+by left-clicking and dragging a face. Scaling may be performed by either
+left-clicking and dragging a face handle (for non-fixed aspect ratio scaling),
+or by right-clicking and dragging the volume (for fixed aspect ratio scaling).
+
+![Manual Manipulation Interactions](img/manual_manipulation_interactions.png)
+
+Once the volume is suitably transformed, click the "OK" button. The voxels
+will then be transformed via rotation, shift, and scaling.
+
+![Manual Manipulation Output](img/manual_manipulation_output.png)
+
+The manual manipulation operator also provides the ability
+to assign a reference data source. If a reference data source is selected,
+the center of the reference data source will be moved to match the center
+of the moving data source. This is especially valuable if the data sources
+are different sizes, as it will allow for a more visually intuitive alignment.
+
+![Manual Manipulation Reference](img/manual_manipulation_reference.png)
+
+If "Align voxels with reference?" is checked, then the moving data source
+will be cropped, padded, and resampled so that the voxels align with the
+reference data source.
+
+Alternatively, if "Align voxels with reference?" is checked, but the
+reference data source is "None", the values of the reference spacing
+and shape may be entered manually. These values will then be used to
+determine the cropping, padding, and resampling that is needed.
+
+### Parameters
+
+- `Shift (int)`: the shift to apply to the voxels. In the custom Manual
+Manipulation widget, this is expressed instead as a double representing
+the shift in physical units. This is converted (including rounding) to
+integer shift. The shift is applied after rotation, and before any
+reference alignment.
+- `Rotate (double)`: the rotations to perform about the center of the
+volume in YXZ ordering (the same ordering that VTK uses internally).
+Rotation is performed before any other operation.
+- `Scale (double)`: the scaling to apply to the volume. This does not
+affect the voxels (unless "Align with Reference" is checked - see the
+"Reference Spacing" parameter for details). It is instead an attribute
+on the data source.
+- `Align with Reference (bool)`: whether to align the voxels of the
+output volume with a reference spacing and shape
+- `Reference Spacing (double)`: the reference spacing target.
+Resampling will be performed to transform the volume's spacing to the
+reference spacing. This will only be applied if "Align with Reference"
+is `True`.
+- `Reference Shape (int)`: the reference shape target. Cropping/padding
+will be performed to transform the volume's shape to the reference
+shape. This will only be applied if "Align with Reference" is `True`.
+
+### Output
+- the resulting volume from the transformations
+
+## Registration
+
+The registration operator may be used to automatically align one volume with
+another via voxel transformations. The transformation that is performed is
+rigid; it consists only of a translation and rotation.
+
+### Setup
+
+This operator requires ITK Elastix, which is currently not being bundled with
+tomviz. As such, ITK Elastix must be installed in the tomviz python environment
+manually. This is possible if tomviz was installed from conda-forge or built
+locally.
+
+ITK Elastix has wheels on PyPI, which were designed to work correctly within
+conda environments. Thus, whether tomviz was installed via conda-forge or
+built locally, running `pip install itk-elastix` should install it correctly.
+This may also upgrade the environment's ITK libraries via PyPI, which should
+work fine as well.
+
+### Running
+
+To perform registration, first ensure that the data source to be
+registered is selected in the pipeline view.
+
+Next, select "Data Transforms" -> "Registration". The operator dialog
+with the various options should appear.
+
+![Registration Options](img/registration_options.png)
+
+Ensure that the `Fixed Dataset` is set correctly to the fixed volume,
+and modify the various options as needed. Click "OK", and registration
+will be performed.
+
+![Registration Output](img/registration_output.png)
+
+ITK Elastix ensures that the output voxels will be aligned with the
+reference voxels.
+
+### Parameters
+- `Fixed Dataset (bool)`: the reference volume to which the input volume
+should be registered.
+- `Max Number of Iterations (int)`: the maximum number of iterations for
+ITK Elastix to use in each resolution.
+- `Number of Resolutions (int)`: the number of resolutions for ITK Elastix
+to use.
+- `Disable Rotation (bool)`: whether to perform a translation-only
+registration.
+- `Interpolation (enum)`: The interpolator that is used during optimization.
+Valid options are: `NearestNeighborInterpolator`, `LinearInterpolator`,
+`BSplineInterpolator`, and `BSplineInterpolatorFloat`.
+- `BSpline Interpolation Order (int)`: the order of the B-spline polynomial
+(only used if a BSpline interpolator is selected).
+- `Resample Interpolator (enum)`: The interpolator that is used to generate
+the final result. Valid options are: `FinalNearestNeighborInterpolator`,
+`FinalLinearInterpolator`, `FinalBSplineInterpolator`, and
+`FinalBSplineInterpolatorFloat`.
+- `Resample BSpline Interpolation Order (int)`: the order of the resample
+B-spline polynomial (only used if a resample BSpline interpolator is
+selected).
+- `Min Histogram Value (double)`: the threshold below which voxels will be
+masked out before performing registration. This may be used to mask out
+noise.
+- `Max Histogram Value (double)`: the threshold above which voxels will be
+masked out before performing registration. This may be used to mask out
+noise.
+- `Show Elastix console output (bool)`: whether or not to display the console
+output from Elastix.
+
+### Output
+- the resulting volume from the registration
+
