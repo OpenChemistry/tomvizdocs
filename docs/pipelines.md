@@ -4,7 +4,7 @@ Tomviz includes a number of functions and algorithms, if those do not satisfy
 your needs there is also support for extensions. These include custom operators
 and file formats, which are primarily implemented using Python scripts and JSON
 to describe user interface elements. These are introduced in the
-[operators](operator.md) section.
+[operators development](operators_development.md) section.
 
 The data processing pipeline is central to Tomviz, and each operator is a
 self-contained unit operating on the data. It is possible to run these operators

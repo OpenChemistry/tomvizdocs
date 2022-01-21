@@ -1,4 +1,4 @@
-The analysis pipeline consists principally of data [operators](operator.md),
+The analysis pipeline consists principally of data [operators](operators_catalog.md),
 these are pipeline objects that can perform various analytical functions on the
 volumetric data. The first place to look would be the `Data Transforms` menu,
 along with the `Segmentation` menu. Tomviz comes bundled with a full Python 3.7
