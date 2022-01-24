@@ -14,17 +14,21 @@ In this subsection, loading methods for three data categories, single data file,
 
 #### Single data file
 
-Loading single dataset is straight forward, simply select ```Open Data``` from the ```File``` menu, as indicated in screenshot below.
+Loading single dataset is straightforward, simply select ```Open```->```Data``` from the ```File``` menu, as indicated in screenshot below.
 
 ![Open data](img/tomviz_open_data.png)
 
 #### Image stacks
 
-Loading image stacks takes a little bit more efforts than loading single data file. After selecting ```Open Stack``` from the ```File``` menu, check all the images you would like to include in the pop-up window, as indicated in screenshots below.
+Loading image stacks takes a little bit more efforts than loading single data file. After selecting ```Open```->```Stack``` from the ```File``` menu, check all the images you would like to include in the pop-up window, as indicated in screenshots below.
 
 ![Open stack](img/tomviz_open_stack.png)
 
 ![Open stack dialog](img/tomviz_stack_dialog.png)
+
+#### Time Series
+
+Loading a time series is straightforward. Simply select ```Open```->```Time Series``` from the ```File``` menu, and select a list of files to load. Each file is considered to be one step in the time series. For more information about editing, analyzing, and visualizing time series data, see [Time Series](time_series.md).
 
 #### Reading a raw file
 
