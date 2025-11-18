@@ -34,6 +34,9 @@ nav:
   - Operators:
     - 'operators_catalog.md'
     - 'operators_development.md'
+  - Workflows:
+    - 'workflows_pyxrf.md'
+    - 'workflows_ptycho.md'
   - Advanced:
     - 'pipelines.md'
     - 'acquisition.md'
