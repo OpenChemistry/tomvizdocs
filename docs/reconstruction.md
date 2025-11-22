@@ -1,3 +1,5 @@
+# Reconstruction
+
 Tomographic reconstruction transforms a tilt series into a reconstructed volume.
 It is the most computationally intensive step step. We recommended that you save
 your work often, and consider downsampling the dataset in order to preview
@@ -19,21 +21,21 @@ simple back projection being the exception (developed in C++ for rapid
 feedback). They serve as a good starting point to develop new algorithms, or
 inspect the implementation of the reconstruction techniques.
 
-### Pre-reconstruction pipeline
+## Pre-reconstruction pipeline
 
 The pipeline shown below is typical of a pre-reconstruction pipeline. This
 includes a number of steps discussed in the [alignment section](alignment.md).
 
 ![Pipeline before reconstruction](img/reco_pre_pipeline.png)
 
-### Reconstruction menu
+## Reconstruction menu
 
 The reconstruction techniques are in the `Tomography` menu, the menu is shown
 below:
 
 ![Reconstruction menu](img/reco_menu.png)
 
-### Weighted back projection
+## Weighted back projection
 
 A simple and relatively fast reconstruction technique is the weighted back
 projection technique. It has a number of parameters that can be specified, along
@@ -48,7 +50,7 @@ resulting volume.
 
 ![Weighted back projection](img/weighted_back_proj2.png)
 
-### Save the reconstruction data
+## Save the reconstruction data
 
 The reconstructed data is shown as a child dataset of the loaded tilt series. In
 order to save the result highlight the `Reconstruction` object in the pipeline,
@@ -56,7 +58,7 @@ click on `Save Data` in the `File` menu as shown below.
 
 ![Save data](img/tomviz_save_data.png)
 
-### TomoPy
+## TomoPy
 
 Reconstructions may be performed using [TomoPy](https://tomopy.readthedocs.io)
 when utilizing the Docker pipeline mode along with the "tomviz/tomopy-pipeline"
@@ -85,7 +87,7 @@ may be viewed by changing the slice direction to the "YZ" plane.
 
 ![TomoPy gridrec reconstruction](img/tooth_reconstruction.png)
 
-### Advanced reconstruction techniques
+## Advanced reconstruction techniques
 
 As already mentioned most of the reconstruction techniques are developed in
 Python. You can inspect the code in the application, and modify the approach if

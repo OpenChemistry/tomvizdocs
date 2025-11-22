@@ -1,3 +1,5 @@
+# Templates
+
 Operators and visualization modules that have been applied to a data source can be saved as a template, which allows for quick and easy reuse with new data that may require the same pipeline.
 
 ## Create a Template

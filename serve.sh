@@ -1,1 +1,3 @@
-mkdocs serve -a localhost:8089
+cd docs
+
+sphinx-autobuild . _build/html

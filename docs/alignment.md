@@ -1,3 +1,5 @@
+# Alignment
+
 Tomviz supports two types of data; volumes and tilt series. Volumes are from
 tomographic reconstructions or sectioning, and tilt series are projection images
 with associated angles. Specialized tools are provided for each type of data,

@@ -1,0 +1,204 @@
+/* Tomviz Documentation - RTD Theme Customization */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Thin purple banner at top of entire page */
+body::before {
+    content: '';
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 8px;
+    background-color: #3f51b5;
+    z-index: 10000;
+}
+
+/* Adjust page to account for banner */
+.wy-grid-for-nav {
+    margin-top: 8px;
+}
+
+/* Hide top mobile nav */
+.wy-nav-top {
+    display: none !important;
+}
+
+/* Left sidebar */
+.wy-nav-side {
+    background-color: #fcfcfc;
+}
+
+.wy-side-nav-search {
+    background-color: #3f51b5;
+    padding: 1.5rem 1rem;
+}
+
+.wy-side-nav-search input[type=text] {
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+.wy-side-nav-search a img.logo {
+    max-width: 200px;
+    margin: 0.5rem auto;
+    display: block;
+}
+
+.wy-side-nav-search > a {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 500;
+    padding-top: 0.5rem;
+}
+
+/* Navigation */
+.wy-menu-vertical a {
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.wy-menu-vertical a:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.wy-menu-vertical a.current {
+    background-color: rgba(63, 81, 181, 0.08);
+    color: #3f51b5;
+    font-weight: 500;
+}
+
+/* Hide subsections in navigation */
+.wy-menu-vertical li.toctree-l2 ul {
+    display: none !important;
+}
+
+/* Main content */
+.wy-nav-content {
+    max-width: none;
+    margin-right: 280px;
+    padding-top: 1rem;
+}
+
+.wy-nav-content-wrap {
+    margin-top: 0;
+}
+
+.rst-content {
+    padding-top: 0;
+}
+
+/* Right sidebar - "On this page" */
+.right-sidebar {
+    position: fixed;
+    right: 0;
+    top: 8px;
+    width: 280px;
+    height: calc(100vh - 8px);
+    padding: 2rem 1.5rem;
+    background-color: #fcfcfc;
+    border-left: 1px solid #e0e0e0;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.right-sidebar h3 {
+    font-size: 0.9rem;
+    color: rgba(0, 0, 0, 0.87);
+    font-weight: 700;
+    margin: 0 0 0.75rem 0;
+    padding: 0.4rem 0.8rem;
+}
+
+.right-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.right-sidebar a {
+    display: block;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    color: rgba(0, 0, 0, 0.87);
+    text-decoration: none;
+}
+
+.right-sidebar a:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.right-sidebar a.current {
+    color: #3f51b5;
+    font-weight: 500;
+    background-color: rgba(63, 81, 181, 0.08);
+}
+
+/* Content styling */
+.rst-content a {
+    color: #3f51b5;
+    text-decoration: none;
+}
+
+.rst-content a:hover {
+    text-decoration: underline;
+}
+
+.rst-content h1,
+.rst-content h2,
+.rst-content h3 {
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+code {
+    background-color: rgba(0, 0, 0, 0.04);
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.2rem;
+}
+
+/* Hide unwanted elements */
+.wy-breadcrumbs,
+.rst-footer-buttons,
+.toctree-wrapper {
+    display: none;
+}
+
+/* API Documentation - force properties on separate lines */
+.rst-content dl.py.property,
+.rst-content dl.py.method,
+.rst-content dl.py.class {
+    display: block;
+    width: 100%;
+}
+
+.rst-content dl dt {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.rst-content dl dd {
+    display: block;
+    width: 100%;
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 1400px) {
+    .right-sidebar {
+        display: none;
+    }
+    .wy-nav-content {
+        margin-right: 0;
+    }
+}

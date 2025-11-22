@@ -69,3 +69,52 @@ example data set, this will display a volume rendering of a reconstructed
 nanoparticle. The `Sample Data` menu offers the reconstruction and tilt series
 for the star nanoparticle, along with options for generating simulated data or
 downloading open data sets for TEM tomography data.
+
+```{toctree}
+:maxdepth: 1
+:hidden:
+
+data
+visualization
+analysis
+alignment
+reconstruction
+templates
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Operators
+:hidden:
+
+operators_catalog
+operators_development
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Workflows
+:hidden:
+
+workflows_pyxrf
+workflows_ptycho
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Advanced
+:hidden:
+
+pipelines
+acquisition
+interactive
+time_series
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: API Reference
+:hidden:
+
+api/index
+```

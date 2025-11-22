@@ -5,14 +5,14 @@ and interact with pipelines from within Python. The Python console can be enable
 using the View menu.
 
 
-# Loading a state file
+## Loading a state file
 
 ```python
 >>> from tomviz import state
 >>> state.load('test.tvsm')
 ```
 
-# Executing the pipeline
+## Executing the pipeline
 
 ```python
 >>> from tomviz import state
@@ -20,7 +20,7 @@ using the View menu.
 >>> state.pipelines[0].execute()
 ```
 
-# Creating a data source
+## Creating a data source
 
 ```python
 >>> from tomviz import state
@@ -31,7 +31,7 @@ using the View menu.
 >>> state.pipelines.append(p)
 ```
 
-# Adding an operator
+## Adding an operator
 
 ```python
 >>> from tomviz import state
@@ -45,7 +45,7 @@ using the View menu.
 >>> p.dataSource.operators.append(o)
 ```
 
-# Adding a Module
+## Adding a Module
 
 ```python
 >>> from tomviz import state
@@ -59,7 +59,7 @@ using the View menu.
 >>> p.dataSource.modules.append(m)
 ```
 
-# Accessing views
+## Accessing views
 
 You can accessing the active view in the following way:
 
@@ -75,7 +75,7 @@ You can also get a list of all views in the following way:
 >>> views = state.views
 ```
 
-# Controlling the camera
+## Controlling the camera
 
 A view has a camera associate with it:
 
@@ -119,7 +119,7 @@ Here is an example of rolling the camera in the active view.
 >>> active.camera.roll = 45
 ```
 
-# Taking a screen shot
+## Taking a screen shot
 
 ```python
 >>> from tomviz import state
@@ -129,7 +129,7 @@ Here is an example of rolling the camera in the active view.
 >>> view.save_screenshot('screen.png')
 ```
 
-## Controlling output image
+### Controlling output image
 
 The `palette`, `resolution` keyword arguments can be using to control the
 output image saved. The `palette` argument can take one of the values from the
