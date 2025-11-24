@@ -17,7 +17,8 @@ build:
     # Clone tomviz repository before building
     pre_build:
       - git clone https://github.com/OpenChemistry/tomviz.git /tmp/tomviz
-      - cd /tmp/tomviz && pip install tomviz/python
+      - pip install /tmp/tomviz/tomviz/python
+      - python scripts/generate_operator_docs.py --local /tmp/tomviz/tomviz/python --output docs/operators
 
 # Python configuration
 python:

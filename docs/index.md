@@ -118,3 +118,11 @@ time_series
 
 api/index
 ```
+
+```{toctree}
+:maxdepth: 2
+:caption: Operators Reference
+:hidden:
+
+operators/index
+```

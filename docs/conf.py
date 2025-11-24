@@ -40,7 +40,7 @@ html_show_sphinx = False
 
 # RTD theme - keep navigation simple
 html_theme_options = {
-    'navigation_depth': 1,
+    'navigation_depth': 3,
     'collapse_navigation': True,
     'sticky_navigation': True,
     'titles_only': True,
@@ -62,3 +62,9 @@ intersphinx_mapping = {
 
 # Autosummary
 autosummary_generate = True
+
+# MyST Parser configuration
+myst_enable_extensions = [
+    "colon_fence",  # Enable ::: fences
+    "deflist",      # Enable definition lists
+]
