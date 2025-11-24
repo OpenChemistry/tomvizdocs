@@ -5,7 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!article) return;
         
         var headings = article.querySelectorAll('h2, h3');
-        if (headings.length === 0) return;
+        var operator_headings = article.querySelectorAll('dl.class dt')
+
+        if (headings.length === 0 && operator_headings.length === 0) return;
         
         // Create sidebar
         var sidebar = document.createElement('div');
@@ -41,6 +43,21 @@ document.addEventListener('DOMContentLoaded', function() {
             li.appendChild(a);
             nav.appendChild(li);
         });
+
+        operator_headings.forEach(function(heading) {
+            // Get clean text
+            var text = heading.id;
+
+            // Create link
+            var li = document.createElement('li');
+
+            var a = document.createElement('a');
+            a.href = '#' + heading.id;
+            a.textContent = text;
+
+            li.appendChild(a);
+            nav.appendChild(li);
+        });
         
         sidebar.appendChild(nav);
         document.body.appendChild(sidebar);
@@ -49,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function highlight() {
             var scrollPos = window.scrollY + 100;
             var current = null;
-            headings.forEach(function(h) { if (h.offsetTop <= scrollPos) current = h; });
+            [...headings, ...operator_headings].forEach(function(h) { if (h.offsetTop <= scrollPos) current = h; });
             
             sidebar.querySelectorAll('a').forEach(function(a) { a.classList.remove('current'); });
             if (current) {
