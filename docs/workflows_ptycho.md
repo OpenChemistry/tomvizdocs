@@ -15,6 +15,12 @@ visualizing different reconstructed elements. Those steps are also detailed belo
 
 To begin, click on "Workflows" in the top menu bar, and then select "Ptycho".
 
+## Tutorial Video
+
+<div style="text-align: center;">
+  <iframe src="https://drive.google.com/file/d/1vBzNkJtdVt6ik0nmI3FdbZSheIV6gpFP/preview" width="760" height="480" allow="autoplay"></iframe>
+</div>
+
 ## Ptycho Dialog
 
 After starting the Ptycho workflow, the following dialog will appear:

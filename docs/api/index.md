@@ -1,15 +1,26 @@
 # API Reference
 
-This section contains the API documentation for the tomviz Python library.
-
-## Core Classes
+This presents API intended to be accessed within Tomviz operator modules.
 
 ### Dataset
 
-The Dataset class for managing volumetric data.
+The Dataset class for managing volumetric and tilt series data. This
+is always passed as the first argument within an operator's `transform()`
+function.
 
 ```{eval-rst}
 .. autoclass:: tomviz.dataset.Dataset
+   :members:
+   :undoc-members:
+   :show-inheritance:
+```
+
+## Utils
+
+Utility functions that may be used within operators.
+
+```{eval-rst}
+.. automodule:: tomviz.utils
    :members:
    :undoc-members:
    :show-inheritance:

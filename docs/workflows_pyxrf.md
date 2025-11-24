@@ -15,6 +15,12 @@ visualizing different reconstructed elements. Those steps are also detailed belo
 
 To begin, click on "Workflows" in the top menu bar, and then select "PyXRF".
 
+## Tutorial Video
+
+<div style="text-align: center;">
+  <iframe src="https://drive.google.com/file/d/1_TieRLbtaF34BJD4ESMF9fXCqkC-8ePL/preview" width="760" height="480" allow="autoplay"></iframe>
+</div>
+
 ## Make HDF5
 
 The first step in the PyXRF workflow involves downloading and formatting the
