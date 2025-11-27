@@ -200,6 +200,9 @@ After selecting all of the options, click `OK`. The operator will run, and
 the slices in the output should appear to be much smoother when transitioning
 from one to another.
 
+More details about the PyStackReg Image Alignment operator may be found
+[here](alignment.md#pystackreg-image-alignment).
+
 ### Tilt Axis Shift Alignment
 
 After performing `PyStackReg` alignment, it can be helpful to center the
@@ -218,6 +221,9 @@ alignment. For reproducibility, the random number generator seed is provided.
 Click `OK` to begin the operation. If the output does not appear to be centered
 perfectly, navigate back to the operator settings and try changing the padding,
 number of slices, or seed.
+
+More details about the Tilt Axis Shift Alignment operator may be found
+[here](alignment.md#auto-tilt-axis-shift-alignment).
 
 ### 3D Reconstruction
 
