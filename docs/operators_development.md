@@ -28,6 +28,10 @@ def transform(dataset):
 
     # This is where the transformed data is set, it will display in tomviz.
     dataset.active_scalars = result
+
+    # Optionally set the voxel sizes (in physical units)
+    # These are the sizes in the directions x, y, z, respectively
+    dataset.spacing = [5, 10, 7]
 ```
 
 The dialog in Tomviz enables editing of Python transforms in the source tab,
