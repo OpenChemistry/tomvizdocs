@@ -60,32 +60,107 @@ click on `Save Data` in the `File` menu as shown below.
 
 ## TomoPy
 
-Reconstructions may be performed using [TomoPy](https://tomopy.readthedocs.io)
-when utilizing the Docker pipeline mode along with the "tomviz/tomopy-pipeline"
-docker image. This can be done by changing the settings under
-"Tools"->"Pipeline Settings".
+Reconstructions may be performed using [TomoPy](https://tomopy.readthedocs.io).
+The TomoPy reconstruction operator supports multiple reconstruction algorithms:
 
-An example which uses the
-[gridrec](https://tomopy.readthedocs.io/en/latest/ipynb/tomopy.html#gridrec)
-reconstruction algorithm is available in Tomviz, and the TomoPy sample file
-[tooth.h5](https://github.com/tomopy/tomopy/blob/master/source/tomopy/data/tooth.h5)
-is a good example to start with.
+ * **gridrec** — A fast, Fourier-based reconstruction algorithm. Best for quick
+   reconstructions with good quality.
+ * **fbp** — Filtered back projection. A standard analytical reconstruction
+   method.
+ * **mlem** — Maximum Likelihood Expectation Maximization. An iterative method
+   that can produce higher quality results for noisy data.
+ * **ospml_hybrid** — Ordered Subset Penalized Maximum Likelihood with hybrid
+   penalty. An iterative method with regularization.
 
-After opening the TomoPy sample file, its sinogram may be visualized by
-changing the slice direction to the "XZ" plane:
+The iterative methods (mlem, ospml_hybrid) expose a `num_iter` parameter that
+controls the number of iterations to perform.
 
-![TomoPy gridrec reconstruction](img/tooth_sinogram.png)
+To use TomoPy reconstruction, select `Tomography` -> `Reconstruction (TomoPy)`
+from the menu. Select the desired algorithm and set any other needed parameters.
 
-Next, select "Tomography"->"TomoPy Gridrec Method", and set the "Rotation
-Center" to be around 300. The rotation center will be tuned automatically
-in this example.
+## Shift Rotation Center
 
-![TomoPy gridrec reconstruction](img/tomopy_gridrec_recon.png)
+```{raw} html
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin-bottom: 1.5em;">
+  <iframe src="https://drive.google.com/file/d/1rGz23e7bdHALZC-jhKkl9Rg0_5kcZd3F/preview" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div>
+```
 
-Start the reconstruction. Once the reconstruction is completed, the image
-may be viewed by changing the slice direction to the "YZ" plane.
+The Shift Rotation Center tool helps determine the optimal rotation center
+for tomographic reconstruction. It generates a set of reconstructions from a
+single slice using a range of test rotation centers, allowing you to visually
+identify which center produces the best reconstruction.
 
-![TomoPy gridrec reconstruction](img/tooth_reconstruction.png)
+Applying the operator then shifts the data so that the center of rotation is
+at the center of the image.
+
+This tool is accessible from the `Tomography` menu.
+
+### How It Works
+
+The tool reconstructs a single slice of your data using multiple different
+rotation center values. The results are presented side-by-side so you can
+compare them and identify the rotation center that produces the sharpest,
+most artifact-free reconstruction.
+
+![Shift Rotation Center Projection Preview](img/shift_rotation_center_projection_preview.png)
+
+The "Projection No." may be edited to view a different projection. The red line
+represents the "Slice" parameter - the plane of the test reconstructions. The
+yellow line represents the current shift in the rotation axis center, in
+fractional pixels.
+
+Clicking the "Test Rotations" button generates the preview reconstructions at the
+various rotation centers defined by the "Start", "Stop", and "Step" parameters.
+
+![Shift Rotation Center Preview Incorrect](img/shift_rotation_center_preview_incorrect.png)
+
+Adjusting the slider interactively updates the preview reconstruction, and allows
+you to interactively determine which rotation center produces the highest quality
+reconstruction. For this example, sliding the value to the correct center yields
+the following preview image:
+
+![Shift Rotation Center Preview](img/shift_rotation_center_preview.png)
+
+Once the correct rotation center has been discovered, applying the operator will
+shift the images so that the rotation center is now at the center of the images.
+
+### Quality Metrics
+
+In addition to visual inspection, the tool computes two quality metrics from
+[Donath et al. (2006)](https://opg.optica.org/josaa/abstract.cfm?uri=josaa-23-5-1048)
+to help quantify reconstruction quality at each candidate rotation center:
+
+ * **QiA (Integral of Absolute Value)** — Measures the sharpness of the
+   reconstruction by summing the absolute values of all pixel intensities.
+   When the rotation center is correct, the reconstruction focuses signal
+   properly into sharp features with high absolute intensities. An incorrect
+   center smears the signal, reducing the total absolute intensity. The
+   optimal rotation center **maximizes** QiA.
+
+ * **QN (Integral of Negativity)** — Measures the total amount of negative
+   pixel intensity in the reconstruction. The reconstructed quantity (e.g.,
+   attenuation coefficient) is inherently non-negative, so negative values
+   in a reconstruction indicate artifacts from an incorrect rotation center.
+   The optimal rotation center **minimizes** QN (i.e., has the least amount
+   of negative intensity). Note that QN is only meaningful for non-iterative
+   algorithms (gridrec, fbp) that can produce negative values. It is
+   automatically hidden when iterative algorithms (mlem, ospml_hybrid) are
+   selected, since those enforce non-negativity constraints.
+
+Both metrics are plotted as line charts alongside the reconstruction previews,
+with the X-axis showing the rotation center offset. A vertical indicator line
+marks the currently selected center, helping you identify the optimal value
+both visually and numerically.
+
+### Saving and Loading Parameters
+
+Parameters can be saved to and loaded from NPZ files. This is useful for
+interoperability with other alignment workflows, allowing you to reuse
+rotation center parameters across different datasets or tools. The NPZ
+files take into account pixel size, so they can be applied to datasets with
+a different shape (for example, taking the shift from an XRF dataset and
+applying the same shift to a ptychography dataset).
 
 ## Advanced reconstruction techniques
 

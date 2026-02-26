@@ -363,6 +363,72 @@ application.
 
 ![Custom Transforms](img/custom_transforms_fancier3.png)
 
+### Automatic Multi-Array Processing
+
+By default, all transform functions are automatically wrapped with behavior
+that applies the operator to every scalar array in the dataset. This means
+that when a dataset contains multiple arrays (e.g., multiple elements from
+XRF data), each operator will process all arrays without requiring any special
+code.
+
+If an operator should only process the active array (not all arrays), or if
+the operator manually processes all arrays through logic inside (for example,
+performing an alignment with one array and then applying the same alignment
+to other arrays), this automatic behavior can be disabled by adding
+`"apply_to_each_array": false` to the operator's JSON description file:
+
+```json
+{
+  "name" : "MyOperator",
+  "label" : "My Operator",
+  "apply_to_each_array" : false
+}
+```
+
+### External Subprocess Execution
+
+Individual operators can be configured to execute in an external subprocess
+rather than in the main Tomviz process. This is useful when an operator
+requires custom, complex dependencies (such as AI ones), and it needs to
+be executed in an external conda environment.
+
+External execution is controlled by a setting in the operator's JSON
+description file. When enabled, the operator runs via the `tomviz-pipeline`
+command in a separate process, with results communicated back to the main
+application.
+
+In the root level of the JSON description file, `tomviz_pipeline_env` should
+be set to the path to the conda environment where the operator should be
+executed. This conda environment must have the `tomviz-pipeline` dependency
+installed from `conda-forge`. Aside from that dependency, the environment
+can be configured however is needed to run the operator.
+
+### Conditional Visibility with `visible_if`
+
+Operator parameters can be conditionally shown or hidden based on the values
+of other parameters using the `visible_if` field. This supports logical
+`and` and `or` operators for complex conditions.
+
+For example, to show a parameter only when specific algorithms are selected:
+
+```json
+{
+  "name" : "num_iter",
+  "label" : "Number of Iterations",
+  "type" : "int",
+  "default" : 100,
+  "visible_if" : "algorithm == 'mlem' or algorithm == 'ospml_hybrid'"
+}
+```
+
+You can also combine conditions with `and`:
+
+```json
+{
+  "visible_if" : "enable_feature == true and mode == 'advanced'"
+}
+```
+
 ###  Accessing multiple channels
 
 It is possible for a dataset to contain multiple channels. Operators can access

@@ -79,6 +79,7 @@ visualization
 analysis
 alignment
 reconstruction
+pipeline_management
 templates
 ```
 

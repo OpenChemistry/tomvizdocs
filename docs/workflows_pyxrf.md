@@ -32,7 +32,12 @@ The dialog appears as the following:
 ![PyXRF Make HDF5 Dialog](img/pyxrf_make_hdf5_dialog.png)
 
 The "PyXRF Utils Command" at the top specifies the command that is to be used
-in order to execute PyXRF. Tomviz will run this command as a subprocess with
+in order to execute PyXRF. Tomviz will automatically search for the
+`pyxrf-utils` executable in standard system paths, starting with the last
+user-selected path. If the executable is found, it is set automatically;
+otherwise, you will be prompted to select one manually.
+
+Tomviz will run this command as a subprocess with
 command-line API expected to match that shown
 [here](https://github.com/OpenChemistry/tomviz/tree/master/tomviz/python/tomviz/pyxrf/pyxrf-utils).
 This command, however, can easily be a script that sets up and runs the same
