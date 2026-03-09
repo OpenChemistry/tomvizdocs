@@ -118,6 +118,64 @@ simultaneously. In the volume module, this is done by displaying the
 magnitude of the components. Additionally, 3-component data [can be mapped
 to RGB channels in the volume module](visualization.md#visualizing-rgb-volumes).
 
+## Scan IDs
+
+Tomviz supports associating scan IDs with each image in a tilt series. Scan IDs
+are identifiers that track which experimental scan produced each projection
+image, and are particularly useful when working with synchrotron beamline data.
+
+### Viewing Scan IDs
+
+Scan IDs are displayed alongside tilt angles in the Data Properties Panel
+(bottom-left corner of the application). When a data source with scan IDs is
+selected in the pipeline, the scan IDs appear in the properties table.
+
+![Data Properties Scan IDs](img/data_properties_scan_ids.png)
+
+### Setting Scan IDs
+
+Scan IDs can be set in several ways:
+
+ * **From file** — When loading tilt angles from a file via the "Set Tilt
+   Angles" dialog, if the file contains a scan IDs column, it will be
+   automatically imported alongside the angles.
+ * **From PyXRF workflow** — Scan IDs are automatically extracted during the
+   PyXRF workflow.
+ * **From Ptychography workflow** — Scan IDs are automatically extracted
+   during the Ptychography workflow.
+
+### Storage
+
+Scan IDs are stored in EMD files under the `/data/tomography/scan_ids` path,
+ensuring they persist across save/load cycles.
+
+### Python Access
+
+Scan IDs can be accessed in Python operators via the `dataset.scan_ids`
+property:
+
+```python
+def transform(dataset):
+    scan_ids = dataset.scan_ids
+    # Use scan IDs for processing...
+```
+
+## Saving Tilt Angles
+
+Tilt angles can be saved to a text file directly from the Data Properties
+Panel. This is useful for exporting the angles for use in external tools or
+for documentation purposes.
+
+To save tilt angles, click the save button in the Data Properties Panel when
+a tilt series is selected. You will be prompted to choose a filename and
+location for the `.txt` file.
+
+![Save Tilt Angles](img/data_properties_save_tilt_angles.png)
+
+If scan IDs are also available and displayed, they will likewise be saved
+to that `.txt` file, in the first column. The tilt angles will be present
+in the second column.
+
 ## Save results
 
 ### Save data

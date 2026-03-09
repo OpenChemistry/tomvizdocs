@@ -186,6 +186,108 @@ shape. This will only be applied if "Align with Reference" is `True`.
 ### Output
 - the resulting volume from the transformations
 
+## Deconvolution Denoise
+
+The `Deconvolution Denoise` operator performs deconvolution-based denoising of
+volumetric data using a ptychographic probe and a selected regularization
+method. The operator uses the probe's amplitude information as a point spread
+function (PSF) and applies deconvolution algorithms slice-by-slice along a
+chosen axis. This is particularly useful for denoising ptychographic
+reconstruction data by leveraging the known probe information.
+
+The operator can be found under the `Data Transforms` menu.
+
+![Deconvolution Denoise](img/operator_deconvolution_denoise.png)
+
+### Methods
+
+Three deconvolution methods are available:
+
+- **APG_BM3D** (Accelerated Proximal Gradient with BM3D denoising): Generally
+  the most accurate method, as BM3D is a state-of-the-art image denoising
+  algorithm. However, it is the slowest of the three and requires the `bm3d`
+  Python package, which is an optional dependency that must be installed
+  manually into the Tomviz Python environment.
+- **APG_TV** (Accelerated Proximal Gradient with Total Variation
+  regularization): Uses total variation regularization within the proximal
+  gradient framework. Does not require any additional dependencies.
+- **ADMM_TV** (Alternating Direction Method of Multipliers with Total Variation
+  regularization): A fast ADMM-based algorithm with TV regularization. Does not
+  support upscaling (Scale X and Scale Y are disabled when this method is
+  selected). Does not require any additional dependencies.
+
+### Parameters
+- `Scalars (select_scalars)`: which scalar arrays to process. If "Apply to all
+  scalars" is unchecked, only the selected scalars will be denoised.
+- `Method (enum)`: the deconvolution method to use. Options are: APG_BM3D,
+  APG_TV, ADMM_TV.
+- `Axis (enum)`: the axis along which to process slices. Options are: X, Y, Z.
+- `Probe (dataset)`: the probe dataset used for deconvolution. The operator
+  looks for a scalar array with "amplitude" in its name within this dataset to
+  use as the PSF.
+- `Fast Axis Scanning (enum)`: the scanning method for the fast axis. Options
+  are: dilation, average.
+- `Slow Axis Scanning (enum)`: the scanning method for the slow axis. Options
+  are: dilation, average.
+- `Probe Kernel (int)`: the size of the probe kernel extracted from the center
+  of the probe amplitude. Default: 11.
+- `Scale X (int)`: X scale factor for super-resolution (only available for
+  APG_TV and APG_BM3D methods). Default: 1.
+- `Scale Y (int)`: Y scale factor for super-resolution (only available for
+  APG_TV and APG_BM3D methods). Default: 1.
+- `Max Iterations (int)`: maximum number of iterations. Default: 8.
+- `Mu (double)`: the mu regularization parameter. Default: 0.01.
+
+### Output
+- The denoised volumetric dataset, with the same scalar arrays that were
+  selected for processing. Scalars that were not selected are removed from
+  the output. Scan IDs and tilt angles are preserved for matching slices.
+
+
+## Similarity Metrics
+
+The `Similarity Metrics` operator computes similarity metrics between the
+current dataset and a reference dataset, producing a table of per-slice MSE
+(Mean Squared Error) and SSIM (Structural Similarity Index) values. This is
+useful for quantitatively evaluating the effect of processing steps such as
+denoising, by comparing a processed dataset against its original or a reference.
+
+The operator can be found under the `Data Transforms` menu.
+
+The results are output as a spreadsheet table which can be visualized as
+interactive line charts using the
+[Plot module](visualization.md#plot-module). Each selected scalar array
+produces two columns in the output: one for MSE and one for SSIM.
+
+![Similarity Metrics](img/operator_similarity_metrics.png)
+
+In the example above, the top-right plot shows the similarity metrics for a
+denoised dataset compared to the original. The SSIM values are closer to 1,
+indicating that the denoising successfully preserved structural similarity. The
+bottom-right plot shows the metrics for a Gaussian-blurred dataset compared to
+the original, where the SSIM values are noticeably lower, confirming that
+blurring degrades structural similarity more than the deconvolution denoising.
+
+### Parameters
+- `Scalars (select_scalars)`: which scalar arrays to compute metrics for.
+- `Axis (enum)`: the axis along which to process slices. Options are: X, Y, Z.
+- `Reference Dataset (dataset)`: the reference dataset to compare against. The
+  operator matches slices between the two datasets using scan IDs when
+  available, and resizes slices to a common size before computing metrics. Both
+  slices are normalized to [0, 1] before comparison. If the reference dataset
+  does not have a matching scalar name, the operator falls back to using a
+  scalar array with "phase" in its name.
+
+### Output
+- Similarity table: a spreadsheet with columns for the slice index, and for
+  each selected scalar, a pair of MSE and SSIM columns. Lower MSE values
+  indicate greater similarity, while SSIM values closer to 1.0 indicate
+  higher structural similarity. The table can be visualized as line charts
+  using the [Plot module](visualization.md#plot-module), or exported as CSV
+  by right-clicking the result in the pipeline and selecting
+  `Export Table as CSV`.
+
+
 ## Registration
 
 The registration operator may be used to automatically align one volume with

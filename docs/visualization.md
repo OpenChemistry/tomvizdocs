@@ -388,6 +388,53 @@ dimensions of that slice through the volume in the case of orthogonal slices.
 ![Export mesh from slice](img/export_image.png)
 
 
+## Plot Module
+
+```{raw} html
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin-bottom: 1.5em;">
+  <iframe src="https://drive.google.com/file/d/1ksio_mU6P8C_u0bxCWFiD91_MDXgYs7j/preview" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div>
+```
+
+The Plot module provides interactive line chart visualizations for tabular
+results produced by operators. Operators such as
+[Power Spectrum Density](analysis.md#power-spectrum-density-psd) and
+[Fourier Shell Correlation](analysis.md#fourier-shell-correlation-fsc)
+generate table-based output that is displayed as line charts in a dedicated
+plot view.
+
+![Plot Module Line Chart](img/plot_module_line_chart.png)
+
+### Adding a Plot Module
+
+To add a Plot module, first select the tabular operator result in the pipeline,
+then click the `Plot` module button in the toolbar at the top of the
+application. The Plot module will appear in the pipeline as a child of the
+selected operator result.
+
+### Plot Options
+
+The Plot module supports several options for customizing the display:
+
+ * **Log Scale X** — Toggle logarithmic scaling on the X axis
+ * **Log Scale Y** — Toggle logarithmic scaling on the Y axis
+
+Axis labels are initially provided by the operator that generated the data,
+giving context to what is being plotted. The axis labels are also editable,
+allowing you to customize them as needed.
+
+### Plot Colors
+
+When multiple data series are displayed, the plot uses automatically generated
+colors based on HSV spacing. This produces a large number of visually
+distinguishable colors, making it easy to differentiate between many series.
+
+### Exporting Plot Data
+
+Table results displayed in the Plot module can be exported as CSV files for
+external analysis. Right-click the operator in the pipeline view and select
+`Export Table as CSV` to save the data.
+
 ## Image Viewer Mode
 
 Under the "View" menu, there is an option to enter "Image Viewer Mode".
