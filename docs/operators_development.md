@@ -1,22 +1,27 @@
 # Development
 
-Operators are the core of the data processing pipeline. They are predominantly
-written in Python, with some developed in C++. Most operators take a volume as
+Transforms are the core of the data processing pipeline. They are predominantly
+written in Python, with some developed in C++. Most transforms take a volume as
 an input, do some operations on that volume, and output a volume. In Python
 these are typically viewed as NumPy arrays where they are a view of the native
 C++ memory used by Tomviz.
 
-## Simple Operator
+Tomviz supports two APIs for writing Python transforms: the **legacy operator
+API** (`tomviz.operators`) and the **new node API** (`tomviz.nodes`). Both
+are fully supported and can be used for custom transforms.
 
-This operator can be found by clicking on `Data Tansforms -> Custom Transform`.
-It is one of the simplest transforms possible where all simple operators define
-the `transform` function, import the necessary modules, and then get the
-data as an array. This array can be treated like any NumPy array, operated on,
-and once ready the output should be set to make it visible to the application.
+## Legacy Operator API
+
+### Simple Transform
+
+This transform can be created by clicking on `Data Transforms` >
+`Data Management` > `Custom Transform`. It is one of the simplest transforms
+possible - all simple transforms define a `transform` function, import the
+necessary modules, and then get the data as an array.
 
 ``` python
 def transform(dataset):
-    """Python operators that transforms the input array"""
+    """Python transform that operates on the input array"""
 
     import numpy as np
 
@@ -30,135 +35,183 @@ def transform(dataset):
     dataset.active_scalars = result
 
     # Optionally set the voxel sizes (in physical units)
-    # These are the sizes in the directions x, y, z, respectively
     dataset.spacing = [5, 10, 7]
 ```
 
-The dialog in Tomviz enables editing of Python transforms in the source tab,
-clicking apply will apply the code in the editor leaving the dialog open,
-clicking OK will apply the transform and close the dialog. The Python code is
-not saved permanently, saving a state file will save custom Python.
+The dialog in Tomviz enables editing of Python transforms in the source tab.
+Clicking Apply will apply the code in the editor leaving the dialog open;
+clicking OK will apply the transform and close the dialog.
 
 ### Subclassing tomviz.operators.Operator
 
 Tomviz provides an operator base class that can be used to implement a Python
-operator. To create an operator simply subclass and provide an implementation of
+transform. To create a transform, subclass and provide an implementation of
 the `transform` method.
 
 ```python
-
 import tomviz.operators
 
 class MyOperator(tomviz.operators.Operator):
     def transform(self, dataset):
         # Do work here
-
 ```
 
 ### Subclassing tomviz.operators.CancelableOperator
 
-To implement an operator that can be canceled the operator should be derived
-from `tomviz.operators.CancelableOperator`. This provides an additional
-property called `canceled` that can be used to determine if the operator
-execution have been canceled by the user. The data should be processed in chunks
-so that this property can be periodically checked to break out of the execution
-if necessary.
+To implement a transform that can be canceled, derive from
+`tomviz.operators.CancelableOperator`. This provides a `canceled` property
+that can be checked to determine if the user has requested cancellation.
 
 ```python
-
 import tomviz.operators
 
 class MyCancelableOperator(tomviz.operators.CancelableOperator):
     def transform(self, dataset):
          while(not self.canceled):
             # Do work here
-
 ```
 
 ### Operator progress
 
-Instances of `tomviz.operators.Operator` have a `progress` attribute that can be
-used to report the progress of an operator. The maximum number of steps the
-operator will report is held in the `progress.maximum` property and the current
-progress can be updated using `progress.value = currrent_value`. A status
-message can also be set on the progress object to give further feedback to the
-user `progress.message = msg`.
+Instances of `tomviz.operators.Operator` have a `progress` attribute for
+reporting progress. Set `progress.maximum` for the total steps,
+`progress.value` for the current step, and `progress.message` for a status
+message.
 
 ```python
-
 import tomviz.operators
 
 class MyProgressOperator(tomviz.operators.Operator):
-    current_progress = 0
     def transform(self, dataset):
         self.progress.maximum = 100
-        # Do work here
-        current_progress += 1
-        self.progress.value = current_progress
+        for i in range(100):
+            # Do work here
+            self.progress.value = i + 1
 ```
 
-### Generating the user interface automatically
+## New Node API
 
-Python operators can take zero or more parameters that govern their operation.
-Initializing these parameter values is typically done through a dialog box
-presented prior to running the operator. The simplest way to define the user
-interface is to describe the parameters in a JSON file that accompanies the
-Python script.
+Tomviz 3.0 introduces a new node-based API via `tomviz.nodes`. This API aligns
+with the new pipeline model and provides explicit port-based input/output.
 
-The JSON file consists of a few key/value pairs at the top level of the JSON
-tree:
+### SourceNode
 
-* `name` - The name of the operator. The name should not contain spaces.
-* `label` - The displayed name of the operator as it should appear in the user
-interface. No restrictions.
-* `description` - Text that describes what the operator does. No restrictions.
-* `parameters` - A JSON array of parameters.
+A `SourceNode` produces output data without any inputs. Subclass
+`tomviz.nodes.SourceNode` and implement the `produce` method:
 
-An item in the `parameter` array is itself a JSON object consisting of several
-name-value pairs.
+```python
+import tomviz.nodes
+import numpy as np
 
-* `name` - The name of the parameter. This must be a valid Python variable name.
-* `label` - The displayed name of the parameter in the user interface. No
-restrictions.
-* `type` - Parameter type. Currently supported types are:
-    * `bool` - Boolean type. Valid values are `true` or `false`.
-    * `int` - Integral type. Valid values are in the range of a C integer.
-    * `double` - Floating-point type. Valid values are in the range of a C double.
-    * `enumeration` - Provides a set of options. Possible values are listed in
-    an `options` key/value pair (described below)
-    * `xyz_header` - Special type used as a hint for the UI to add the headers
-    "X", "Y", and "Z" above columns for 3-element parameters representing
-    coordinates.
-    * `file` - Provides the ability to browse for a file path.
-    * `directory` - Provides the ability to browse for a directory path.
-* `default` - Default value for the parameter. Must be a number or boolean JSON
-value `true` or `false`. The default for a multi-element `int` or `double`
-parameter is an array of one or more ints or doubles.
-* `minimum` - Sets the minimum value that a parameter may be. An array of
-values specifies the component-wise minimum of a multi-element parameter.
-* `maximum` - Like the `minimum`, but sets the maximum value that a parameter
-may be.
-* `precision` - Optional number of digits past the decimal for `double`
-parameters.
-* `options` - An array of JSON objects, each of which contains a single
-key-value pair where the key is the name of the option and the value is an
-integer index of the options.
+class MySphere(tomviz.nodes.SourceNode):
+    def produce(self, radius=10.0, shape_x=100, shape_y=100, shape_z=100):
+        ds = self.create_dataset()
+
+        # Generate a sphere
+        x, y, z = np.mgrid[:shape_x, :shape_y, :shape_z]
+        center = np.array([shape_x, shape_y, shape_z]) / 2
+        dist = np.sqrt((x - center[0])**2 + (y - center[1])**2 +
+                       (z - center[2])**2)
+        volume = (dist <= radius).astype(np.float32)
+
+        ds.active_scalars = volume
+        ds.spacing = (1.0, 1.0, 1.0)
+        return {'output': ds}
+```
+
+Parameters are passed as keyword arguments from the JSON description file.
+The return value is a dictionary mapping output port names to Dataset objects.
+
+### TransformNode
+
+A `TransformNode` consumes input data and produces output data. Subclass
+`tomviz.nodes.TransformNode` and implement the `transform` method:
+
+```python
+import tomviz.nodes
+
+class AddConstant(tomviz.nodes.TransformNode):
+    def transform(self, inputs, constant=0.0):
+        ds = inputs['volume']
+        ds.active_scalars = ds.active_scalars + constant
+        return {'volume': ds}
+```
+
+The `inputs` parameter is a dictionary mapping input port names to Dataset
+objects. Return a dictionary mapping output port names to the results.
+
+### Progress, Cancellation, and Completion
+
+Both `SourceNode` and `TransformNode` provide the same progress/cancellation
+interface as the legacy API:
+
+```python
+class MyNode(tomviz.nodes.TransformNode):
+    def transform(self, inputs, **params):
+        self.progress.maximum = 100
+        for i in range(100):
+            if self.canceled:
+                return None
+            # Do work
+            self.progress.value = i + 1
+        return {'volume': inputs['volume']}
+```
+
+### Dataset API
+
+The `Dataset` object provides these properties and methods:
+
+ * `active_scalars` - Get/set the active scalar array (NumPy ndarray)
+ * `active_name` - Get/set the name of the active scalar
+ * `num_scalars` - Number of scalar arrays
+ * `scalars_names` - List of all scalar array names
+ * `scalars(name)` - Get a scalar array by name
+ * `set_scalars(name, array)` - Add or update a scalar array
+ * `remove_scalars(name)` - Remove a scalar array
+ * `spacing` - Voxel spacing (x, y, z) tuple
+ * `tilt_angles` - NumPy array of tilt angles
+ * `tilt_axis` - Axis index for tilting (0, 1, 2, or None)
+ * `scan_ids` - NumPy array of scan IDs
+ * `dark` / `white` - Dark/white field calibration data
+ * `file_name` - Original filename
+ * `metadata` - Arbitrary metadata dictionary
+ * `empty_copy()` - Create a new dataset with same geometry but no arrays
+
+## Generating the user interface automatically
+
+Python transforms can take parameters governed by a JSON description file.
+The JSON file consists of:
+
+* `name` - The transform name (no spaces).
+* `label` - The displayed name in the UI.
+* `description` - Description of what the transform does.
+* `parameters` - A JSON array of parameter definitions.
+
+Each parameter has:
+
+* `name` - Must be a valid Python variable name.
+* `label` - Displayed name in the UI.
+* `type` - One of: `bool`, `int`, `double`, `enumeration`, `xyz_header`,
+  `file`, `directory`.
+* `default` - Default value.
+* `minimum` / `maximum` - Value bounds.
+* `precision` - Decimal digits for `double` parameters.
+* `options` - Array of `{"Name": index}` objects for `enumeration` type.
 
 Examples of parameter descriptions:
 
 `bool`
-
-```
+```json
 {
-  "name" : "enable_valley_emphasis",
-  "label" : "Enable Valley Emphasis",
+  "name" : "enable_feature",
+  "label" : "Enable Feature",
   "type" : "bool",
   "default" : false
 }
 ```
 
 `int`
-```
+```json
 {
   "name" : "iterations",
   "label" : "Number of Iterations",
@@ -169,22 +222,20 @@ Examples of parameter descriptions:
 ```
 
 Multi-element `int`
-```
+```json
 {
   "name" : "shift",
   "label" : "Shift",
-  "description" : "The shift to apply",
   "type" : "int",
   "default" : [0, 0, 0]
 }
 ```
 
 `double`
-```
+```json
 {
   "name" : "rotation_angle",
   "label" : "Angle",
-  "description" : "Rotation angle in degrees.",
   "type" : "double",
   "default" : 90.0,
   "minimum" : -360.0,
@@ -193,22 +244,11 @@ Multi-element `int`
 }
 ```
 
-Multi-element `double`
-```
-{
-  "name" : "resampling_factor",
-  "label" : "Resampling Factor",
-  "type" : "double",
-  "default" : [1, 1, 1]
-}
-```
-
 `enumeration`
-```
+```json
 {
   "name" : "rotation_axis",
   "label" : "Axis",
-  "description" : "Axis of rotation.",
   "type" : "enumeration",
   "default" : 0,
   "options" : [
@@ -219,122 +259,96 @@ Multi-element `double`
 }
 ```
 
-### Defining Operator Results and Child Data Sets
+### Defining Results and Child Data Sets
 
-In addition to transforming the current data set, operators may produce
-additional data sets. The additional data sets are described in the top-level
-JSON with the following keys:
+Transforms may produce additional datasets described in the JSON:
 
-* `results` - An array of JSON objects describing the outputs produced by the
-operator. Results are additional datasets produced when the operator is run.
-Result JSON objects have three key/value pairs:
-    * `name` - The name of the result
-    * `label` - The displayed name of the result in the UI.
-More than one result may be produced by the operator.
-* `children` - An array of JSON objects describing child data sets produced by
-the operator. Child data sets are similar to results, but are special in that
-they must be image data to which additional operators may be applied. A child
-dataset is described with the same key/value pairs as `results` datasets.
-Currently, only a single child data set is supported.
+* `results` - Array of `{"name": "...", "label": "..."}` objects for additional
+  output datasets.
+* `children` - Array describing child datasets that accept further transforms.
 
-The `name` key of each result and child data set must be unique.
-
-### Creating Operator Results and Child Data Sets
-
-In the operator Python code, results and child data sets are set in a dictionary
-returned by the `transform` function. This dictionary consists of
-key/value pairs where the name is the `name` value of the result or child
-dataset and the value is the result or child dataset. Results and child
-datasets are created in the Python operator code.
+Results and children are returned from the `transform` function as a dictionary
+mapping names to datasets.
 
 ### Command line execution of pipeline
 
-An operator pipeline can be executed from a Python command line. The data source
-must be in EMD format. The execution is driven using a state file containing
-the operator pipeline. To install the command line package run the following:
+A pipeline can be executed from the command line without the Tomviz GUI. The
+`tomviz-pipeline` package is available on conda-forge:
 
 ```bash
-pip install  <tomviz_repo_directory>/tomviz/python/
-
+conda install -c conda-forge tomviz-pipeline
 ```
-Then to execute the operator pipeline run the following command:
 
+Alternatively, install from the Tomviz source repository:
+
+```bash
+pip install <tomviz_repo_directory>/tomviz/python/
 ```
+
+Then execute a saved state file:
+
+```bash
 tomviz-pipeline -s <path_to_state_file> -o <path_to_write_output_emd>
 ```
-The input data source in the state file can be overridden by providing a path to
-a different EMD file using the -d option.
 
-Current restrictions/issues:
+The input data source can be overridden with the `-d` option, enabling batch
+processing: save a pipeline as a state file in the GUI, then run it on
+multiple datasets from a script:
 
-- EMD data source only.
-- Spacing and units are copied from input data source.
-- No support for child data.
+```bash
+for f in dataset_*.emd; do
+    tomviz-pipeline -s my_pipeline.tvh5 -d "$f" -o "output_${f}"
+done
+```
 
-### Custom Operators
+## Custom Transforms
 
-Tomviz comes with a number of operators, many of which are developed in Python.
-We welcome contributions to the code base, but sometimes it is preferable to
-add local operators. On startup the application looks for a `tomviz` directory
-as a folder in your home directory, if found that directory is scanned for
-operators. These will be added to the `Custom Transforms` menu, and will look
-just like builtin operators (empty menu shown below with option to import).
+Tomviz comes with many built-in transforms. To add local transforms, place
+Python files in one of these directories:
+
+ * `~/tomviz/`
+ * `~/.tomviz/`
+
+The `Custom Transforms` menu re-scans these directories every time you open
+it, so new files appear immediately without restarting the application.
+Edits to existing files are also picked up on next use, since the script is
+loaded from disk when the transform is applied.
 
 ![Custom transforms menu](img/custom_transforms.png)
 
-The default name will match that of the Python file, i.e. `my_thing.py` would
-be added as `my_thing` to the menu. You should only import a transform once,
-all this really does is add the Python file to the `tomviz` directory in your
-home directory, i.e. `~/tomviz/my_thing.py`. When developing a custom transform
-it is preferable to simply copy your code to that directory, and edit it in
-place. You will need to close and reopen Tomviz in order to see new changes.
+The file name becomes the menu entry name (e.g., `my_thing.py` appears as
+`my_thing`). Add a JSON file with the same base name to customize the
+displayed label and add input parameters:
 
-If you add a JSON file with the same name you can customize the appearance
-further, and even add some input interface.
-
-``` json
+```json
 {
   "name" : "Custom Thing",
   "label" : "Operate on data",
-  "description" : "Apply my special operation to the data...",
+  "description" : "Apply my special operation to the data..."
 }
 ```
 
-## Import operators
+### Custom Transforms Path
 
-After creating a custom operator, it can be added by importing it as a custom
-transform, which can be accessed through `Custom Transform` menu.
+The search directories can be overridden by setting the
+`TOMVIZ_CUSTOM_TRANSFORMS_PATH` environment variable. It accepts multiple
+directories separated by `:` (Linux/macOS) or `;` (Windows).
 
-![Custom Transforms](img/custom_transforms.png)
+## Apply transforms
 
-In addition to importing the Python code, users can also copy the Python scripts
-or JSON metadata into the `~/tomviz` or `~/.tomviz` directory.
+Custom transforms appear in the `Custom Transforms` menu and can be applied
+just like built-in transforms.
 
-## Apply operators
+### User Input for Transforms
 
-After importing or copying the customer operator `test`, it will show up in
-the `Custom Transform` menu.
+Custom transforms can accept user input via JSON metadata. For example,
+to let the user set a parameter:
 
-![Custom Transforms](img/custom_transforms_test.png)
-
-The `test` operator can be applied just like any other built-in operator.
-After loading the example dataset, click on `test`, the result will be
-displayed in the main render window.
-
-![Custom Transforms](img/custom_transforms_applied.png)
-
-### User Input for Operators
-
-Once you have a custom operator you may want to accept user input. For example
-instead of hard-coding the chunk size in `test` we could let the user set it.
-JSON metadata can specify what input a script accepts, and a Qt user interface
-will be generated at runtime. An example of a single input is shown below:
-
-```JSON
+```json
 {
   "name": "Fancy Square Root",
   "label": "Classy Square Root",
-  "description": "This is the fanciest square root operator, it does it all...",
+  "description": "A configurable square root operator.",
   "parameters": [
     {
       "name": "number_of_chunks",
@@ -348,68 +362,64 @@ will be generated at runtime. An example of a single input is shown below:
 }
 ```
 
-Now that you can run `Classy Square Root` from the `Custom Transforms` menu.
-
-![Custom Transforms](img/custom_transforms_fancier.png)
-
-The interface is generated based on the objects in the `parameters` array. In
-this case the input control for ```Number of Chunks``` is shown with a default
-value of 10.
-
-![Custom Transforms](img/custom_transforms_fancier2.png)
-
-You can click on `OK` when ready, and the result will be displayed in the
-application.
-
-![Custom Transforms](img/custom_transforms_fancier3.png)
-
 ### Automatic Multi-Array Processing
 
-By default, all transform functions are automatically wrapped with behavior
-that applies the operator to every scalar array in the dataset. This means
-that when a dataset contains multiple arrays (e.g., multiple elements from
-XRF data), each operator will process all arrays without requiring any special
-code.
+By default, all transform functions are automatically wrapped to apply the
+transform to every scalar array in the dataset. This means datasets with
+multiple arrays (e.g., XRF elements) are processed automatically.
 
-If an operator should only process the active array (not all arrays), or if
-the operator manually processes all arrays through logic inside (for example,
-performing an alignment with one array and then applying the same alignment
-to other arrays), this automatic behavior can be disabled by adding
-`"apply_to_each_array": false` to the operator's JSON description file:
+To disable this (e.g., for transforms that handle multi-array logic
+internally), add to the JSON:
 
 ```json
 {
-  "name" : "MyOperator",
-  "label" : "My Operator",
   "apply_to_each_array" : false
 }
 ```
 
 ### External Subprocess Execution
 
-Individual operators can be configured to execute in an external subprocess
-rather than in the main Tomviz process. This is useful when an operator
-requires custom, complex dependencies (such as AI ones), and it needs to
-be executed in an external conda environment.
+Individual transforms can execute in an external subprocess with a separate
+Python environment. This is useful for transforms that depend on libraries
+that would conflict with Tomviz's built-in environment, or that require
+specialized packages such as AI/ML frameworks.
 
-External execution is controlled by a setting in the operator's JSON
-description file. When enabled, the operator runs via the `tomviz-pipeline`
-command in a separate process, with results communicated back to the main
-application.
+The external environment only needs the `tomviz-pipeline` package installed
+(available from `conda-forge`). Beyond that, you can install any packages
+you need - PyTorch, TensorFlow, specialized reconstruction libraries, etc.
+The transform runs in a completely independent Python process, so there are
+no dependency conflicts with Tomviz itself.
 
-In the root level of the JSON description file, `tomviz_pipeline_env` should
-be set to the path to the conda environment where the operator should be
-executed. This conda environment must have the `tomviz-pipeline` dependency
-installed from `conda-forge`. Aside from that dependency, the environment
-can be configured however is needed to run the operator.
+External execution can be configured in two ways:
+
+**Via the Execution tab:** Every transform's configure dialog includes an
+Execution tab with an executor dropdown. Select `External` and specify the
+path to a Python environment containing `tomviz-pipeline`. This lets you
+configure external execution at runtime without modifying any files.
+
+**Via JSON metadata:** Set `tomviz_pipeline_env` in the transform's JSON
+description file to make external execution the default:
+
+```json
+{
+  "name": "MyAITransform",
+  "label": "AI Denoise",
+  "tomviz_pipeline_env": "/path/to/conda/envs/ai_env"
+}
+```
+
+To set up an external environment:
+
+```bash
+conda create -n my_transform_env python=3.10
+conda activate my_transform_env
+conda install -c conda-forge tomviz-pipeline
+pip install torch  # or any other packages your transform needs
+```
 
 ### Conditional Visibility with `visible_if`
 
-Operator parameters can be conditionally shown or hidden based on the values
-of other parameters using the `visible_if` field. This supports logical
-`and` and `or` operators for complex conditions.
-
-For example, to show a parameter only when specific algorithms are selected:
+Parameters can be conditionally shown based on other parameter values:
 
 ```json
 {
@@ -421,45 +431,27 @@ For example, to show a parameter only when specific algorithms are selected:
 }
 ```
 
-You can also combine conditions with `and`:
+Supports `and` and `or` operators for complex conditions.
 
-```json
-{
-  "visible_if" : "enable_feature == true and mode == 'advanced'"
-}
-```
+### Accessing multiple channels
 
-###  Accessing multiple channels
-
-It is possible for a dataset to contain multiple channels. Operators can access
-these channels by passing the channel name to the `dataset.scalars()`
-function to specify the channel of interest.
-
-In the example below, the channel named `'Tiff Scalars'` is extracted from the dataset.
+Datasets can contain multiple scalar arrays. Access them by name:
 
 ```python
-
 def transform(dataset):
     import numpy as np
 
     array = dataset.scalars(name='Tiff Scalars')
     dataset.active_scalars = array
-
 ```
 
-It is also possible to iterate through the channels one at a time using the
-`dataset.scalars_names` property along with the `dataset.scalars()` function.
-The example below loops through the channels and sums them up. Note that the call
-to `dataset.active_scalars = ...` will always update the active channel.
-
+Iterate through all channels:
 
 ```python
-
 def transform(dataset):
     import numpy as np
 
     channel_sum = None
-    # Iterate through the channels adding them up.
     for name in dataset.scalars_names:
         channel = dataset.scalars(name)
         if channel_sum is None:
@@ -468,5 +460,4 @@ def transform(dataset):
             channel_sum += channel
 
     dataset.active_scalars = channel_sum
-
 ```
