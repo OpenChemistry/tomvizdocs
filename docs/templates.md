@@ -1,40 +1,54 @@
 # Templates
 
-Transforms and visualizations that have been applied to a data source can be
-saved as a template, which allows for quick and easy reuse with new data that
-may require the same pipeline.
+A **template** is a pipeline state with the source nodes and visualization
+nodes stripped out — only the transform graph and its connectivity remain.
+What's left is a recipe for processing data, decoupled from where the data
+came from or how it's displayed.
 
-## Create a Template
+The point is reuse. Once you've assembled a useful chain of transforms — an
+alignment + reconstruction recipe, a segmentation workflow, a denoising
+pipeline — saving it as a template lets you apply the same chain to any
+source you load next. The same template can be applied to many different
+sources over the course of a session.
 
-Templates can be created by selecting `Save Template As` from the `File` menu.
-This will save all currently applied transforms and visualizations for the
-selected source node.
+## Loading and Saving Templates
 
-<!-- SCREENSHOT NEEDED: File menu showing "Save Template As" option, or the
-     template save workflow in the new UI. -->
-![Save Template](img/save_template.png)
+Templates live in Tomviz state files (`.tvsm` and `.tvh5`). There are two
+ways to load and save them.
 
-A dialog will be provided that allows the template to be named before it is
-saved. The saved template will appear in the `Pipeline templates` top-level
-menu, where it is available for immediate use.
+:::{list-table}
+:widths: 1 1
+:header-rows: 0
+:class: top-align
 
-<!-- SCREENSHOT NEEDED: Template name dialog in the new UI. -->
-![Save Template Dialog](img/save_template_dialog.png)
+* - ![Load/Save Template from the File menu](img/template_file_menu.png)
+  - ![Pipeline templates menu](img/template_pipeline_menu.png)
+:::
 
-## Applying Templates
+**From the File menu.** `Load Template` opens a file picker and applies the
+chosen template to the current pipeline. `Save Template As` writes the
+current pipeline to a state file with the sources, sinks, and sink groups
+filtered out — what remains on disk is just the transform-only graph.
 
-Loading will apply the template to the currently selected source node, so if
-you have more than one source loaded you will want to make sure you have the
-correct one chosen. Select the desired template from the `Pipeline templates`
-menu.
+**From the Pipeline templates menu.** A dedicated top-level menu lists
+templates that Tomviz discovers automatically in a known set of directories.
+Out of the box this includes the bundled `share/tomviz/templates/` directory
+that ships with the application, plus a user templates directory under your
+Tomviz user data path. You can override the user location by setting the
+`TOMVIZ_PIPELINE_TEMPLATES_PATH` environment variable to a list of
+directories — Tomviz will then scan those instead. The menu also exposes a
+`Save Template` entry that saves the current pipeline into the first of
+those directories (so it shows up in the menu on the next scan) and prompts
+only for a name rather than a full path.
 
-<!-- SCREENSHOT NEEDED: Pipeline strip widget showing data before template
-     application (just source with default visualizations). -->
-![Template Before](img/template_before.png)
+## Using Regular State Files as Templates
 
-Any visualizations or transforms that were already applied will remain after
-the template has been applied.
+Because a template is just a stripped-down state file, the loader will
+happily accept any regular state file via `Load Template` as well. When it
+does, source nodes, sink nodes, sink groups, and any links touching them are
+dropped, along with view layout and palette information. Only the transforms
+and the links between them are loaded into the current pipeline.
 
-<!-- SCREENSHOT NEEDED: Pipeline strip widget showing data after template
-     application (source with template transforms and visualizations added). -->
-![Template After](img/template_after.png)
+This means an existing `.tvsm` or `.tvh5` you saved as a full session can be
+reused as a template against a different source, without having to manually
+re-save it as one.

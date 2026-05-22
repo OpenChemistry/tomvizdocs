@@ -53,6 +53,7 @@ incompatible with the currently selected port's type appear in the
 :::{list-table}
 :widths: 1 1 1
 :header-rows: 0
+:class: top-align
 
 * - ![Pipeline widget](img/pipeline_strip_widget.png)
   - ![Pipeline widget with expanded nodes](img/pipeline_widget_expanded.png)
