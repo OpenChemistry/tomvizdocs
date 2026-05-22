@@ -18,11 +18,9 @@ To begin, click on `Sources` in the top menu bar, and then select `Ptycho`.
 
 ## Tutorial Video
 
-<!-- VIDEO NEEDED: Updated Ptycho source tutorial. The workflow has been completely
-     redesigned from a dialog to an embedded widget within a source node. Show:
-     selecting Sources > Ptycho, configuring the widget (ptycho directory,
-     loading CSV, filtering SIDs, selecting versions, error detection), and the
-     resulting loaded data in the pipeline (object and probe datasets). -->
+<div style="text-align: center;">
+  <iframe src="https://drive.google.com/file/d/1YbE158I4umDG908Q4FRGSDUq1SlYlB0v/preview" width="760" height="480" allow="autoplay"></iframe>
+</div>
 
 ## Ptycho Source Widget
 

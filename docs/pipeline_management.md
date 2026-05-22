@@ -129,6 +129,10 @@ Double-click a node card to open its edit dialog.
 
 ## Creating Links
 
+<div style="text-align: center;">
+  <iframe src="https://drive.google.com/file/d/144ym8hbFQLp44b0YHtTWcGPV5OygAcNC/preview" width="760" height="480" allow="autoplay"></iframe>
+</div>
+
 To create a link between nodes, click and drag from an output port square to
 an input port on another node. While dragging, a dashed line follows the cursor.
 When the cursor is over a valid input port, the line becomes solid. Release
@@ -139,6 +143,10 @@ visualization from the menus — see [Inserting Transforms](#inserting-transform
 below for the exact rules that govern where the new node attaches.
 
 ## Pipeline Controls
+
+<div style="text-align: center;">
+  <iframe src="https://drive.google.com/file/d/1tmHj15rZ9YCR_9v6HN1NFb-aVTwMKcUc/preview" width="760" height="480" allow="autoplay"></iframe>
+</div>
 
 ![Pipeline controls](img/pipeline_controls.png)
 

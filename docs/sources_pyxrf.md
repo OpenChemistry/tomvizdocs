@@ -18,11 +18,9 @@ To begin, click on `Sources` in the top menu bar, and then select `PyXRF`.
 
 ## Tutorial Video
 
-<!-- VIDEO NEEDED: Updated PyXRF source tutorial. The workflow has been completely
-     redesigned from a multi-dialog approach to a single embedded widget within
-     a source node. Show: selecting Sources > PyXRF, configuring the widget
-     (scan range, download, filter SIDs, CSV import, process projections,
-     normalization channel), and the resulting loaded data in the pipeline. -->
+<div style="text-align: center;">
+  <iframe src="https://drive.google.com/file/d/1PgD8TLvymbVrlpI6W9kmaaTbPaNEbkuI/preview" width="760" height="480" allow="autoplay"></iframe>
+</div>
 
 ## PyXRF Source Widget
 

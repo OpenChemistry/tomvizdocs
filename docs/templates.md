@@ -11,6 +11,10 @@ pipeline — saving it as a template lets you apply the same chain to any
 source you load next. The same template can be applied to many different
 sources over the course of a session.
 
+<div style="text-align: center;">
+  <iframe src="https://drive.google.com/file/d/1Y9zIefNjfhqoXJvM-8Et2XhngSrnsKHB/preview" width="760" height="480" allow="autoplay"></iframe>
+</div>
+
 ## Loading and Saving Templates
 
 Templates live in Tomviz state files (`.tvsm` and `.tvh5`). There are two
