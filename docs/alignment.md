@@ -17,8 +17,6 @@ reconstruction. The tilt series sample will automatically set the tilt angles.
 To load the sample tilt series select `Star Nanoparticle (Tilt Series)` from
 the `Sample Data` menu.
 
-<!-- SCREENSHOT NEEDED: Sample Data menu showing the Star Nanoparticle
-     entries (Reconstruction and Tilt Series). -->
 ![Open sample tilt series](img/tomviz_load_tilt.png)
 
 Once loaded you will see a default view of the data showing the outline and a
@@ -28,8 +26,13 @@ slice through the center of the tilt series.
 
 ### Creating a tilt series
 
-Data can be marked as a tilt series by selecting `Set Data Type` from
-the `Tomography` menu and choosing the tilt series type. Tilt angles can then
+This sample is loaded from an EMD file that already identifies it as a tilt
+series and stores the tilt angles. Data loaded another way, such as from a
+stack of TIFF files, must be manually marked as a tilt series and have its
+angles set.
+
+Data can be marked as a tilt series by selecting `Mark Data As Tilt Series`
+from the `Tomography` menu. Tilt angles can then
 be set by selecting `Set Tilt Angles` from the `Tomography` menu, which adds
 a Set Tilt Angles transform to the pipeline.
 
