@@ -5,6 +5,12 @@ The pipeline is displayed as a vertical pipeline widget in the top-left panel
 of the application, showing the flow of data from sources through transforms
 to visualizations.
 
+```{raw} html
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin-bottom: 1.5em;">
+  <iframe src="https://drive.google.com/file/d/1w-NiTblh0yRtrv1Sp9UrZBch2q8HtGMO/preview" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div>
+```
+
 ## Pipeline Concepts
 
 The pipeline is a directed graph built from three kinds of nodes connected

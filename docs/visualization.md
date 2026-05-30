@@ -339,6 +339,12 @@ animation.
 
 ## Plot Visualization
 
+```{raw} html
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin-bottom: 1.5em;">
+  <iframe src="https://drive.google.com/file/d/1EVoWTAiN61pKwAJdNu0_9D_KGCkE1e1s/preview" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div>
+```
+
 The Plot visualization provides interactive line chart displays for tabular
 results produced by transforms. Transforms such as
 [Power Spectrum Density](analysis.md#power-spectrum-density-psd) and
