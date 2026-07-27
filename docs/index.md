@@ -117,6 +117,7 @@ templates
 
 operators_catalog
 operators_development
+ml_segmentation
 ```
 
 ```{toctree}

@@ -408,6 +408,19 @@ description file to make external execution the default:
 }
 ```
 
+Note that `tomviz_pipeline_env` embeds a machine-specific path, so it is
+best suited to operator collections managed for a specific site. For
+portable operators, prefer configuring the environment through the
+Execution tab.
+
+Setting `"externalOnly": true` marks a transform as requiring external
+execution: the Internal executor is disabled in the Execution tab, and
+newly added instances default to External (with a warning until an
+environment is selected). Use this for operators whose dependencies
+(e.g. PyTorch) can never be imported in the application environment. The
+built-in `SAM 2 Segmentation (3D)` operator is an example; see
+[Machine Learning Segmentation](ml_segmentation.md).
+
 To set up an external environment:
 
 ```bash

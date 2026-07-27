@@ -151,6 +151,8 @@ Tomviz offers a number of segmentation routines that make use of ITK under the
  * **Label Analysis** - Label Object Attributes, Label Object Principal Axes,
    Label Object Distance From Principal Axis
  * **Segmentation Workflows** - Segment Particles, Segment Pores
+ * **Machine Learning** - SAM 2 Segmentation (3D), SAM 3 Segmentation
+   (3D); see [Machine Learning Segmentation](ml_segmentation.md)
 
 ![Segmentation menu](img/segmentation_menu.png)
 
