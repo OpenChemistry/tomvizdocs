@@ -84,8 +84,12 @@ reports the current slice.
 ## SAM 3 Segmentation (3D)
 
 Available under `Segmentation` -> `Machine Learning`. Instead of a seed
-point, you describe what to segment with a **text prompt** (e.g.
-"particle", "pore", "crack"). Each slice along all three axes is
+point, you describe what to segment with a **text prompt**. Concrete,
+appearance-based phrases work far better than domain terms: "bright
+blob" (the default), "circle", or "round object" rather than "particle"
+or "pore" -- SAM 3 is grounded in everyday visual vocabulary, and
+abstract terms can score below the confidence threshold on every slice,
+yielding an empty result. Each slice along all three axes is
 segmented independently by the SAM 3 image model, the per-axis masks are
 combined by majority voting, and connected-component labeling stitches
 the result into a 3D **instance label map** (int32, 0 = background).
@@ -124,6 +128,13 @@ Set the `Text Prompt` to the kind of feature you want segmented and press
   voxels are removed.
 * `Confidence Threshold` - the SAM 3 detection confidence cutoff
   (default 0.3).
+
+**If the result comes back empty** (all zeros), the prompt most likely
+scored below the confidence threshold on every slice. Try a more
+concrete visual phrase, lower the `Confidence Threshold` to ~0.1, or set
+`Vote Threshold` to 1 to check whether detections exist on only one
+axis. With a fine-tuned checkpoint, the prompt used during fine-tuning
+works best.
 
 Each slice is processed three times (once per axis); progress reports the
 current axis and slice, and the operator can be canceled.
