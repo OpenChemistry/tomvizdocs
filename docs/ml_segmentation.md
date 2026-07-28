@@ -62,17 +62,20 @@ operator is external-only, so the `Internal` executor is disabled.
 
 ### Usage
 
-The defaults require no manual input: `Prompt Mode` is `Auto Mask
-(Otsu)`, which builds the seed mask automatically on the middle slice.
-Press `Apply` and the mask is propagated through the volume in both
-directions.
+The operator dialog shows a slice of the input volume: **click the
+slice to set the seed point**, and use the slider to pick the seed
+slice. `Prompt Mode` defaults to `Point (click)`, so SAM 2 segments
+whatever object contains the seed and propagates it through the volume
+in both directions. With no click, the seed defaults to the volume
+center (a `Seed` component of -1 means center / middle slice).
 
-If the automatic seed grabs the wrong object:
-
-* Toggle `Invert Contrast` if your feature is darker than the background.
-* Switch `Prompt Mode` to `Point (click)` and enter the voxel coordinates
-  of a point inside the object of interest (`Seed X/Y/Z`; -1 means
-  center).
+Alternatively, switch `Prompt Mode` to `Auto Mask (Otsu)` to build the
+seed mask automatically by thresholding the seed slice - this works well
+for a single bright object on a dark background, but on noisy or
+textured data the threshold tends to grab only the brightest fragment.
+Toggle `Invert Contrast` if your feature is darker than the background.
+If faint parts of the object are missed in either mode, apply a
+contrast stretch (e.g. `Square Root Scale`) before this operator.
 
 Other parameters: `Z Axis` (which numpy axis to propagate along),
 `Propagation Direction` (both ways from the seed slice, or only forward
@@ -81,13 +84,23 @@ use `Tiny` for quick previews), and `Device` (`Auto` picks MPS or CUDA
 when available, else CPU). The operator can be canceled, and progress
 reports the current slice.
 
+**Drift cleanup** (on by default): after the seeded object ends, SAM 2's
+video tracker can reattach to other bright objects in later slices,
+leaving phantom regions - very noticeable on volumes with many
+particles. Two parameters suppress this: `Trim Mask Below` removes mask
+voxels darker than the given fraction of the volume's bright reference
+value (99.9th percentile), and `Keep Only the Seed-Connected Component`
+drops every mask region not connected to the clicked seed (with an
+auto-mask prompt, the largest region is kept instead). Set the fraction
+to 0 and untick the checkbox to get the raw SAM 2 mask.
+
 ## SAM 3 Segmentation (3D)
 
 Available under `Segmentation` -> `Machine Learning`. Instead of a seed
 point, you describe what to segment with a **text prompt**. Concrete,
 appearance-based phrases work far better than domain terms: "bright
-blob" (the default), "circle", or "round object" rather than "particle"
-or "pore" -- SAM 3 is grounded in everyday visual vocabulary, and
+lines" (the default), "bright object", or "glowing object" rather than
+"particle" or "pore" -- SAM 3 is grounded in everyday visual vocabulary, and
 abstract terms can score below the confidence threshold on every slice,
 yielding an empty result. Each slice along all three axes is
 segmented independently by the SAM 3 image model, the per-axis masks are
@@ -123,9 +136,12 @@ Set the `Text Prompt` to the kind of feature you want segmented and press
 `Apply`. Tuning knobs:
 
 * `Vote Threshold` - how many of the three axis passes must agree for a
-  voxel to be foreground (default 2).
+  voxel to be foreground (default 1). Raise it to 2 or 3 to keep only
+  features that look right from multiple directions - stricter, but it
+  can discard structures that are only recognizable in one view (e.g.
+  wiring that reads as "lines" only from the side).
 * `Minimum Component Size` - connected components smaller than this many
-  voxels are removed.
+  voxels are removed (default 200).
 * `Confidence Threshold` - the SAM 3 detection confidence cutoff
   (default 0.3).
 
