@@ -150,7 +150,10 @@ reconstruction with the text prompt "IC feature" (vote threshold 2,
 minimum component size 50), using a fine-tuned SAM 3 checkpoint. Each
 interconnect wire is a separate instance with its own label and color.
 This result was produced with the facility-hosted Tiled workflow
-described below, which runs the same SAM 3 model server-side.*
+described below, which runs the same SAM 3 model server-side; the local
+operator reproduces it on a FISTA reconstruction with the same prompt,
+vote threshold 2, minimum component size 500, and `Split Touching
+Instances` set to 2.*
 
 Set the `Text Prompt` to the kind of feature you want segmented and press
 `Apply`. Tuning knobs:
@@ -162,6 +165,14 @@ Set the `Text Prompt` to the kind of feature you want segmented and press
   wiring that reads as "lines" only from the side).
 * `Minimum Component Size` - connected components smaller than this many
   voxels are removed (default 200).
+* `Split Touching Instances` - instance identity comes from 3D
+  connected-component labeling, so objects that touch anywhere merge
+  into one label; the denser (better) the segmentation, the more likely
+  everything collapses into a single instance. Setting an erosion
+  radius here breaks thin junctions: the mask is eroded by that many
+  voxels, the surviving cores become the instances, and every mask
+  voxel joins its nearest core. Radius 2 turns the merged IC wiring
+  above into one instance per wire (0 = off).
 * `Confidence Threshold` - the SAM 3 detection confidence cutoff
   (default 0.3).
 
