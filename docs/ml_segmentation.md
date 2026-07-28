@@ -69,6 +69,17 @@ whatever object contains the seed and propagates it through the volume
 in both directions. With no click, the seed defaults to the volume
 center (a `Seed` component of -1 means center / middle slice).
 
+![SAM 2 example](img/SAM2_example.png)
+
+*SAM 2 on a nanoparticle reconstruction. The crosshair in the slice
+view (left) selects one nanoparticle as the seed; the volume rendering
+(right) shows that only the clicked particle is segmented out of the
+many in the volume. The dialog shows the full parameter set: the seed
+point set by the click, `Point (click)` prompt mode, the propagation
+axis and direction, model size and device, and the drift-cleanup
+parameters (`Trim Mask Below`, `Keep Only the Seed-Connected
+Component`) that keep the result to just the seeded particle.*
+
 Alternatively, switch `Prompt Mode` to `Auto Mask (Otsu)` to build the
 seed mask automatically by thresholding the seed slice - this works well
 for a single bright object on a dark background, but on noisy or
@@ -131,6 +142,15 @@ SAM 3 image model work the same way.
 **3. Select the environment** in the `Execution` tab, as for SAM 2.
 
 ### Usage
+
+![SAM 3 example](img/SAM3_example.png)
+
+*SAM 3 instance segmentation of an integrated-circuit ptychography
+reconstruction with the text prompt "IC feature" (vote threshold 2,
+minimum component size 50), using a fine-tuned SAM 3 checkpoint. Each
+interconnect wire is a separate instance with its own label and color.
+This result was produced with the facility-hosted Tiled workflow
+described below, which runs the same SAM 3 model server-side.*
 
 Set the `Text Prompt` to the kind of feature you want segmented and press
 `Apply`. Tuning knobs:
