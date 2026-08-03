@@ -1,146 +1,153 @@
 # External Pipelines
 
-Tomviz includes a number of functions and algorithms, if those do not satisfy
-your needs there is also support for extensions. These include custom operators
-and file formats, which are primarily implemented using Python scripts and JSON
-to describe user interface elements. These are introduced in the
-[operators development](operators_development.md) section.
+Tomviz pipelines can be executed outside the GUI in two equivalent ways:
 
-The data processing pipeline is central to Tomviz, and each operator is a
-self-contained unit operating on the data. It is possible to run these operators
-interactively in the application, in a Docker container as part of the
-application, and in an external pipeline runner. This section covers running
-operators in external pipelines.
+ * The `tomviz-pipeline` command line tool.
+ * The `tomviz.pipeline.run` function from the small `tomviz-pipeline` Python
+   package that ships with the application.
 
-## Configuration
+Both consume the same state files (`.tvsm` JSON or `.tvh5` HDF5) you save
+from the GUI, and both let you override the inputs declared in those state
+files. That last bit is what makes this useful for batch processing: build a
+pipeline interactively once, save it as a template or a state file, then
+point the runner at any number of new datasets to get the same processing
+applied to each.
 
-Tomviz usually runs pipelines in a background thread (```Threaded```)
-interactively in the application. This can be changed to ```Docker``` in
-```Pipeline Settings```.
+## Installation
 
-![Pipeline Settings](img/pipeline_settings.png)
-
-When changing ```Pipeline Mode``` to ```Docker```, a new dialog will appear:
-
-![Pipeline Settings](img/pipeline_settings_docker.png)
-
-Click on ```OK``` when ready. Tomviz will download the docker image from the
-selected source the next time the pipeline executes.
-
-![Pipeline Settings](img/pulling_docker.png)
-
-### Running Pipelines
-
-We recommend that you create a virtual environment, and install requirements
-into that environment. The steps are shown below:
+Both interfaces live in the `tomviz-pipeline` Python package under
+`tomviz/python` in the [tomviz repository](https://github.com/openchemistry/tomviz).
+Create a virtual environment and install it:
 
 ```bash
-  $ git clone --recursive git://github.com/openchemistry/tomviz
-  $ cd tomviz/tomviz/python
-  $ mkvirtualenv tomviz
-  $ pip install -e .
+git clone --recursive https://github.com/openchemistry/tomviz
+cd tomviz/tomviz/python
+pip install .
 ```
 
-Use Tomviz to build a pipeline, and save the sate state file (JSON). Note that
-the input must be an EMD file, and the output will be an EMD file. The operators
-can will be executed in sequence as they are in the application.
+This puts the `tomviz-pipeline` executable on your `PATH` and makes the
+`tomviz.pipeline` module importable.
+
+## Running a Pipeline As-Is
+
+In its simplest form, the runner takes a state file and an output directory.
+The pipeline executes once, against whatever inputs are pinned in the state
+file:
 
 ```bash
-  $ tomviz-pipeline -s state.tvsm -d data.emd -o output.emd
-  [2019-07-23 14:14:59,647] INFO: Executing 'Invert Data' operator
-  [2019-07-23 14:14:59,963] INFO: Writing transformed data.
+tomviz-pipeline -s pipeline.tvsm -o results/
 ```
 
-A directory may also be provide for the `-d` option. In this case the pipeline
-will be executed on all EMD files contained within that directory. The `-o` option
-will also accept a directory to which the transformed EMD files will be written.
+```python
+from tomviz.pipeline import run
 
-For example given a directory containing the follow EMD files:
+run("pipeline.tvsm", "results/")
+```
+
+Visualization nodes are ignored. The leaves of what remains — every output
+port whose data isn't consumed by another node — are written under
+`results/` as typed files (EMD for image data, CSV for tables, XYZ for
+molecules), named `<id>_<label>__<port>.<ext>`.
+
+## Overriding Inputs for Batch Processing
+
+The more interesting case is replacing the inputs declared in the state file
+with new data. The shape of the override depends on whether the pipeline has
+one source or many.
+
+### Single-Source Pipelines
+
+When the pipeline contains exactly one source node, the override is just a
+file, a glob, or a list of files. Each matched file produces one run.
 
 ```bash
-ls -la /tmp/data
-total 503920
--rw-r--r-- 1 tomviz tomviz 64495909 Aug 22 09:14 small1.emd
--rw-r--r-- 1 tomviz tomviz 64495909 Aug 22 09:14 small2.emd
--rw-r--r-- 1 tomviz tomviz 64495909 Aug 22 09:14 small3.emd
--rw-r--r-- 1 tomviz tomviz 64495909 Aug 22 09:14 small4.emd
--rw-r--r-- 1 tomviz tomviz 64495909 Aug 22 09:14 small5.emd
--rw-r--r-- 1 tomviz tomviz 64495909 Aug 22 09:14 small6.emd
--rw-r--r-- 1 tomviz tomviz 64495909 Aug 22 09:14 small7.emd
--rw-r--r-- 1 tomviz tomviz 64495909 Aug 22 09:14 small8.emd
+# One file → one run.
+tomviz-pipeline -s pipeline.tvsm -o results/ --input data.emd
+
+# Glob → one run per matched file.
+tomviz-pipeline -s pipeline.tvsm -o results/ --input 'data/*.emd'
+
+# Explicit list (comma-separated, no spaces).
+tomviz-pipeline -s pipeline.tvsm -o results/ --input a.emd,b.emd,c.emd
 ```
 
-We can run a pipeline on these file using the following invocation:
+```python
+from tomviz.pipeline import run
+
+run("pipeline.tvsm", "results/", inputs="data.emd")
+run("pipeline.tvsm", "results/", inputs="data/*.emd")
+run("pipeline.tvsm", "results/", inputs=["a.emd", "b.emd", "c.emd"])
+```
+
+### Multi-Source Pipelines
+
+When the pipeline has more than one source, each override has to identify
+which source it targets by node id. Node ids are stable integers assigned by
+the pipeline and visible inside the state file.
+
+On the CLI, prefix every `--input` value with `NODE_ID:`:
 
 ```bash
-~$ tomviz-pipeline -s /tmp/test.tvsm -d /tmp/data/ -o /tmp/output
-[2019-08-23 08:14:11,570] INFO: Executing pipeline on 8 files.
-[2019-08-23 08:14:11,570] INFO: Executing pipeline on /tmp/data/small3.emd
-[2019-08-23 08:14:12,263] INFO: Executing 'Invert Data' operator
-100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 35.66it/s]
-[2019-08-23 08:14:12,574] INFO: Execution complete.
-[2019-08-23 08:14:12,574] INFO: Writing transformed data.
-[2019-08-23 08:14:13,166] INFO: Write complete.
-[2019-08-23 08:14:13,178] INFO: Executing pipeline on /tmp/data/small8.emd
-[2019-08-23 08:14:13,852] INFO: Executing 'Invert Data' operator
-100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 38.67it/s]
-[2019-08-23 08:14:14,111] INFO: Execution complete.
-[2019-08-23 08:14:14,111] INFO: Writing transformed data.
-[2019-08-23 08:14:14,704] INFO: Write complete.
-[2019-08-23 08:14:14,716] INFO: Executing pipeline on /tmp/data/small4.emd
-[2019-08-23 08:14:15,390] INFO: Executing 'Invert Data' operator
-100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 38.22it/s]
-[2019-08-23 08:14:15,652] INFO: Execution complete.
-[2019-08-23 08:14:15,652] INFO: Writing transformed data.
-[2019-08-23 08:14:16,245] INFO: Write complete.
-[2019-08-23 08:14:16,256] INFO: Executing pipeline on /tmp/data/small6.emd
-[2019-08-23 08:14:16,929] INFO: Executing 'Invert Data' operator
-100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 38.53it/s]
-[2019-08-23 08:14:17,189] INFO: Execution complete.
-[2019-08-23 08:14:17,189] INFO: Writing transformed data.
-[2019-08-23 08:14:17,769] INFO: Write complete.
-[2019-08-23 08:14:17,780] INFO: Executing pipeline on /tmp/data/small2.emd
-[2019-08-23 08:14:18,473] INFO: Executing 'Invert Data' operator
-100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 39.05it/s]
-[2019-08-23 08:14:18,729] INFO: Execution complete.
-[2019-08-23 08:14:18,729] INFO: Writing transformed data.
-[2019-08-23 08:14:19,325] INFO: Write complete.
-[2019-08-23 08:14:19,335] INFO: Executing pipeline on /tmp/data/small1.emd
-[2019-08-23 08:14:20,031] INFO: Executing 'Invert Data' operator
-100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 37.97it/s]
-[2019-08-23 08:14:20,295] INFO: Execution complete.
-[2019-08-23 08:14:20,295] INFO: Writing transformed data.
-[2019-08-23 08:14:20,906] INFO: Write complete.
-[2019-08-23 08:14:20,916] INFO: Executing pipeline on /tmp/data/small7.emd
-[2019-08-23 08:14:21,601] INFO: Executing 'Invert Data' operator
-100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 38.51it/s]
-[2019-08-23 08:14:21,862] INFO: Execution complete.
-[2019-08-23 08:14:21,862] INFO: Writing transformed data.
-[2019-08-23 08:14:22,461] INFO: Write complete.
-[2019-08-23 08:14:22,470] INFO: Executing pipeline on /tmp/data/small5.emd
-[2019-08-23 08:14:23,144] INFO: Executing 'Invert Data' operator
-100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 39.34it/s]
-[2019-08-23 08:14:23,399] INFO: Execution complete.
-[2019-08-23 08:14:23,399] INFO: Writing transformed data.
-[2019-08-23 08:14:24,002] INFO: Write complete.
+tomviz-pipeline -s pipeline.tvsm -o results/ \
+    --input '1:data/*.emd' \
+    --input '3:reference.emd'
 ```
 
-Here is the listing of the output directoy `/tmp/out`:
+In Python, pass a dict keyed by node id:
+
+```python
+from glob import glob
+from tomviz.pipeline import run
+
+run("pipeline.tvsm", "results/", inputs={
+    1: sorted(glob("data/*.emd")),  # five matches → five runs
+    3: "reference.emd",              # broadcast across all five runs
+})
+```
+
+A length-1 value (a single file or a glob that matches one file) is
+broadcast to the longest non-broadcast list, so a constant reference input
+can be paired with a sweep over many primary inputs. Lists of length two or
+more must all agree on length.
+
+## Output Layout
+
+For a single run, outputs land directly under the output directory:
+
+```
+results/
+  3_Reconstruction__output.emd
+  5_AnalyzeStructures__results.csv
+```
+
+For two or more runs, each run gets its own zero-padded subdirectory:
+
+```
+results/
+  run_0/
+    3_Reconstruction__output.emd
+  run_1/
+    3_Reconstruction__output.emd
+  ...
+```
+
+The subdirectory prefix defaults to `run` and can be changed with
+`--run-prefix` on the CLI or `run_dir_prefix=` in Python.
+
+## Bundled State Output
+
+By default, each leaf output port is written as its own typed file (the
+`port` output format). Two other formats are available:
+
+ * `state` — write a single `output_state.tvh5` per run that bundles the
+   pipeline state with the volume payloads of every populated, non-sink
+   output port. The resulting file can be re-opened in tomviz.
+ * `state+port` — both: the bundled tvh5 plus the typed per-port files.
 
 ```bash
--rw-r--r-- 1 tomviz tomviz 257935088 Aug 23 08:14 small1_transformed.emd
--rw-r--r-- 1 tomviz tomviz 257935088 Aug 23 08:14 small2_transformed.emd
--rw-r--r-- 1 tomviz tomviz 257935088 Aug 23 08:14 small3_transformed.emd
--rw-r--r-- 1 tomviz tomviz 257935088 Aug 23 08:14 small4_transformed.emd
--rw-r--r-- 1 tomviz tomviz 257935088 Aug 23 08:14 small5_transformed.emd
--rw-r--r-- 1 tomviz tomviz 257935088 Aug 23 08:14 small6_transformed.emd
--rw-r--r-- 1 tomviz tomviz 257935088 Aug 23 08:14 small7_transformed.emd
--rw-r--r-- 1 tomviz tomviz 257935088 Aug 23 08:14 small8_transformed.emd
+tomviz-pipeline -s pipeline.tvsm -o results/ --output-format state
 ```
 
-As you can see the transformed datasets are written to files with the
-`_transformed` suffix.
-
-## Summary
-
-This section showed how the pipeline can be run externally.
+```python
+run("pipeline.tvsm", "results/", output_format="state")
+```

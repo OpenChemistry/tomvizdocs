@@ -25,7 +25,7 @@ through the time steps.
 
 Alternatively, the time steps may be manipulated through the use of
 the animation widget, which may be displayed by clicking
-```View```->```Animation```:
+`View` > `Animation`:
 
 ![Animation Widget](img/animation_widget.png)
 
@@ -44,8 +44,7 @@ time step results in both the volume and the label updating:
 ![Next Step](img/time_series_next_step.png)
 
 The label can be moved by left-clicking and dragging it. It may also be
-resized by left-clicking and dragging a border. An example of a label that
-has been moved and resized is shown in the image below:
+resized by left-clicking and dragging a border:
 
 ![Label Moved and Resized](img/time_series_label_moved_and_resized.png)
 
@@ -58,27 +57,20 @@ the camera orbit animation is skipped.
 
 ## Editing a Time Series
 
-If a data source has been loaded as a time series, a "Time Series"
-section will be available in the data properties (which can be seen
-by selecting the data source in the pipeline):
+If a source has been loaded as a time series, a "Time Series" section
+will be available in the Properties panel (visible when selecting the
+source node in the pipeline):
 
 ![Data Properties](img/time_series_data_properties.png)
 
-The "Show label?" checkbox allows the user to modify the visibility of
-the time series label. If unchecked, the time series label will be
-hidden.
+The "Show label?" checkbox controls the visibility of the time series label.
 
-The "Edit Time Series" button allows the ordering of the time steps and
-the labels to be edited. If clicked, a dialog will appear similar to
-the one below:
+The "Edit Time Series" button opens a dialog for reordering time steps and
+editing labels:
 
 ![Edit Dialog](img/time_series_edit_dialog.png)
 
-Individual rows may be left-clicked and dragged to modify the ordering
-of the time steps. The labels may also be modified
-by double-clicking them and typing a new label. If "OK" is clicked,
-the changes will be applied. An example of an edited label is provided
-in the image below:
+Individual rows may be left-clicked and dragged to modify the ordering.
+Labels may be edited by double-clicking them.
 
 ![Label Edited](img/time_series_label_edited.png)
-

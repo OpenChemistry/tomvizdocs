@@ -193,6 +193,13 @@ code {
     margin-bottom: 1rem;
 }
 
+/* Top-align cells in list-tables tagged with :class: top-align —
+   used for side-by-side screenshots that should line up at the top
+   when their heights differ. */
+.top-align td {
+    vertical-align: top !important;
+}
+
 /* Responsive */
 @media (max-width: 1400px) {
     .right-sidebar {
