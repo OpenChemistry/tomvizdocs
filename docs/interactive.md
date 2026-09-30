@@ -1,14 +1,14 @@
 # Interactive Python Console
 
-Tomviz provides a Python console that can be used to interact with the
-application programmatically. The Python console can be enabled from the
-`View` menu (or it may already be visible as a tab at the bottom of the
-window).
+Tomviz has a Python console for working with the application from code.
+Open it from the `View` menu if it is not already a tab at the bottom of the
+window.
 
 ```{note}
-The interactive Python API is undergoing changes for the Tomviz 3.0 pipeline
-model. The examples below reflect the current state of the API, which may
-continue to evolve. The legacy API shown here is still functional.
+The examples below use the pre-3.0 interactive API (`tomviz.state`,
+`tomviz.views` and `tomviz.modules`). It was removed with the Tomviz 3.0
+pipeline model, so these examples do not run in Tomviz 3.x. The
+[Dataset API](#dataset-api) at the end of this page is current.
 ```
 
 ## Loading a state file

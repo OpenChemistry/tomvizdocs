@@ -1,22 +1,19 @@
 # Data Acquisition
 
-An experimental feature adds the ability to passively watch a directory for new
-files in order to facilitate a passive mode of acquisition where another program
-is acquiring data from the microscope. The Tomviz acquisition interface will
-watch files in a specified directory using a regular expression to match the
-file name.
+An experimental feature watches a directory for new files, for a passive mode
+of acquisition where another program acquires the data from the microscope.
+Files are matched with a regular expression on the file name.
 
-The process watching the directory is a small, self-contained Python server with
-a simple programming interface that can be called over the network. The process
-should be started on a machine with access to files as they are acquired, this
-can then be used from the Tomviz user interface.
+The watching is done by a small, self-contained Python server that is called
+over the network. Start it on a machine that can see the files as they are
+acquired.
 
 ## Installing the Acquisition Server
 
-Get a copy of the Tomviz source repository, and ensure the machine has Python
-available. You can install everything in a Python virtual environment:
+Clone the Tomviz source repository on a machine with Python, and install the
+server in a virtual environment:
 
-    git clone --recursive git://github.com/openchemistry/tomviz.git
+    git clone --recursive https://github.com/openchemistry/tomviz.git
     cd tomviz/acquisition
     python -m venv tomviz-acq
     source tomviz-acq/bin/activate
@@ -29,10 +26,9 @@ available. You can install everything in a Python virtual environment:
 Once everything is installed you can start the acquisition server:
 
     source tomviz-acq/bin/activate
-    tomviz-acquisition -a tomviz.acquisition.vendors.passive.PassiveWatchSource
+    tomviz-acquisition -a tomviz_acquisition.acquisition.vendors.passive.PassiveWatchSource
 
-This will start a process running in the terminal on the machine that has a
-directory to be watched passively.
+The server runs in that terminal.
 
 ## Connecting from the Application
 
@@ -49,12 +45,13 @@ when new images are available.
 
 ## Starting a Test Sequence
 
-Image stacks already acquired can be used for testing. The following command
-writes an image from a stack every five seconds:
+To test with an existing image stack, this command writes one image every
+five seconds:
 
     tomviz-tiltseries-writer -p /tmp/test -d 5 -t tiff
 
-It supports `dm3` type as well. The path, delay, and type can all be modified.
+`-p` sets the path, `-d` the delay in seconds, and `-t` the type (`tiff` or
+`dm3`).
 
 ## Active Development
 
