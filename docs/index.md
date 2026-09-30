@@ -93,7 +93,7 @@ link to more open TEM tomography datasets.
 
 Tomviz covers each step of a tomography workflow:
 
- * [Acquisition](acquisition.md)
+ * [Acquisition](pipeline_management.md#live-data-and-periodic-execution)
  * [Pre-processing](alignment.md#pre-processing)
  * [Alignment](alignment.md)
  * [Reconstruction](reconstruction.md)
@@ -215,7 +215,6 @@ sources_ptycho
 :hidden:
 
 pipelines
-acquisition
 time_series
 ```
 
