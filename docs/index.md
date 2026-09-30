@@ -216,7 +216,6 @@ sources_ptycho
 
 pipelines
 acquisition
-interactive
 time_series
 ```
 
