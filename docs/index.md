@@ -24,6 +24,44 @@ contributions are welcome through the main
 [Github project page](https://github.com/openchemistry/tomviz). This page offers
 a complete list of contributors, older releases, issue tracking, and more.
 
+## What's New in 3.1
+
+ * **Live data** - Python sources can re-run on a timer as new data arrives,
+   so a pipeline follows an experiment while it runs. The PyXRF and Ptycho
+   sources pick up new scans this way, and `Sample Data` >
+   `Simulated Live Acquisition` shows it without an instrument. See
+   [Live Data and Periodic Execution](pipeline_management.md#live-data-and-periodic-execution).
+ * **Fourier-space filtering** - FFT, Fourier Filter, Fourier Peak Mask with
+   automatic peak detection, and Fourier Mask, plus Image Math and Combine
+   Datasets for working with two volumes. See
+   [Fourier-Space Filtering](analysis.md#fourier-space-filtering).
+ * **Segmentation and label maps** - Thresholding, connected components and
+   morphology run on NumPy and SciPy, a new `Label Map` visualization shows
+   each label in its own color, and `Remove Labels` drops the labels you
+   hide. See [Label Map](visualization.md#label-map).
+ * **Volume rendering** - Lighting presets that you can save and rename,
+   optional shadows, cut-out and exploded views, auto contrast over a
+   selected region, opacity presets, and several volumes rendered together in
+   one view. See [Volume Rendering](visualization.md#volume-rendering) and
+   [Several volumes in one view](visualization.md#several-volumes-in-one-view).
+ * **Slices** - Slices and clips of different datasets can be linked so they
+   move together, and the 2D/3D toggle turns a view into a 2D image viewer.
+   See [Slice](visualization.md#slice) and
+   [2D image viewer](visualization.md#d-image-viewer).
+ * **Animation** - A new `Animation` menu and a reworked Animation Helper:
+   camera paths through saved viewpoints that also record and animate
+   visualization settings, orbits, captions, sweeps of individual
+   properties, and MP4 movie export. See
+   [Animation Helper](visualization.md#animation-helper).
+ * **Pipelines outside the application** - Saved pipelines run from the
+   command line, one dataset or many, with the `tomviz-pipeline` package.
+   See [External Pipelines](pipelines.md).
+ * **Custom transforms** - Create, edit, clone and delete your own
+   transforms from the `Custom Transforms` menu. See
+   [Custom Transforms](operators_development.md#custom-transforms).
+ * **Saving** - `Save Data` can save any output that holds data, including
+   transient ones. See [Save data](data.md#save-data).
+
 ## What's New in 3.0
 
 Tomviz 3.0 includes a major overhaul of the application's pipeline architecture
@@ -80,6 +118,16 @@ Linux, the Tomviz executable is in the `bin` directory.
 
 ## Tutorials and Documentation
 
+Tutorial videos for the 3.1 features are embedded in the pages they cover:
+
+ * [Live Data and Periodic Execution](pipeline_management.md#live-data-and-periodic-execution)
+ * [Fourier-Space Filtering](analysis.md#fourier-space-filtering)
+ * [Label Maps](visualization.md#label-map)
+ * [Volume Rendering Techniques](visualization.md#techniques)
+ * [Animation Helper](visualization.md#animation-helper)
+
+The [Gallery](gallery.md) shows renderings made with these features.
+
 In addition to this new documentation resource there are several other tutorials:
 
  * [Tutorial on the Visualization of Volumetric Data](https://doi.org/10.1017/S1551929517001213)
@@ -91,11 +139,13 @@ know.
 
 ## First Steps
 
-Once you open the application you will be offered the opportunity to open an
-example data set, this will display a volume rendering of a reconstructed
-nanoparticle. The `Sample Data` menu offers the reconstruction
-and tilt series for the star nanoparticle, along with options for generating
-simulated data or downloading open data sets for TEM tomography data.
+The installers bundle an example dataset, and the first time you open the
+application you are offered a volume rendering of a reconstructed
+nanoparticle. The `Sample Data` menu starts with `Simulated Live
+Acquisition`, a pretend scan that updates as projections arrive, and offers
+options for generating simulated data or downloading open data sets for TEM
+tomography. With the installers it also has the reconstruction and tilt
+series for the star nanoparticle.
 
 ```{toctree}
 :maxdepth: 1
@@ -108,6 +158,7 @@ alignment
 reconstruction
 pipeline_management
 templates
+gallery
 ```
 
 ```{toctree}

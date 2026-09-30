@@ -25,7 +25,7 @@ through the time steps.
 
 Alternatively, the time steps may be manipulated through the use of
 the animation widget, which may be displayed by clicking
-`View` > `Animation`:
+`Animation` > `Animation Panel` (also in the `View` menu):
 
 ![Animation Widget](img/animation_widget.png)
 
@@ -51,9 +51,9 @@ resized by left-clicking and dragging a border:
 The label may also be hidden or edited (see
 [Editing a Time Series](#editing-a-time-series)).
 
-Note: normally, when data is loaded in Tomviz, a default camera orbit
-animation is generated. However, when data is loaded as a time series,
-the camera orbit animation is skipped.
+Note: pressing `Play` with nothing set up to animate normally turns the
+view into a camera orbit; with a time series loaded, `Play` steps through
+the time steps instead.
 
 ## Editing a Time Series
 

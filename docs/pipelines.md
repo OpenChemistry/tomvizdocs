@@ -3,8 +3,8 @@
 Tomviz pipelines can be executed outside the GUI in two equivalent ways:
 
  * The `tomviz-pipeline` command line tool.
- * The `tomviz.pipeline.run` function from the small `tomviz-pipeline` Python
-   package that ships with the application.
+ * The `tomviz_pipeline.run` function from the small `tomviz-pipeline` Python
+   package.
 
 Both consume the same state files (`.tvsm` JSON or `.tvh5` HDF5) you save
 from the GUI, and both let you override the inputs declared in those state
@@ -15,18 +15,21 @@ applied to each.
 
 ## Installation
 
-Both interfaces live in the `tomviz-pipeline` Python package under
-`tomviz/python` in the [tomviz repository](https://github.com/openchemistry/tomviz).
-Create a virtual environment and install it:
+Both interfaces live in the `tomviz-pipeline` Python package, developed in
+the [tomviz-pipeline repository](https://github.com/openchemistry/tomviz-pipeline)
+and published on PyPI and conda-forge. Install it into any Python
+environment (3.9 or newer):
 
 ```bash
-git clone --recursive https://github.com/openchemistry/tomviz
-cd tomviz/tomviz/python
-pip install .
+pip install tomviz-pipeline
+# or
+conda install -c conda-forge tomviz-pipeline
 ```
 
 This puts the `tomviz-pipeline` executable on your `PATH` and makes the
-`tomviz.pipeline` module importable.
+`tomviz_pipeline` module importable. The same package is what tomviz uses
+for external Python environments, so an environment set up for one serves
+the other.
 
 ## Running a Pipeline As-Is
 
@@ -39,7 +42,7 @@ tomviz-pipeline -s pipeline.tvsm -o results/
 ```
 
 ```python
-from tomviz.pipeline import run
+from tomviz_pipeline import run
 
 run("pipeline.tvsm", "results/")
 ```
@@ -72,7 +75,7 @@ tomviz-pipeline -s pipeline.tvsm -o results/ --input a.emd,b.emd,c.emd
 ```
 
 ```python
-from tomviz.pipeline import run
+from tomviz_pipeline import run
 
 run("pipeline.tvsm", "results/", inputs="data.emd")
 run("pipeline.tvsm", "results/", inputs="data/*.emd")
@@ -97,7 +100,7 @@ In Python, pass a dict keyed by node id:
 
 ```python
 from glob import glob
-from tomviz.pipeline import run
+from tomviz_pipeline import run
 
 run("pipeline.tvsm", "results/", inputs={
     1: sorted(glob("data/*.emd")),  # five matches → five runs
@@ -118,6 +121,7 @@ For a single run, outputs land directly under the output directory:
 results/
   3_Reconstruction__output.emd
   5_AnalyzeStructures__results.csv
+  state.tvsm
 ```
 
 For two or more runs, each run gets its own zero-padded subdirectory:
@@ -126,10 +130,15 @@ For two or more runs, each run gets its own zero-padded subdirectory:
 results/
   run_0/
     3_Reconstruction__output.emd
+    state.tvsm
   run_1/
     3_Reconstruction__output.emd
+    state.tvsm
   ...
 ```
+
+Each run also writes `state.tvsm`, the pipeline with that run's inputs
+pinned.
 
 The subdirectory prefix defaults to `run` and can be changed with
 `--run-prefix` on the CLI or `run_dir_prefix=` in Python.
@@ -151,3 +160,40 @@ tomviz-pipeline -s pipeline.tvsm -o results/ --output-format state
 ```python
 run("pipeline.tvsm", "results/", output_format="state")
 ```
+
+## Worked Example
+
+The tomviz repository ships a complete, reproducible batch run in
+[`examples/batch`](https://github.com/openchemistry/tomviz/tree/master/examples/batch).
+`make_example.py` writes four small volumes with a different number of
+spheres in each, and a pipeline `particles.tvsm` (Gaussian Blur, Binary
+Threshold, Connected Components) built from the operator scripts tomviz
+ships, the same thing saving it from the GUI gives you:
+
+```bash
+cd examples/batch
+python make_example.py example
+tomviz-pipeline -s example/particles.tvsm -o example/results \
+    --input 'example/inputs/*.emd'
+```
+
+The glob matches four files, so there are four runs, each with the label
+map that Connected Components produced:
+
+```
+example/results/
+  run_0/4_Connected_Components__volume.emd
+  run_0/state.tvsm
+  run_1/4_Connected_Components__volume.emd
+  run_1/state.tvsm
+  run_2/...
+  run_3/...
+```
+
+Each `state.tvsm` is the pipeline as it ran, with that run's input pinned;
+it can be opened in tomviz or passed back to `tomviz-pipeline -s`.
+
+`run.sh` in the same directory does both steps. To batch your own
+pipeline, save it from the GUI with `File > Save State`, then substitute
+your state file and your input glob; nothing in the state file needs
+editing, since `--input` replaces the reader's file list for every run.

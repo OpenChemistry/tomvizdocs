@@ -47,16 +47,44 @@ containing the scan ID subdirectories (e.g., `S157391`, `S157394`) in the
 analyze the directory and populate the scan table. If the directory contains a
 `recon_result` subdirectory, it will be auto-detected.
 
+The directory is scanned in the background, so the dialog stays responsive on
+slow or networked storage. Scan IDs appear in the table as they are found and
+a progress bar below the table reports how far the scan has got; you can start
+reading the table before the scan finishes. Applying the source waits for the
+scan to complete, so the selection is always taken from the full scan.
+
 ### Loading Settings from CSV
 
-The `Load settings from CSV` field allows you to specify a CSV file to
-automatically configure the scan table. Click `Select` to browse. CSV files
-generated from the [PyXRF source](./sources_pyxrf.md) are compatible. When
-loaded, the CSV file will:
+The `Load settings from CSV` field allows you to specify a scan list file to
+automatically configure the scan table. Click `Select` to browse. When loaded,
+the file will:
 
- * Mark each SID as "Use" that was marked as "Use" in the CSV
- * Unmark SIDs missing from the CSV or not marked as "Use"
+ * Mark each SID as "Use" that was marked as "Use" in the file
+ * Unmark SIDs missing from the file or not marked as "Use"
  * Set versions from the "Version" column if present
+
+SIDs listed in the file that are not present in the ptycho directory are
+skipped, and a message naming them is written to the message log.
+
+The `Save Scan List...` button next to the SID filter writes the table as it
+stands (`Scan ID`, `Theta`, `Use`, `Version`) to a CSV without running the
+operator, so a list can be prepared and checked before either the ptycho or
+the PyXRF workflow starts. Only the SIDs currently shown (after filtering)
+are written.
+
+The same scan list files work in both the ptycho and the
+[PyXRF](./sources_pyxrf.md) source, so a list produced by one can be loaded
+directly into the other. Several layouts are accepted:
+
+ * The CSV written by the PyXRF source (its `Scan ID`, `Use`, and
+   `Version` columns are used; the other columns are ignored)
+ * The CSV written by this source's **Output Info File** (see below)
+ * The whitespace-delimited text file written by earlier versions of Tomviz,
+   whose header comment names the columns (`# Angle SID Version`)
+ * A plain text file with one scan ID per line
+
+Column names are matched case- and punctuation-insensitively, so `Scan ID`,
+`Scan_ID`, and `SID` are all understood.
 
 ### Filtering SIDs
 
@@ -93,6 +121,25 @@ appears red with the error reason displayed:
    the stacking configuration. Click `Select` to browse.
  * **Rotate datasets to Tomviz convention?** - Rotate the resulting datasets
    to match the convention expected by reconstruction transforms
+
+### Live Updates
+
+With `Periodic Execution` enabled on the node's Execution tab, Tomviz
+polls the ptycho directory and re-executes when reconstructions change.
+A newly completed scan (object, probe, and its config file present) is
+absorbed automatically: it is added to the scan lists and marked "Use",
+the datasets are re-stacked to include it, and the dialog's table shows
+it on next open. Scans you deselected stay deselected, and scans that
+are still incomplete are picked up once their remaining files arrive.
+Only the new scans are processed thanks to the per-scan cache, so each
+update costs roughly one scan's work.
+
+To try this against synthetic data, run the simulator from a tomviz
+checkout and point the ptycho directory at its output:
+
+```bash
+python tests/simulation/simulate_ptycho_stream.py /tmp/ptycho-sim --interval 5
+```
 
 ### Output
 
