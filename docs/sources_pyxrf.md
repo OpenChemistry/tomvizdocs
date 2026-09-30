@@ -77,6 +77,39 @@ SIDs can also be loaded from a text file or CSV file using the
 `Load from txt/csv` button. When loading a CSV, columns named "Scan ID" and
 "Use" are recognized, allowing you to reuse scan selections.
 
+The scan list files used here and in the [Ptycho source](./sources_ptycho.md)
+are interchangeable, so a list produced by either can be loaded into the
+other. Besides this source's own CSV, the button also reads the CSV or
+whitespace-delimited text file written by the ptycho source's **Output Info
+File**, including one whose header comment names the columns
+(`# Angle SID Version`), and a plain list of one scan ID per line. Column
+names are matched case- and punctuation-insensitively, so `Scan ID`,
+`Scan_ID`, and `SID` are all understood.
+
+The `Save Scan List...` button writes the table as it stands (`Scan ID`,
+`Theta`, `Use`) to a CSV without running the operator, so a scan list can be
+prepared up front and loaded into either dialog later. The `Use` column
+accepts `1`, `x`, `true`, or `yes` when a list is loaded back in.
+
+### Live Updates
+
+With `Periodic Execution` enabled on the node's Execution tab, Tomviz
+polls the data directory and re-executes when scan files change. With
+the `Scan Range` empty, each run reads the current `tomo.h5`, so new
+scans appear as soon as whatever maintains that file has added them.
+With a range set, the range is grown automatically when scans arrive
+past its end (scans below or inside holes of the range are left alone,
+since the range is your selection), and the new scans are downloaded
+and processed on the re-run.
+
+To try this against synthetic data, run the simulator from a tomviz
+checkout, point the data directory at its output, leave the scan range
+empty, and check `Skip downloads`:
+
+```bash
+python tests/simulation/simulate_pyxrf_stream.py /tmp/pyxrf-sim --interval 5
+```
+
 ### Processing Projections
 
 The bottom section configures how the downloaded data is processed:

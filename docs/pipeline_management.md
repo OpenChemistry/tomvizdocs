@@ -17,12 +17,14 @@ The pipeline is a directed graph built from three kinds of nodes connected
 by links:
 
  * **Sources** - Load or generate data. This includes file readers,
-   data generators (constant dataset, random particles, electron beam shape),
+   data generators (constant dataset, random particles, electron beam shape,
+   simulated live acquisition),
    and beamline sources (PyXRF, Ptycho).
  * **Transforms** - Process data. These include all operators from the
    Data Transforms, Segmentation, and Tomography menus.
  * **Visualizations** - Display data. These include Volume, Slice,
-   Contour, Outline, Threshold, Clip, Ruler, Scale Cube, Molecule, and Plot.
+   Contour, Outline, Threshold, Label Map, Clip, Ruler, Scale Cube, Molecule,
+   and Plot.
 
 Each node exposes typed **input ports** (where data comes in) and **output
 ports** (where data goes out). Sources have only outputs, visualizations have
@@ -126,8 +128,10 @@ unrelated parts of the pipeline.
 Right-click a node, port, or link to access its context menu. Context menus
 provide options such as:
 
- * **Nodes** - Edit parameters, delete, clone, export data
- * **Ports** - Change persistence mode, export data
+ * **Nodes** - Delete, Save Data (sources and transforms), Leave Group
+   (grouped visualizations)
+ * **Ports** - Persistency (Persist in Memory, Persist on Disk, Transient),
+   Save Data
  * **Links** - Delete the connection
  * **Visualization groups** - Remove a visualization from its group
 
@@ -204,6 +208,40 @@ where the breakpoint was.
 
 The breakpoint is not removed automatically after resuming. Click the solid red
 circle again to remove it.
+
+## Live Data and Periodic Execution
+
+```{raw} html
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin-bottom: 1.5em;">
+  <iframe src="https://drive.google.com/file/d/18zxhe5K994PDiMc4U73E-IGrD8IBIvG4/preview" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div>
+```
+
+A source can keep a pipeline up to date while data is still being acquired.
+With periodic execution on, Tomviz asks the node at a fixed interval whether
+anything new has arrived and, if so, runs it again. Everything downstream,
+such as a reconstruction and its visualizations, updates with it.
+
+To turn it on, double-click the node's card, open the **Execution** tab,
+check **Periodic Execution** `every` and set the interval in seconds. While
+it is on, the node's card shows a button in its header; click it to turn
+periodic execution off again.
+
+![Periodic Execution on the Execution tab](img/periodic_execution.png)
+
+![A node with periodic execution on, and its button](img/periodic_node_card.png)
+
+The [PyXRF](sources_pyxrf.md) and [Ptycho](sources_ptycho.md) sources use
+this to pick up new scans during an experiment. To try it without an
+instrument, choose `Sample Data` > `Simulated Live Acquisition`: it adds a
+tilt series that gains a projection every few seconds, with periodic
+execution already on. Add a reconstruction from `Tomography` >
+`Reconstruction` (the video uses `Constraint-based Direct Fourier Method`)
+and watch it sharpen as projections arrive.
+
+Periodic execution is available for Python nodes written with the node API.
+To write your own live source, see
+[Periodic execution](operators_development.md#periodic-execution).
 
 ## Inserting Transforms
 

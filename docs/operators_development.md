@@ -15,7 +15,7 @@ are fully supported and can be used for custom transforms.
 ### Simple Transform
 
 This transform can be created by clicking on `Data Transforms` >
-`Data Management` > `Custom Transform`. It is one of the simplest transforms
+`Custom Transform`. It is one of the simplest transforms
 possible - all simple transforms define a `transform` function, import the
 necessary modules, and then get the data as an array.
 
@@ -157,6 +157,108 @@ class MyNode(tomviz.nodes.TransformNode):
         return {'volume': inputs['volume']}
 ```
 
+### Periodic execution
+
+A node can re-run on its own when new data arrives, which is how live data
+reaches a pipeline. Tick `Periodic Execution` on the node's Execution tab
+and choose an interval. Tomviz then calls the node's `should_auto_execute`
+every interval and re-runs the pipeline when it returns `True`.
+
+ * `should_auto_execute(self, **params)` answers "is there new data?". It
+   runs often, so keep it cheap: check, don't compute.
+ * `self.state` is a dictionary kept between runs and checks (not saved in
+   state files), for bookkeeping such as when a scan started or which files
+   were seen last.
+ * `self.set_parameter(name, value)` changes one of the node's own
+   parameters; the dialog and the saved state follow.
+
+`Sample Data` > `Simulated Live Acquisition` uses all three with no
+instrument: it pretends one projection of a test object is recorded every
+few seconds. This is the whole script:
+
+```python
+import time
+from typing import Any
+
+import numpy as np
+import scipy.ndimage
+
+import tomviz.nodes
+from tomviz.dataset import Dataset
+
+
+class SimulatedLiveAcquisition(tomviz.nodes.SourceNode):
+    """A pretend tomography scan: one new projection every few seconds.
+    Copy it to make a source that watches a real instrument."""
+
+    def produce(self, size: int = 64, num_projections: int = 60,
+                start_angle: float = -60.0, end_angle: float = 60.0,
+                seconds_per_projection: float = 5.0,
+                acquired: int = 0) -> dict[str, Dataset] | None:
+        # Build the dataset from every projection recorded so far
+        if 'started_at' not in self.state:
+            self.state['started_at'] = time.time()  # the scan starts now
+        count = self._recorded(num_projections, seconds_per_projection)
+        angles = np.linspace(start_angle, end_angle, num_projections)[:count]
+
+        sample = self._test_object(size)
+        projections = np.empty((size, size, count), np.float32, order='F')
+        self.progress.maximum = count
+        for i, angle in enumerate(angles):
+            if self.canceled:
+                return None
+            rotated = scipy.ndimage.rotate(sample, -angle, axes=(1, 2),
+                                           reshape=False, order=1)
+            projections[:, :, i] = rotated.sum(axis=2)
+            self.progress.value = i + 1
+
+        self.set_parameter('acquired', count)  # shown in the dialog
+
+        dataset = self.create_dataset()
+        dataset.set_scalars('Projections', projections)
+        dataset.tilt_angles = angles
+        return {'tilt_series': dataset}
+
+    def should_auto_execute(self, **params: Any) -> bool:
+        # Called every interval: True re-runs the pipeline. Keep it cheap.
+        if 'started_at' not in self.state:
+            # self.state is not saved: after loading a state file, re-run
+            return params['acquired'] > 0
+        count = self._recorded(params['num_projections'],
+                               params['seconds_per_projection'])
+        return count > params['acquired']
+
+    def _recorded(self, num_projections: int,
+                  seconds_per_projection: float) -> int:
+        # How many projections the pretend instrument has recorded by now
+        elapsed = time.time() - self.state['started_at']
+        return min(1 + int(elapsed // seconds_per_projection),
+                   num_projections)
+
+    @staticmethod
+    def _test_object(size: int) -> np.ndarray:
+        # A sphere with a 3D sine wave inside
+        r = np.linspace(-1, 1, size)
+        x, y, z = np.meshgrid(r, r, r, indexing='ij')
+        wave = 1 + 0.5 * np.sin(2 * np.pi * x) * np.sin(2 * np.pi * y) * \
+            np.sin(2 * np.pi * z)
+        sphere = x**2 + y**2 + z**2 < 0.8**2
+        return np.where(sphere, wave, 0).astype(np.float32)
+```
+
+Add a reconstruction and a volume rendering after it and watch them update
+as projections arrive. For a real instrument, keep the same shape: in
+`should_auto_execute`, check the data directory (file names and times) or
+the database, remember what you saw in `self.state`, and return `True` when
+it changed. `PyXRFSource.py` and `PtychoSource.py` do exactly this.
+
+The sample switches periodic execution on from the start with an
+`autoExecute` block in its JSON description:
+
+```json
+"autoExecute": {"enabled": true, "intervalSeconds": 5}
+```
+
 ### Dataset API
 
 The `Dataset` object provides these properties and methods:
@@ -191,8 +293,10 @@ Each parameter has:
 
 * `name` - Must be a valid Python variable name.
 * `label` - Displayed name in the UI.
-* `type` - One of: `bool`, `int`, `double`, `enumeration`, `xyz_header`,
-  `file`, `directory`.
+* `type` - One of: `bool`, `int`, `double`, `enumeration`, `string`,
+  `xyz_header`, `file`, `save_file`, `directory`, `select_scalars`, or
+  `dataset` (which adds an input port to link a second dataset to, rather
+  than a widget).
 * `default` - Default value.
 * `minimum` / `maximum` - Value bounds.
 * `precision` - Decimal digits for `double` parameters.
@@ -272,67 +376,67 @@ mapping names to datasets.
 
 ### Command line execution of pipeline
 
-A pipeline can be executed from the command line without the Tomviz GUI. The
-`tomviz-pipeline` package is available on conda-forge:
-
-```bash
-conda install -c conda-forge tomviz-pipeline
-```
-
-Alternatively, install from the Tomviz source repository:
-
-```bash
-pip install <tomviz_repo_directory>/tomviz/python/
-```
-
-Then execute a saved state file:
-
-```bash
-tomviz-pipeline -s <path_to_state_file> -o <path_to_write_output_emd>
-```
-
-The input data source can be overridden with the `-d` option, enabling batch
-processing: save a pipeline as a state file in the GUI, then run it on
-multiple datasets from a script:
-
-```bash
-for f in dataset_*.emd; do
-    tomviz-pipeline -s my_pipeline.tvh5 -d "$f" -o "output_${f}"
-done
-```
+A saved pipeline can be run without the GUI, once or over many datasets,
+with the `tomviz-pipeline` tool or the `tomviz_pipeline.run` function.
+See [External Pipelines](pipelines.md), which also has a reproducible batch
+example.
 
 ## Custom Transforms
 
-Tomviz comes with many built-in transforms. To add local transforms, place
-Python files in one of these directories:
+Tomviz comes with many built-in transforms. Your own transforms live in
+your tomviz user directory, `~/tomviz/` by default (set the
+`TOMVIZ_USER_DIRECTORY` environment variable to move it). Each custom
+transform is a pair of files with the same base name: `my_thing.py` holds the
+script and `my_thing.json` the description (label, ports and parameters).
 
- * `~/tomviz/`
- * `~/.tomviz/`
-
-The `Custom Transforms` menu re-scans these directories every time you open
-it, so new files appear immediately without restarting the application.
-Edits to existing files are also picked up on next use, since the script is
-loaded from disk when the transform is applied.
+The `Custom Transforms` menu re-scans the directory every time you open it,
+so files added or edited outside tomviz appear immediately without a
+restart. The transform's label from the JSON file is the menu entry (or the
+file name if there is no JSON file).
 
 ![Custom transforms menu](img/custom_transforms.png)
 
-The file name becomes the menu entry name (e.g., `my_thing.py` appears as
-`my_thing`). Add a JSON file with the same base name to customize the
-displayed label and add input parameters:
+### Creating and managing custom transforms
 
-```json
-{
-  "name" : "Custom Thing",
-  "label" : "Operate on data",
-  "description" : "Apply my special operation to the data..."
-}
-```
+You do not have to write the files by hand. The `Custom Transforms` menu
+starts with two entries:
+
+ * **Create New...** opens the custom node editor on a fresh transform
+   template that already uses the node API. Pick a file name, edit the
+   `Definition` tab (the JSON description) and the `Script` tab, and click
+   `Save`. Both files are written to your tomviz directory.
+ * **Manage...** lists every custom transform tomviz can see, grouped into
+   sources and transforms, with its file path. Each entry offers `Edit`,
+   `Delete`, `Clone` and `Open containing folder`. `Refresh` re-scans the
+   directories after changes made outside tomviz. A transform whose JSON
+   file cannot be parsed is marked `broken`; hover it to see the error.
+
+![The Manage Custom Transforms dialog](img/custom_transforms_manage.png)
+
+Any Python node already in a pipeline can also become a custom transform:
+double-click its node card to open the node editor and click
+`Save as Custom Transform...`. A copy of the node's script and description
+is opened in the custom node editor for you to name and save; the node in
+the pipeline is left as it was.
+
+Editing renames or rewrites the `.py` and `.json` files in place, and the
+description is validated before saving: the ports of an existing transform
+cannot change and parameter names must be unique. Deleting removes both files after a confirmation.
 
 ### Custom Transforms Path
 
-The search directories can be overridden by setting the
+Additional read-only search directories can be given with the
 `TOMVIZ_CUSTOM_TRANSFORMS_PATH` environment variable. It accepts multiple
-directories separated by `:` (Linux/macOS) or `;` (Windows).
+directories separated by `:` (Linux/macOS) or `;` (Windows). When it is set,
+those directories are scanned instead of the default extras, `~/.tomviz`
+(where earlier releases looked) and the platform application-data
+location; your tomviz user directory is always scanned as well.
+
+Only transforms in your tomviz user directory can be edited or deleted from
+tomviz. Transforms found anywhere else, such as a shared repository on the
+path, are read-only in the `Manage...` dialog; use `Clone` to copy one into
+your directory and edit the copy. The clone gets `_copy` appended to its
+file name and `(copy)` to its label so it is told apart from the original.
 
 ## Apply transforms
 
@@ -376,6 +480,24 @@ internally), add to the JSON:
   "apply_to_each_array" : false
 }
 ```
+
+### Output Color Map
+
+A transform's output starts with the color map of its primary input,
+rescaled to the new values, so a color scheme chosen for the data carries
+through blurs, crops and reconstructions. When the output means something
+else entirely, the input's colors and opacity curve no longer fit (the
+`Fast Fourier Transform (FFT)` operator's spectrum is an example). To start
+the output from the default color map (`Plasma`, as loaded data gets)
+instead, add to the JSON:
+
+```json
+{
+  "inheritColorMap" : false
+}
+```
+
+A label map input never passes on its colors, whatever this says.
 
 ### External Subprocess Execution
 

@@ -12,6 +12,10 @@ import urllib.request
 import urllib.error
 
 
+# Not operators: the template behind Custom Transforms > Create New...
+SKIPPED_FILES = {'NewCustomTransform.json'}
+
+
 def fetch_github_json(user: str, repo: str, branch: str, path: str) -> List[Dict[str, Any]]:
     """
     Fetch JSON files from a GitHub repository.
@@ -36,6 +40,8 @@ def fetch_github_json(user: str, repo: str, branch: str, path: str) -> List[Dict
     operators = []
     
     for file_info in files_list:
+        if file_info['name'] in SKIPPED_FILES:
+            continue
         if file_info['name'].endswith('.json'):
             # Fetch the raw content
             raw_url = file_info['download_url']
@@ -66,6 +72,8 @@ def load_local_json_files(directory: str) -> List[Dict[str, Any]]:
         return []
     
     for json_file in json_dir.glob('*.json'):
+        if json_file.name in SKIPPED_FILES:
+            continue
         try:
             with open(json_file, 'r') as f:
                 operator_data = json.load(f)
@@ -243,6 +251,9 @@ def generate_operator_markdown(operator: Dict[str, Any]) -> str:
     if 'parameters' in operator and operator['parameters']:
         lines.append("Parameters")
         for param in operator['parameters']:
+            # Layout-only entries (e.g. an xyz_header) have no name
+            if 'name' not in param:
+                continue
             lines.append(format_parameter(param))
     
     # Results section
@@ -286,7 +297,8 @@ def categorize_operators(operators: List[Dict[str, Any]]) -> Dict[str, List[Dict
     }
     
     for op in operators:
-        name = op.get('name', '').lower()
+        # Some descriptions have no name, so fall back to the file name
+        name = (op.get('name') or op.get('_filename', '')).lower()
         label = op.get('label', '').lower()
         
         # Simple categorization based on keywords
@@ -295,13 +307,13 @@ def categorize_operators(operators: List[Dict[str, Any]]) -> Dict[str, List[Dict
         if any(kw in name or kw in label for kw in ['recon', 'reconstruct']):
             categories['Reconstruction'].append(op)
             categorized = True
-        elif any(kw in name or kw in label for kw in ['align', 'register', 'shift', 'rotation']):
+        elif any(kw in name or kw in label for kw in ['align', 'register', 'registration', 'shift', 'rotation']):
             categories['Alignment'].append(op)
             categorized = True
-        elif any(kw in name or kw in label for kw in ['filter', 'denoise', 'smooth', 'median', 'gaussian', 'noise']):
+        elif any(kw in name or kw in label for kw in ['filter', 'denoise', 'smooth', 'median', 'gaussian', 'noise', 'fourier', 'fft']):
             categories['Filtering'].append(op)
             categorized = True
-        elif any(kw in name or kw in label for kw in ['segment', 'threshold', 'label']):
+        elif any(kw in name or kw in label for kw in ['segment', 'threshold', 'label', 'binary', 'connected', 'dilate', 'erode', 'morpholog']):
             categories['Segmentation'].append(op)
             categorized = True
         elif any(kw in name or kw in label for kw in ['crop', 'pad', 'resample', 'bin', 'rotate', 'swap', 'transpose']):

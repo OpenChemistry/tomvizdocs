@@ -29,7 +29,7 @@ Tomviz supports the following file formats for reading:
 | EMD | `.emd` | Electron Microscopy Data format (HDF5-based) |
 | TIFF | `.tiff`, `.tif` | Including multi-file stacks |
 | MRC | `.mrc`, `.st`, `.rec`, `.ali` | Electron microscopy format |
-| HDF5 | `.h5`, `.hspy` | Auto-detects DataExchange, FXI, HyperSpy, or generic |
+| HDF5 | `.h5`, `.hspy`, `.nxs` | Auto-detects DataExchange, FXI, HyperSpy, NeXus, or generic |
 | DICOM | `.dcm` | Enhanced (single-file) DICOM only; classic multi-file DICOM is not yet supported (requires ITK) |
 | NumPy | `.npy` | NumPy binary arrays |
 | MATLAB | `.mat` | MATLAB v7.2 and earlier |
@@ -53,7 +53,7 @@ dropping them onto the Tomviz application window. State files (`.tvh5`,
 Loading image stacks takes a little bit more effort than loading a single data
 file. After selecting `Open` > `Stack` from the `File` menu, check all the
 images you would like to include in the pop-up dialog. You can also select the
-data type (e.g. `Tilt Series`) and toggle `Image Viewer Mode`.
+data type (e.g. `Tilt Series`).
 
 ![Open stack](img/tomviz_open_stack.png)
 
@@ -136,6 +136,10 @@ asking the user to choose a dataset to load.
 Tomviz includes built-in data generators that create synthetic datasets without
 loading from files. These are available from the `Sample Data` menu:
 
+ * **Simulated Live Acquisition** - A pretend tomography scan: one new
+   projection every few seconds, with periodic execution on so the pipeline
+   updates as they arrive. A template for live sources; see
+   [Live Data and Periodic Execution](pipeline_management.md#live-data-and-periodic-execution).
  * **Constant Dataset** - Generates a 3D dataset filled with a constant value.
    Parameters: shape (default 100×100×100) and Value (the fill value).
  * **Random Particles** - Generates random 3D particles using a Fourier Noise
@@ -145,6 +149,10 @@ loading from files. These are available from the `Sample Data` menu:
    STEM imaging simulation, with full aberration parameters including beam
    energy, semi-convergence angle, pixel sizes, defocus range, spherical
    aberration, astigmatism, and coma.
+
+In the installers, the menu also loads the star nanoparticle
+reconstruction and tilt series, which the conda package does not bundle.
+`Download More Datasets` fetches others.
 
 When you select a data generator, a parameter dialog will appear. After
 configuring parameters and clicking OK, the dataset is generated and added to
@@ -221,7 +229,20 @@ in the second column.
 ### Save data
 
 Users can save the data by clicking `Save Data` from the `File` menu, or
-by using the keyboard shortcut `Ctrl+S`.
+by using the keyboard shortcut `Ctrl+S`. Right-clicking a node or one of
+its output ports offers `Save Data` for just that node or port.
+
+The dialog writes every checked port into one `Destination` directory, with
+a file format chosen per data type (image data, table, molecule).
+`Ports to save` offers `Leaf nodes only` (outputs that don't feed another
+transform) or `All ports with data`, and `Select All` and `Deselect All`
+toggle the list.
+
+Any output that currently holds data can be saved, whether its port is
+persistent or transient. A transient port lets its data go once the
+pipeline no longer needs it; if that has happened, the dialog lists the
+port and explains why it cannot be saved. To save it, right-click the port
+and choose `Persist in Memory`, and tomviz runs that step again.
 
 ![Save data](img/tomviz_save_data.png)
 
