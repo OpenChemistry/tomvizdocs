@@ -2,12 +2,9 @@
 
 ## Invert Data
 
-The `Invert Data` transform inverts scalar values so that the maximum becomes
-the minimum and vice versa. This is useful for preparing data where the
-convention for foreground/background intensity is reversed.
-
-The transform can be found under `Data Transforms` > `Math Operations` >
-`Invert Data`.
+`Data Transforms` -> `Math Operations` -> `Invert Data` inverts the scalar
+values so that the maximum becomes the minimum and vice versa, for data whose
+foreground/background intensity convention is reversed.
 
 ### Parameters
 - None
@@ -18,10 +15,9 @@ The transform can be found under `Data Transforms` > `Math Operations` >
 
 ## Tortuosity
 
-The `Tortuosity` transform calculates various quantities described in the paper
-by [Chen-Wiegart et al.](https://doi.org/10.1016/j.jpowsour.2013.10.026)
-
-The transform can be found under `Data Transforms` > `Material Analysis`.
+The `Tortuosity` transform (`Data Transforms` -> `Material Analysis`)
+calculates the quantities described by
+[Chen-Wiegart et al.](https://doi.org/10.1016/j.jpowsour.2013.10.026)
 
 ### Parameters
 - `phase (int)`: the scalar value in the dataset that is considered a pore
@@ -29,18 +25,17 @@ The transform can be found under `Data Transforms` > `Material Analysis`.
   pore nodes. Options are: Euclidean, CityBlock, Chessboard.
 - `propagation_direction (enum)`: the face of the volume from which distances
   are calculated. Options are X+, X-, Y+, Y-, Z+, Z-.
-- `save_to_file (bool)`: save the detailed output of the operator to files. If
-  set to True, propagate along all six directions and save the results, but
-  only display results for one direction within the application.
-- `output_folder (str)`: the path to the folder where the optional output files
-  are written to
+- `save_to_file (bool)`: if True, also propagate along all six directions and
+  save the detailed results to files. Only one direction is shown in the
+  application.
+- `output_folder (str)`: the folder for the optional output files
 
 ### Output
-- Volumetric data: in the output volume are saved the distances between each
-  pore voxel and the starting propagation face.
+- Volumetric data: the distance from each pore voxel to the starting
+  propagation face.
 - Path length table: the average path length for a face vs the linear length
-- Tortuosity table: 4 different tortuosity values calculated from the path
-  length table.
+- Tortuosity table: four tortuosity values calculated from the path length
+  table.
 - Tortuosity distribution table: the distribution of tortuosities for voxels in
   the last slice of the propagation
 - If `save_to_file` is True, the following files are created for all propagation
@@ -53,11 +48,10 @@ The transform can be found under `Data Transforms` > `Material Analysis`.
 
 ## Pore Size Distribution
 
-The `Pore Size Distribution` transform calculates the continuous pore size
-distribution as described by
+The `Pore Size Distribution` transform (`Data Transforms` ->
+`Material Analysis`) calculates the continuous pore size distribution
+described by
 [Münch and Holzer](https://doi.org/10.1111/j.1551-2916.2008.02736.x).
-
-The transform can be found under `Data Transforms` > `Material Analysis`.
 
 ### Parameters
 - `threshold (int)`: scalars greater than `threshold` are considered matter;
@@ -78,12 +72,8 @@ The transform can be found under `Data Transforms` > `Material Analysis`.
 
 ## Cylindrical Crop
 
-The `Cylindrical Crop` transform crops a volume to a cylindrical region with
-an arbitrary axis orientation. It provides an interactive 3D widget for
-visually positioning and sizing the cylinder.
-
-The transform can be found under `Data Transforms` > `Data Management` >
-`Cylindrical Crop`.
+`Data Transforms` -> `Data Management` -> `Cylindrical Crop` crops a volume to a
+cylinder with any axis orientation, placed and sized with a 3D widget.
 
 <div style="text-align: center;">
   <iframe src="https://drive.google.com/file/d/1GKXI173fJYuabPbwkItOwclbPU0Fprmz/preview" width="760" height="480" allow="autoplay"></iframe>
@@ -93,9 +83,9 @@ The volume before cropping:
 
 ![Volume before cylindrical crop](img/cylindrical_crop1.png)
 
-When the operator is added, an interactive cylinder widget appears overlaid on
-the volume. The Configure dialog shows instructions and numeric spinboxes for
-the center, axis, radius, and fill value. Left-click the cylinder and drag to
+When the transform is added, the cylinder widget appears on the volume, and
+the dialog shows instructions and fields for the center, axis, radius, and
+fill value. Left-click the cylinder and drag to
 translate. Left-click the arrow and drag to adjust the orientation. Right-click
 the cylinder and drag to adjust the radius.
 
@@ -122,11 +112,10 @@ and the cropped volume is displayed:
 
 ## Deconvolution Denoise
 
-The `Deconvolution Denoise` transform performs deconvolution-based denoising
-using a ptychographic probe and a selected regularization method. See the
+The `Deconvolution Denoise` transform (`Data Transforms` ->
+`Metrics & Spectral`) denoises data by deconvolution with a ptychographic
+probe and a choice of regularization. See the
 [analysis page](analysis.md#deconvolution-denoise) for an overview.
-
-The transform can be found under `Data Transforms` > `Metrics & Spectral`.
 
 ![Deconvolution Denoise](img/operator_deconvolution_denoise.png)
 
@@ -140,8 +129,8 @@ The transform can be found under `Data Transforms` > `Metrics & Spectral`.
 - `Scalars (select_scalars)`: which scalar arrays to process.
 - `Method (enum)`: APG_BM3D, APG_TV, or ADMM_TV.
 - `Axis (enum)`: X, Y, or Z.
-- `Probe`: probe dataset for PSF, provided via the transform's second input
-  port. Link the probe source node to this port in the pipeline.
+- `Probe`: the probe dataset for the PSF. Link the probe source node to this
+  input port in the pipeline.
 - `Fast Axis Scanning (enum)`: dilation or average.
 - `Slow Axis Scanning (enum)`: dilation or average.
 - `Probe Kernel (int)`: size of probe kernel. Default: 11.
@@ -156,18 +145,17 @@ The transform can be found under `Data Transforms` > `Metrics & Spectral`.
 
 ## Similarity Metrics
 
-The `Similarity Metrics` transform computes per-slice MSE and SSIM between the
-current dataset and a reference. See the
+The `Similarity Metrics` transform (`Data Transforms` -> `Metrics & Spectral`)
+computes per-slice MSE and SSIM between the dataset and a reference. See the
 [analysis page](analysis.md#similarity-metrics) for an overview.
-
-The transform can be found under `Data Transforms` > `Metrics & Spectral`.
 
 ![Similarity Metrics](img/operator_similarity_metrics.png)
 
 ### Parameters
 - `Scalars (select_scalars)`: which scalar arrays to compute metrics for.
 - `Axis (enum)`: X, Y, or Z.
-- `Reference Dataset (dataset)`: dataset to compare against.
+- Reference dataset: the dataset to compare against, linked to the
+  transform's second input port in the pipeline.
 
 ### Output
 - Similarity table with columns for slice index, MSE, and SSIM per scalar.

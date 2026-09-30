@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 
 # Project information
-project = 'Tomviz Documentation'
+project = 'Tomviz'
 copyright = 'Content is available under <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a>'
 author = 'Tomviz Team'
 
@@ -25,11 +25,12 @@ suppress_warnings = ['myst.xref_missing']
 
 # General settings
 templates_path = ['_templates']
-exclude_patterns = ['_build']
+exclude_patterns = ['_build', '.pytest_cache']
 source_suffix = {'.rst': 'restructuredtext', '.md': 'markdown'}
 
 # HTML output
 html_theme = 'sphinx_rtd_theme'
+html_title = 'Tomviz Documentation'
 html_static_path = ['_static', 'img']
 html_css_files = ['extra.css']
 html_js_files = ['sidebar.js']

@@ -1,23 +1,21 @@
 # Development
 
-Transforms are the core of the data processing pipeline. They are predominantly
-written in Python, with some developed in C++. Most transforms take a volume as
-an input, do some operations on that volume, and output a volume. In Python
-these are typically viewed as NumPy arrays where they are a view of the native
-C++ memory used by Tomviz.
+Transforms are the core of the data processing pipeline. Most are written in
+Python, some in C++. A typical transform takes a volume, operates on it, and
+outputs a volume. In Python the volume is a NumPy array that views Tomviz's
+native C++ memory.
 
 Tomviz supports two APIs for writing Python transforms: the **legacy operator
 API** (`tomviz.operators`) and the **new node API** (`tomviz.nodes`). Both
-are fully supported and can be used for custom transforms.
+work for custom transforms.
 
 ## Legacy Operator API
 
 ### Simple Transform
 
-This transform can be created by clicking on `Data Transforms` >
-`Custom Transform`. It is one of the simplest transforms
-possible - all simple transforms define a `transform` function, import the
-necessary modules, and then get the data as an array.
+`Data Transforms` -> `Custom Transform` creates a transform like this one,
+about the simplest possible. A simple transform defines a `transform`
+function, imports the modules it needs, and gets the data as an array.
 
 ``` python
 def transform(dataset):
@@ -38,15 +36,13 @@ def transform(dataset):
     dataset.spacing = [5, 10, 7]
 ```
 
-The dialog in Tomviz enables editing of Python transforms in the source tab.
-Clicking Apply will apply the code in the editor leaving the dialog open;
-clicking OK will apply the transform and close the dialog.
+Edit the code in the dialog's `Script` tab. `Apply` runs it and keeps the
+dialog open; `OK` runs it and closes the dialog.
 
 ### Subclassing tomviz.operators.Operator
 
-Tomviz provides an operator base class that can be used to implement a Python
-transform. To create a transform, subclass and provide an implementation of
-the `transform` method.
+To write a transform as a class, subclass `tomviz.operators.Operator` and
+implement the `transform` method.
 
 ```python
 import tomviz.operators
@@ -58,9 +54,9 @@ class MyOperator(tomviz.operators.Operator):
 
 ### Subclassing tomviz.operators.CancelableOperator
 
-To implement a transform that can be canceled, derive from
-`tomviz.operators.CancelableOperator`. This provides a `canceled` property
-that can be checked to determine if the user has requested cancellation.
+For a transform that can be canceled, derive from
+`tomviz.operators.CancelableOperator` and check its `canceled` property,
+which is set when the user cancels.
 
 ```python
 import tomviz.operators
@@ -91,8 +87,8 @@ class MyProgressOperator(tomviz.operators.Operator):
 
 ## New Node API
 
-Tomviz 3.0 introduces a new node-based API via `tomviz.nodes`. This API aligns
-with the new pipeline model and provides explicit port-based input/output.
+Tomviz 3.0 added the node API, `tomviz.nodes`, which matches the pipeline
+model and has explicit input and output ports.
 
 ### SourceNode
 
@@ -159,22 +155,22 @@ class MyNode(tomviz.nodes.TransformNode):
 
 ### Periodic execution
 
-A node can re-run on its own when new data arrives, which is how live data
-reaches a pipeline. Tick `Periodic Execution` on the node's Execution tab
-and choose an interval. Tomviz then calls the node's `should_auto_execute`
-every interval and re-runs the pipeline when it returns `True`.
+A node written with the node API can re-run on its own when new data
+arrives. With periodic execution turned on in the node's Execution tab (see
+[Live Data and Periodic Execution](pipeline_management.md#live-data-and-periodic-execution)),
+Tomviz calls the node's `should_auto_execute` at the set interval and re-runs
+the pipeline when it returns `True`.
 
  * `should_auto_execute(self, **params)` answers "is there new data?". It
-   runs often, so keep it cheap: check, don't compute.
+   runs often, so keep it cheap.
  * `self.state` is a dictionary kept between runs and checks (not saved in
    state files), for bookkeeping such as when a scan started or which files
    were seen last.
  * `self.set_parameter(name, value)` changes one of the node's own
    parameters; the dialog and the saved state follow.
 
-`Sample Data` > `Simulated Live Acquisition` uses all three with no
-instrument: it pretends one projection of a test object is recorded every
-few seconds. This is the whole script:
+The `Sample Data` -> `Simulated Live Acquisition` source uses all three. It
+simulates an instrument that records one projection every few seconds:
 
 ```python
 import time
@@ -246,14 +242,14 @@ class SimulatedLiveAcquisition(tomviz.nodes.SourceNode):
         return np.where(sphere, wave, 0).astype(np.float32)
 ```
 
-Add a reconstruction and a volume rendering after it and watch them update
-as projections arrive. For a real instrument, keep the same shape: in
-`should_auto_execute`, check the data directory (file names and times) or
-the database, remember what you saw in `self.state`, and return `True` when
-it changed. `PyXRFSource.py` and `PtychoSource.py` do exactly this.
+A source for a real instrument has the same shape: `should_auto_execute`
+checks the data directory or database, remembers what it saw in
+`self.state`, and returns `True` when something changed. `PyXRFSource.py`
+and `PtychoSource.py` work this way.
 
-The sample switches periodic execution on from the start with an
-`autoExecute` block in its JSON description:
+To turn periodic execution on when the source is added, put an
+`autoExecute` block in the JSON description. Tomviz reads this block only
+for sources, not for transforms:
 
 ```json
 "autoExecute": {"enabled": true, "intervalSeconds": 5}
@@ -281,8 +277,8 @@ The `Dataset` object provides these properties and methods:
 
 ## Generating the user interface automatically
 
-Python transforms can take parameters governed by a JSON description file.
-The JSON file consists of:
+A JSON description file defines a Python transform's parameters. It
+contains:
 
 * `name` - The transform name (no spaces).
 * `label` - The displayed name in the UI.
@@ -383,74 +379,68 @@ example.
 
 ## Custom Transforms
 
-Tomviz comes with many built-in transforms. Your own transforms live in
-your tomviz user directory, `~/tomviz/` by default (set the
-`TOMVIZ_USER_DIRECTORY` environment variable to move it). Each custom
-transform is a pair of files with the same base name: `my_thing.py` holds the
-script and `my_thing.json` the description (label, ports and parameters).
+Your own transforms live in your Tomviz user directory, `~/tomviz/` by
+default (set the `TOMVIZ_USER_DIRECTORY` environment variable to move it).
+Each custom transform is a pair of files with the same base name:
+`my_thing.py` holds the script and `my_thing.json` the description (label,
+ports and parameters).
 
 The `Custom Transforms` menu re-scans the directory every time you open it,
-so files added or edited outside tomviz appear immediately without a
-restart. The transform's label from the JSON file is the menu entry (or the
-file name if there is no JSON file).
+so files added outside Tomviz appear without a restart. The menu entry is the
+label from the JSON file, or the file name if there is no JSON file.
 
 ![Custom transforms menu](img/custom_transforms.png)
 
 ### Creating and managing custom transforms
 
-You do not have to write the files by hand. The `Custom Transforms` menu
-starts with two entries:
+The `Custom Transforms` menu starts with two entries for writing these
+files from Tomviz:
 
- * **Create New...** opens the custom node editor on a fresh transform
-   template that already uses the node API. Pick a file name, edit the
-   `Definition` tab (the JSON description) and the `Script` tab, and click
-   `Save`. Both files are written to your tomviz directory.
- * **Manage...** lists every custom transform tomviz can see, grouped into
+ * **Create New...** opens the custom node editor on a new transform
+   template that uses the node API. Enter a file name, fill in the
+   `Definition` tab (a form for the JSON description) and the `Script` tab,
+   and click `Save`. Both files are written to your Tomviz directory.
+ * **Manage...** lists every custom transform Tomviz can see, grouped into
    sources and transforms, with its file path. Each entry offers `Edit`,
    `Delete`, `Clone` and `Open containing folder`. `Refresh` re-scans the
-   directories after changes made outside tomviz. A transform whose JSON
-   file cannot be parsed is marked `broken`; hover it to see the error.
+   directories. A transform whose JSON file cannot be parsed is marked
+   `broken`; hover over it to see the error.
 
 ![The Manage Custom Transforms dialog](img/custom_transforms_manage.png)
 
-Any Python node already in a pipeline can also become a custom transform:
-double-click its node card to open the node editor and click
-`Save as Custom Transform...`. A copy of the node's script and description
-is opened in the custom node editor for you to name and save; the node in
-the pipeline is left as it was.
+To turn a Python node in a pipeline into a custom transform, double-click
+its node card and click `Save as Custom Transform...`. A copy of its script
+and description opens in the custom node editor for you to name and save.
 
-Editing renames or rewrites the `.py` and `.json` files in place, and the
-description is validated before saving: the ports of an existing transform
-cannot change and parameter names must be unique. Deleting removes both files after a confirmation.
+Editing rewrites or renames the `.py` and `.json` files in place. The ports
+of an existing transform cannot change, and parameter names must be unique.
+Deleting removes both files.
 
 ### Custom Transforms Path
 
-Additional read-only search directories can be given with the
-`TOMVIZ_CUSTOM_TRANSFORMS_PATH` environment variable. It accepts multiple
-directories separated by `:` (Linux/macOS) or `;` (Windows). When it is set,
-those directories are scanned instead of the default extras, `~/.tomviz`
-(where earlier releases looked) and the platform application-data
-location; your tomviz user directory is always scanned as well.
+Besides your Tomviz user directory, Tomviz scans `~/.tomviz` (used by
+earlier releases) and the platform application-data directory. The
+`TOMVIZ_CUSTOM_TRANSFORMS_PATH` environment variable replaces those two with
+your own list of directories, separated by `:` (Linux/macOS) or `;`
+(Windows). The user directory is always scanned.
 
-Only transforms in your tomviz user directory can be edited or deleted from
-tomviz. Transforms found anywhere else, such as a shared repository on the
-path, are read-only in the `Manage...` dialog; use `Clone` to copy one into
-your directory and edit the copy. The clone gets `_copy` appended to its
-file name and `(copy)` to its label so it is told apart from the original.
+Only transforms in your Tomviz user directory can be edited or deleted from
+Tomviz. Transforms found elsewhere are read-only in the `Manage...` dialog;
+use `Clone` to copy one into your directory and edit the copy.
 
 ## Apply transforms
 
-Custom transforms appear in the `Custom Transforms` menu and can be applied
-just like built-in transforms.
+Apply custom transforms from the `Custom Transforms` menu, like built-in
+transforms.
 
 ### User Input for Transforms
 
-Custom transforms can accept user input via JSON metadata. For example,
-to let the user set a parameter:
+Parameters in the JSON description become fields in the transform's dialog.
+For example:
 
 ```json
 {
-  "name": "Fancy Square Root",
+  "name": "FancySquareRoot",
   "label": "Classy Square Root",
   "description": "A configurable square root operator.",
   "parameters": [
@@ -468,12 +458,10 @@ to let the user set a parameter:
 
 ### Automatic Multi-Array Processing
 
-By default, all transform functions are automatically wrapped to apply the
-transform to every scalar array in the dataset. This means datasets with
-multiple arrays (e.g., XRF elements) are processed automatically.
-
-To disable this (e.g., for transforms that handle multi-array logic
-internally), add to the JSON:
+By default a transform is applied to every scalar array in the dataset, so
+datasets with several arrays (such as XRF elements) are processed in one go.
+To turn this off, for a transform that handles the arrays itself, add to the
+JSON:
 
 ```json
 {
@@ -483,13 +471,10 @@ internally), add to the JSON:
 
 ### Output Color Map
 
-A transform's output starts with the color map of its primary input,
-rescaled to the new values, so a color scheme chosen for the data carries
-through blurs, crops and reconstructions. When the output means something
-else entirely, the input's colors and opacity curve no longer fit (the
-`Fast Fourier Transform (FFT)` operator's spectrum is an example). To start
-the output from the default color map (`Plasma`, as loaded data gets)
-instead, add to the JSON:
+A transform's output starts with the color map and opacity of its primary
+input. When the output means something else, such as the spectrum from
+`Fast Fourier Transform (FFT)`, add this to the JSON to start from the
+default color map (`Plasma`) instead:
 
 ```json
 {
@@ -497,27 +482,27 @@ instead, add to the JSON:
 }
 ```
 
-A label map input never passes on its colors, whatever this says.
+Label maps always use their own label colors.
 
 ### External Subprocess Execution
 
-Individual transforms can execute in an external subprocess with a separate
-Python environment. This is useful for transforms that depend on libraries
-that would conflict with Tomviz's built-in environment, or that require
-specialized packages such as AI/ML frameworks.
+A transform can run in a subprocess with a separate Python environment, for
+libraries that would conflict with Tomviz's own environment or packages such
+as AI/ML frameworks.
 
-The external environment only needs the `tomviz-pipeline` package installed
-(available from `conda-forge`). Beyond that, you can install any packages
-you need - PyTorch, TensorFlow, specialized reconstruction libraries, etc.
-The transform runs in a completely independent Python process, so there are
-no dependency conflicts with Tomviz itself.
+The environment needs the `tomviz-pipeline` package (on PyPI and
+conda-forge) plus whatever your transform uses: PyTorch, TensorFlow,
+reconstruction libraries and so on. The transform runs in its own Python
+process, so there are no dependency conflicts with Tomviz.
 
 External execution can be configured in two ways:
 
-**Via the Execution tab:** Every transform's configure dialog includes an
-Execution tab with an executor dropdown. Select `External` and specify the
-path to a Python environment containing `tomviz-pipeline`. This lets you
-configure external execution at runtime without modifying any files.
+**Via the Execution tab:** A Python transform's dialog has an Execution tab
+with an executor dropdown. Select `External` and give the path to a Python
+environment containing `tomviz-pipeline`. The tab checks the path as soon as
+you pick it. If `tomviz-pipeline` is missing
+or outside `tomviz-pipeline>=3.1.3,<4`, it shows the `pip` or `conda`
+command that fixes it.
 
 **Via JSON metadata:** Set `tomviz_pipeline_env` in the transform's JSON
 description file to make external execution the default:
@@ -530,10 +515,9 @@ description file to make external execution the default:
 }
 ```
 
-Note that `tomviz_pipeline_env` embeds a machine-specific path, so it is
-best suited to operator collections managed for a specific site. For
-portable operators, prefer configuring the environment through the
-Execution tab.
+Because `tomviz_pipeline_env` is a machine-specific path, it suits operator
+collections managed for one site. For portable operators, use the Execution
+tab.
 
 Setting `"externalOnly": true` marks a transform as requiring external
 execution: the Internal executor is disabled in the Execution tab, and
@@ -542,6 +526,11 @@ environment is selected). Use this for operators whose dependencies
 (e.g. PyTorch) can never be imported in the application environment. The
 built-in `SAM 2 Segmentation (3D)` operator is an example; see
 [Machine Learning Segmentation](ml_segmentation.md).
+
+`"externalCompatible": false` does the opposite: the External executor is
+disabled and the transform always runs in the application's own Python.
+The ITK-based transforms, `Registration` and `Initialize Real-Time Tomography`
+are examples.
 
 To set up an external environment:
 
@@ -566,7 +555,7 @@ Parameters can be conditionally shown based on other parameter values:
 }
 ```
 
-Supports `and` and `or` operators for complex conditions.
+Conditions can combine `and` and `or`.
 
 ### Accessing multiple channels
 
