@@ -1,22 +1,21 @@
 # Machine Learning Segmentation
 
-Tomviz supports segmentation with machine-learning models in two ways:
+Tomviz segments data with machine-learning models through **local
+inference**: the built-in `SAM 2 Segmentation (3D)` and
+`SAM 3 Segmentation (3D)` operators run Meta's Segment Anything models on
+your machine in a separate conda environment. SAM 2 propagates a
+seed-slice prompt and runs on all platforms; SAM 3 is text-prompted and
+requires an NVIDIA GPU.
 
-1. **Local inference** with the built-in `SAM 2 Segmentation (3D)` and
-   `SAM 3 Segmentation (3D)` operators, which run Meta's Segment Anything
-   models on your machine in a separate conda environment. SAM 2
-   propagates a seed-slice prompt and runs on all platforms; SAM 3 is
-   text-prompted and requires an NVIDIA GPU.
-2. **Facility-hosted inference**, where a lightweight operator submits
-   the volume to a remote service and retrieves the finished
-   segmentation. This is the pattern used for SAM 3 at the NSLS-II HXN
-   beamline.
+A facility can also host a model as a service, which a lightweight
+operator sends the volume to and gets the finished segmentation back from
+(see [Facility-hosted segmentation](#facility-hosted-segmentation)).
+NSLS-II runs such a service for SAM 3; it is not part of Tomviz.
 
-Both approaches keep the heavyweight AI dependencies (PyTorch, model
-weights) out of the Tomviz application itself. Local inference relies on
-Tomviz's [external subprocess
+Both approaches keep the AI dependencies (PyTorch, model weights) out of Tomviz
+itself. Local inference uses [external subprocess
 execution](operators_development.md#external-subprocess-execution), which
-runs an operator in any conda environment you point it at.
+runs an operator in a conda environment of your choice.
 
 ## SAM 2 Segmentation (3D)
 
@@ -72,21 +71,18 @@ center (a `Seed` component of -1 means center / middle slice).
 ![SAM 2 example](img/SAM2_example.png)
 
 *SAM 2 on a nanoparticle reconstruction. The crosshair in the slice
-view (left) selects one nanoparticle as the seed; the volume rendering
-(right) shows that only the clicked particle is segmented out of the
-many in the volume. The dialog shows the full parameter set: the seed
-point set by the click, `Point (click)` prompt mode, the propagation
-axis and direction, model size and device, and the drift-cleanup
-parameters (`Trim Mask Below`, `Keep Only the Seed-Connected
-Component`) that keep the result to just the seeded particle.*
+view (left) selects one nanoparticle as the seed, and the volume rendering
+(right) shows only that particle segmented out of the many in the volume.
+The drift-cleanup parameters (`Trim Mask Below`, `Keep Only the
+Seed-Connected Component`) keep the result to the seeded particle.*
 
-Alternatively, switch `Prompt Mode` to `Auto Mask (Otsu)` to build the
-seed mask automatically by thresholding the seed slice - this works well
-for a single bright object on a dark background, but on noisy or
-textured data the threshold tends to grab only the brightest fragment.
+Alternatively, set `Prompt Mode` to `Auto Mask (Otsu)` to build the seed
+mask by thresholding the seed slice. This works well for a single bright
+object on a dark background; on noisy or textured data the threshold tends
+to grab only the brightest fragment.
 Toggle `Invert Contrast` if your feature is darker than the background.
 If faint parts of the object are missed in either mode, apply a
-contrast stretch (e.g. `Square Root Scale`) before this operator.
+contrast stretch (e.g. `Square Root Data`) before this operator.
 
 Other parameters: `Z Axis` (which numpy axis to propagate along),
 `Propagation Direction` (both ways from the seed slice, or only forward
@@ -97,7 +93,7 @@ reports the current slice.
 
 **Drift cleanup** (on by default): after the seeded object ends, SAM 2's
 video tracker can reattach to other bright objects in later slices,
-leaving phantom regions - very noticeable on volumes with many
+leaving phantom regions, most noticeable on volumes with many
 particles. Two parameters suppress this: `Trim Mask Below` removes mask
 voxels darker than the given fraction of the volume's bright reference
 value (99.9th percentile), and `Keep Only the Seed-Connected Component`
@@ -111,16 +107,17 @@ Available under `Segmentation` -> `Machine Learning`. Instead of a seed
 point, you describe what to segment with a **text prompt**. Concrete,
 appearance-based phrases work far better than domain terms: "bright
 lines" (the default), "bright object", or "glowing object" rather than
-"particle" or "pore" -- SAM 3 is grounded in everyday visual vocabulary, and
+"particle" or "pore". SAM 3 is grounded in everyday visual vocabulary, and
 abstract terms can score below the confidence threshold on every slice,
-yielding an empty result. Each slice along all three axes is
-segmented independently by the SAM 3 image model, the per-axis masks are
-combined by majority voting, and connected-component labeling stitches
-the result into a 3D **instance label map** (int32, 0 = background).
+giving an empty result.
+
+The SAM 3 image model segments each slice along all three axes
+independently. The per-axis masks are combined by voting (see
+`Vote Threshold`), and connected-component labeling stitches the result
+into a 3D **instance label map** (int32, 0 = background).
 
 **Requirements:** an NVIDIA GPU (CUDA) with at least 8 GB of memory. On
-other machines, use the SAM 2 operator or a facility-hosted service
-(below).
+other machines, use the SAM 2 operator.
 
 ### One-time setup
 
@@ -155,12 +152,12 @@ operator reproduces it on a FISTA reconstruction with the same prompt,
 vote threshold 2, minimum component size 500, and `Split Touching
 Instances` set to 2.*
 
-Set the `Text Prompt` to the kind of feature you want segmented and press
-`Apply`. Tuning knobs:
+Set the `Text Prompt` to the kind of feature you want segmented and click
+`Apply`. Tuning parameters:
 
 * `Vote Threshold` - how many of the three axis passes must agree for a
   voxel to be foreground (default 1). Raise it to 2 or 3 to keep only
-  features that look right from multiple directions - stricter, but it
+  features that look right from several directions. This is stricter, but
   can discard structures that are only recognizable in one view (e.g.
   wiring that reads as "lines" only from the side).
 * `Minimum Component Size` - connected components smaller than this many
@@ -191,16 +188,15 @@ current axis and slice, and the operator can be canceled.
 When no local GPU is available, or when a facility maintains a central
 model (for example a fine-tuned SAM 3 checkpoint on a data-center GPU),
 the recommended pattern is a thin client operator that ships the volume
-to a service and polls for the result. The NSLS-II HXN deployment
+to a service and polls for the result. The NSLS-II deployment
 implements this with [Tiled](https://blueskyproject.io/tiled/): the
 Tomviz operator writes the volume and prompt metadata into a Tiled
 catalog and polls for the finished segmentation, while a receiver process
 on a GPU server runs SAM 3 inference on each new volume and writes the
 label map back. The client operator needs only the `tiled` package, so it
 runs in the internal executor with no AI dependencies, and the model
-weights, license terms, and GPU provisioning stay entirely within the
-facility. The reference implementation (operator and receiver) is
-maintained in the NSLS-II HXN operator repository.
+weights, license terms, and GPU provisioning stay within the facility. The
+reference implementation (operator and receiver) is maintained at NSLS-II.
 
 ## A note on model licensing
 

@@ -1,76 +1,64 @@
 # Time Series
 
-Time series contain a series of volumes where each volume is associated
-with a specific time step. Time series can be used, for instance, to
-create an animation of a volume changing over time. Currently, each
-time step volume is loaded as a separate data file.
+A time series is a sequence of volumes, one per time step, such as a sample
+changing over time. Each time step is loaded from its own file.
 
 ## Loading a Time Series
 
-For loading a time series, see [here](data.md#time-series). Note that
-the time steps will be sorted by file name, but
-[the order may be edited](#editing-a-time-series).
+See [Time Series](data.md#time-series) on the Data page. The time steps are
+sorted by file name.
 
 ## Stepping through a Time Series
 
-In Tomviz, time steps are integrated with the animation features. Thus,
-one way to manipulate the current time step is through the VCR toolbar
-(found at the top of the main window).
+Time steps are part of the animation features, so the VCR toolbar at the top
+of the main window steps through them.
 
 ![VCR Toolbar](img/vcr_toolbar.png)
 
-This toolbar includes buttons to play through all of the time steps,
-step back/forward one frame, go to the first/last frame, and loop
-through the time steps.
+Its buttons play all the time steps, step back or forward one frame, jump to
+the first or last frame, and loop.
 
-Alternatively, the time steps may be manipulated through the use of
-the animation widget, which may be displayed by clicking
-`View` > `Animation`:
+The animation panel, from `Animation` -> `Animation Panel` (also in the `View`
+menu), sets the time step too:
 
 ![Animation Widget](img/animation_widget.png)
 
-This includes several methods for manipulating time, including combo
-boxes, a spin box, and a track slider.
+It has combo boxes, a spin box and a track slider.
 
-When data is loaded as a time series, a label indicating the current
-time step automatically appears in the top right corner of the
-render view:
+A time series shows a label with the current time step in the top right
+corner of the render view:
 
 ![First Step](img/time_series_first_step.png)
 
-Using the VCR toolbar or the animation widget to proceed to the next
-time step results in both the volume and the label updating:
+Moving to the next time step updates both the volume and the label:
 
 ![Next Step](img/time_series_next_step.png)
 
-The label can be moved by left-clicking and dragging it. It may also be
-resized by left-clicking and dragging a border:
+Drag the label to move it, or drag a border to resize it:
 
 ![Label Moved and Resized](img/time_series_label_moved_and_resized.png)
 
-The label may also be hidden or edited (see
-[Editing a Time Series](#editing-a-time-series)).
+To hide or edit the label, see
+[Editing a Time Series](#editing-a-time-series).
 
-Note: normally, when data is loaded in Tomviz, a default camera orbit
-animation is generated. However, when data is loaded as a time series,
-the camera orbit animation is skipped.
+With a time series loaded, `Play` steps through the time steps instead of
+orbiting the camera. While a camera path plays, the
+[Animation Helper](animation.md#animation-helper)'s `Play time series`
+checkbox (on by default, at the bottom of the helper) steps them too. It
+appears only when a time series is loaded.
 
 ## Editing a Time Series
 
-If a source has been loaded as a time series, a "Time Series" section
-will be available in the Properties panel (visible when selecting the
-source node in the pipeline):
+Select the source node of a time series to see a `Time Series` section in
+the Properties panel:
 
 ![Data Properties](img/time_series_data_properties.png)
 
-The "Show label?" checkbox controls the visibility of the time series label.
-
-The "Edit Time Series" button opens a dialog for reordering time steps and
-editing labels:
+`Show Time Series Label` shows or hides the label. `Edit Time Series...`
+opens a dialog for editing the labels:
 
 ![Edit Dialog](img/time_series_edit_dialog.png)
 
-Individual rows may be left-clicked and dragged to modify the ordering.
-Labels may be edited by double-clicking them.
+Double-click a label to edit it.
 
 ![Label Edited](img/time_series_label_edited.png)

@@ -1,6 +1,6 @@
 # Data
 
-Typical data sets may have following relationships between attributes and sizes.
+Typical volume sizes and the memory they take:
 
 | Volume          | Voxels        | Size (char) | Size (int) |
 |  :---           |  :---         |    :---     | :---       |
@@ -12,25 +12,21 @@ Typical data sets may have following relationships between attributes and sizes.
 
 ## Load data
 
-In this section, loading methods for three data categories - single data file,
-stack of images, and raw data set - are introduced.
-
 ### Single data file
 
-Loading a single dataset is straightforward. Select `Open` > `Data` from the
-`File` menu.
+Choose `File` -> `Open` -> `Data`.
 
 ![Open data](img/tomviz_open_data.png)
 
-Tomviz supports the following file formats for reading:
+Tomviz reads these formats:
 
 | Format | Extensions | Notes |
 | :--- | :--- | :--- |
 | EMD | `.emd` | Electron Microscopy Data format (HDF5-based) |
 | TIFF | `.tiff`, `.tif` | Including multi-file stacks |
 | MRC | `.mrc`, `.st`, `.rec`, `.ali` | Electron microscopy format |
-| HDF5 | `.h5`, `.hspy` | Auto-detects DataExchange, FXI, HyperSpy, or generic |
-| DICOM | `.dcm` | Enhanced (single-file) DICOM only; classic multi-file DICOM is not yet supported (requires ITK) |
+| HDF5 | `.h5`, `.hspy`, `.nxs` | Auto-detects Data Exchange and FXI; other files, including HyperSpy (`.hspy`) and NeXus (`.nxs`), are read as generic HDF5 |
+| DICOM | `.dcm` | Enhanced (single-file) DICOM only; classic multi-file DICOM is not yet supported; requires ITK |
 | NumPy | `.npy` | NumPy binary arrays |
 | MATLAB | `.mat` | MATLAB v7.2 and earlier |
 | VTK ImageData | `.vti` | VTK XML format |
@@ -39,21 +35,19 @@ Tomviz supports the following file formats for reading:
 | Raw | `.raw`, `.dat`, `.bin` | Requires dimension/type configuration |
 | Images | `.png`, `.jpg`, `.jpeg` | Single image files |
 | OME-TIFF | `.ome.tif`, `.ome.tiff` | Multi-channel microscopy images |
-| Text | `.txt` | Plain text arrays |
-| XYZ | `.xyz` | Molecule files |
+
+DICOM reading and writing need ITK. The installers include it; with the
+conda package, install `itk` with pip.
 
 ### Drag-and-drop
 
-Data files can also be loaded by dragging them from the file manager and
-dropping them onto the Tomviz application window. State files (`.tvh5`,
-`.tvsm`) are recognized automatically and loaded as state rather than data.
+You can also drop data files from the file manager onto the Tomviz window.
+State files (`.tvh5`, `.tvsm`) are loaded as state.
 
 ### Image stacks
 
-Loading image stacks takes a little bit more effort than loading a single data
-file. After selecting `Open` > `Stack` from the `File` menu, check all the
-images you would like to include in the pop-up dialog. You can also select the
-data type (e.g. `Tilt Series`) and toggle `Image Viewer Mode`.
+Choose `File` -> `Open` -> `Stack`, then check the images to include in the
+dialog. You can also set the data type, such as `Tilt Series`.
 
 ![Open stack](img/tomviz_open_stack.png)
 
@@ -61,138 +55,120 @@ data type (e.g. `Tilt Series`) and toggle `Image Viewer Mode`.
 
 ### Time Series
 
-Loading a time series is straightforward. Simply select `Open` > `Time Series`
-from the `File` menu, and select a list of files to load. Each file is
-considered to be one step in the time series. For more information about
-editing, analyzing, and visualizing time series data, see
-[Time Series](time_series.md).
+Choose `File` -> `Open` -> `Time Series` and select the files. Each file is one
+time step. See [Time Series](time_series.md) for working with them.
 
 ### Reading a raw file
 
-Users can also choose to read raw files by defining data dimensions, data type,
-endianness, and number of components, as indicated below.
+To read a raw file, set its dimensions, data type, endianness and number of
+components:
 
 ![Open data](img/raw_reader.png)
 
 ### HDF5 Formats
 
 #### HDF5 Subsampling
-Tomviz utilizes the
-[hyperslab selection](https://support.hdfgroup.org/HDF5/Tutor/select.html)
-features of HDF5, so that HDF5 files may be read with subsampling.
+Tomviz uses HDF5
+[hyperslab selection](https://support.hdfgroup.org/documentation/hdf5/latest/_l_b_dset_sub_r_w.html)
+to read HDF5 files with subsampling.
 
-When opening any kind of HDF5 file (includes EMD, Data Exchange, HyperSpy, or
-any generic HDF5 file), if any dimension of the dataset is 1200 voxels or
-larger, Tomviz will automatically show a "Pick Subsample" dialog. This dialog
-allows the user to specify volume bounds and strides (per-axis or uniform),
-and conveniently provides an estimated memory usage of the dataset at the
-bottom.
+When any dimension of an HDF5 dataset (EMD, Data Exchange, HyperSpy or
+generic HDF5) is 1200 voxels or larger, Tomviz shows a `Pick Subsample`
+dialog before reading it. Set the volume bounds and the strides (per axis, or
+the same for all); the estimated memory is shown at the bottom.
 
 ![HDF5 Subsample Dialog](img/hdf5_subsample_dialog.png)
 
-Once accepted, the dataset will immediately reload with the new
-subsample settings.
-
-The subsample dialog will also appear if a user attempts to open a
-very large HDF5 dataset, so that the user may subsample the dataset
-before the initial reading.
-
 #### EMD
-Tomviz supports reading and writing both volumes and tilt series with
-the [EMD format](https://emdatasets.com/format/). For tilt series
-datasets, Tomviz expects the first axis to define the angles.
+Tomviz reads and writes volumes and tilt series in the
+[EMD format](https://emdatasets.com/format/). In a tilt series, the first
+axis holds the angles.
 
-As an extension of the EMD format, Tomviz also supports writing multiple
-scalar arrays and reading them back in. The active scalar is always
-written as the "data" dataset in the EMD data group. All other scalars
-are written by name in a "tomviz\_scalars" group in the EMD data group.
+As an extension of the format, Tomviz writes several scalar arrays and reads
+them back: the active one as the "data" dataset in the EMD data group, and
+the others by name in a "tomviz\_scalars" group in the same data group.
 
 #### Data Exchange
-Tomviz supports reading volumes from
+Tomviz reads volumes from
 [Scientific Data Exchange format](https://doi.org/10.1107/S160057751401604X)
-files.
-
-When opening an HDF5 file, Tomviz will check to see if a dataset
-exists in the path "/exchange/data". If it does, the dataset will
-be loaded into Tomviz as a volume.
-
-Volumes in Tomviz that are saved as a generic HDF5 file will be written
-in the Data Exchange format.
+files: if an HDF5 file has a dataset at "/exchange/data", Tomviz loads it as a
+volume. Tomviz does not write this format: volumes saved as HDF5 (`.h5`)
+are written in [EMD](#emd) format.
 
 #### HyperSpy
 
-Tomviz recognizes HyperSpy `.hspy` files as HDF5 and can load
-three-dimensional datasets from them.
+Tomviz reads HyperSpy `.hspy` files as HDF5 and loads their
+three-dimensional datasets.
 
 #### Generic HDF5 File
-If an HDF5 file is opened that does not appear to be a format Tomviz
-recognizes, Tomviz will locate all three-dimensional datasets in the
-file. If only one three-dimensional dataset exists, Tomviz will load
-that dataset as a volume. If more than one exists, a dialog will appear
-asking the user to choose a dataset to load.
+In any other HDF5 file, Tomviz looks for three-dimensional datasets. If
+there is one, it is loaded as a volume. If there are several, a dialog asks
+which to load; the first one checked becomes the volume and the others are
+added to it as extra scalar arrays.
 
 ## Data Generators
 
-Tomviz includes built-in data generators that create synthetic datasets without
-loading from files. These are available from the `Sample Data` menu:
+The `Sample Data` menu has built-in sources that generate data instead of
+reading a file:
 
- * **Constant Dataset** - Generates a 3D dataset filled with a constant value.
-   Parameters: shape (default 100×100×100) and Value (the fill value).
- * **Random Particles** - Generates random 3D particles using a Fourier Noise
-   method. Parameters: shape (up to 512³), internal complexity, particle size,
-   and sparsity.
- * **Electron Beam Shape** - Generates a convergent electron beam in 3D for
-   STEM imaging simulation, with full aberration parameters including beam
-   energy, semi-convergence angle, pixel sizes, defocus range, spherical
-   aberration, astigmatism, and coma.
+ * **Simulated Live Acquisition** - A simulated tomography scan that adds a
+   projection every 5 seconds; the pipeline updates as projections arrive.
+   It is also a template for live sources. See
+   [Live Data and Periodic Execution](pipeline_management.md#live-data-and-periodic-execution).
+ * **Generate Constant Dataset** - A 3D volume filled with one value.
+   Parameters: shape (default 100×100×100) and value.
+ * **Generate Random Particles** - Random 3D particles made with a Fourier
+   noise method. Parameters: shape (up to 512³), internal complexity,
+   particle size and sparsity.
+ * **Generate Electron Beam Shape** - A convergent electron beam in 3D for
+   STEM imaging simulation. Parameters include beam energy, semi-convergence
+   angle, pixel sizes, defocus range, spherical aberration, astigmatism and
+   coma.
 
-When you select a data generator, a parameter dialog will appear. After
-configuring parameters and clicking OK, the dataset is generated and added to
-the pipeline with default visualizations.
+The installers also add `Star Nanoparticle (Reconstruction)` and
+`Star Nanoparticle (Tilt Series)` to this menu; the conda package does not
+include them. `Download More Datasets` opens a web page with more electron
+tomography datasets.
 
-These built-in generators are implemented using the Python
-[SourceNode API](operators_development.md#sourcenode). You can create your own
-source nodes that generate data from Python, using any installed third-party
-library - for example, downloading data from a web server or generating
-synthetic datasets with a custom algorithm.
+Each generator opens a dialog for its parameters. Click `OK` to generate the
+data and add it to the pipeline with default visualizations.
+
+The generators are written with the Python
+[SourceNode API](operators_development.md#sourcenode). Your own source nodes
+can use any installed library, for example to download data from a web
+server or to generate synthetic data with your own algorithm.
 
 ![Sample Data menu](img/sample_data_menu.png)
 
 ## Scan IDs
 
-Tomviz supports associating scan IDs with each image in a tilt series. Scan IDs
-are identifiers that track which experimental scan produced each projection
-image, and are particularly useful when working with synchrotron beamline data.
+A tilt series can carry a scan ID for each image, recording which
+experimental scan produced it. Scan IDs are most useful with synchrotron
+beamline data.
 
 ### Viewing Scan IDs
 
-Scan IDs are displayed alongside tilt angles in the Properties panel
-(bottom-left corner of the application). When a source with scan IDs is
-selected in the pipeline, the scan IDs appear in the properties table.
+Select a source with scan IDs in the pipeline, and the Properties panel
+(bottom left) shows them beside the tilt angles.
 
 ![Data Properties Scan IDs](img/data_properties_scan_ids.png)
 
 ### Setting Scan IDs
 
-Scan IDs can be set in several ways:
+Scan IDs come from:
 
- * **From file** - When loading tilt angles from a file via the "Set Tilt
-   Angles" dialog, if the file contains a scan IDs column, it will be
-   automatically imported alongside the angles.
- * **From PyXRF source** - Scan IDs are automatically extracted during the
-   PyXRF source workflow.
- * **From Ptycho source** - Scan IDs are automatically extracted
-   during the Ptycho source workflow.
+ * **A tilt angle file** - If a file loaded in the `Set Tilt Angles` dialog
+   has a scan ID column, it is imported with the angles.
+ * **The PyXRF and Ptycho sources** - Both extract scan IDs automatically.
 
 ### Storage
 
-Scan IDs are stored in EMD files under the `/data/tomography/scan_ids` path,
-ensuring they persist across save/load cycles.
+EMD files store scan IDs at `/data/tomography/scan_ids`, so they survive
+saving and loading.
 
 ### Python Access
 
-Scan IDs can be accessed in Python operators via the `dataset.scan_ids`
-property:
+Python transforms can read them from `dataset.scan_ids`:
 
 ```python
 def transform(dataset):
@@ -202,58 +178,59 @@ def transform(dataset):
 
 ## Saving Tilt Angles
 
-Tilt angles can be saved to a text file directly from the Properties panel.
-This is useful for exporting the angles for use in external tools or
-for documentation purposes.
-
-To save tilt angles, click the `Save Tilt Angles...` button below the tilt
-angles table in the Properties panel. You will be prompted to choose a
-filename and location for the `.txt` file.
+To save the tilt angles to a `.txt` file, for use in other tools, click
+`Save Tilt Angles...` below the tilt angle table in the Properties panel and
+choose a file name.
 
 ![Save Tilt Angles](img/data_properties_save_tilt_angles.png)
 
-If scan IDs are also available and displayed, they will likewise be saved
-to that `.txt` file, in the first column. The tilt angles will be present
-in the second column.
+The file has one angle per line.
 
 ## Save results
 
 ### Save data
 
-Users can save the data by clicking `Save Data` from the `File` menu, or
-by using the keyboard shortcut `Ctrl+S`.
+Choose `File` -> `Save Data` (`Ctrl+S`). To save one node or port,
+right-click it and choose `Save Data`.
+
+The dialog writes every checked port to the `Destination` directory, in the
+`File formats` chosen for each data type. `Ports to save` lists
+`Leaf nodes only` (outputs that feed no other transform) or
+`All ports with data`.
+
+Any output that holds data can be saved. A transient port drops its data once
+the pipeline is done with it, and the dialog lists it as unsaveable. To save
+it, right-click the port and choose `Persist in Memory`; Tomviz runs that
+step again.
 
 ![Save data](img/tomviz_save_data.png)
 
-Tomviz supports the following file formats for writing:
+Tomviz writes these formats:
 
 | Format | Extensions | Notes |
 | :--- | :--- | :--- |
-| EMD | `.emd`, `.hdf5` | Recommended - supports all Tomviz data types and units |
-| TIFF | `.tiff`, `.tif` | Widely supported; double data converted to float |
-| HDF5 | `.h5` | Written in Data Exchange format |
-| MRC | `.mrc`, `.mrc2` | Electron microscopy format |
-| DICOM | `.dcm` | Enhanced (single-file) DICOM with tilt angle metadata |
+| EMD | `.emd` | Recommended - supports all Tomviz data types and units |
+| HDF5 | `.h5` | Written in EMD format |
+| TIFF | `.tiff` | Widely supported; double data converted to float |
+| MRC | `.mrc` | Electron microscopy format |
+| DICOM | `.dcm` | Enhanced (single-file) DICOM with tilt angle metadata; requires ITK |
 | NumPy | `.npy` | NumPy binary arrays |
 | VTK ImageData | `.vti` | VTK XML format |
 | Meta Image | `.mhd` | ITK format |
-| CSV | `.csv` | Tabular data |
+| CSV | `.csv` | Volumes and tables |
+| JSON | `.json` | Volumes (JSON Image) and tables |
 | Legacy VTK | `.vtk` | Older VTK format |
 | XDMF | `.xmf` | XDMF/HDF5 composite |
-| Exodus II | `.ex2`, `.exo` | Finite element format |
+| XYZ | `.xyz` | Molecules |
 
-We recommend EMD (HDF5 based) for saving data because it supports all the data
-types used in Tomviz and can save units in all three dimensions. TIFF is often
-the most versatile export format when sharing with other tools.
+EMD keeps every Tomviz data type and the units of all three dimensions. For
+sharing with other tools, TIFF is often the most versatile.
 
 ### Save state
 
-Similarly to saving data, users can save the state by clicking `Save State As`
-from the `File` menu.
-
-Once a state file has been saved or loaded, `Save State` can be used
-to overwrite the same state file. For more information about the types
-of state files, see [below](#state-files).
+Choose `File` -> `Save State As` to save the state. Once a state file has
+been saved or loaded, `Save State` overwrites it. See
+[State files](#state-files) for the two types.
 
 ### State files
 
@@ -262,50 +239,41 @@ Two types of state files are available in Tomviz:
 1. Full state files (`.tvh5` files)
 2. Light state files (`.tvsm` files)
 
-The full state files save both the state of the program and the data
-into a single file, which is in HDF5 format. Both input and output data
-are saved in the file, so that pipelines do not need to be re-run when
-the file is opened.
+A full state file holds the application state and the data, both input and
+output, in one HDF5 file, so pipelines do not need to re-run when it is
+opened.
 
-The light state files only save the state of the program, and they
-use relative file paths on the file system to load the input data.
-When a light state file is loaded, all of the pipelines are re-run
-to produce the output data.
+A light state file holds only the application state, with relative paths to
+the input data files. Loading one re-runs every pipeline to produce the
+output data.
 
-Full state files are useful for moving the Tomviz state between file
-systems and computers. Light state files are useful for saving progress
-on a single computer.
+Use full state files to move work between computers, and light state files
+to save progress on one computer.
 
-Tomviz 3.0 uses a new state file format (schema version 2) that stores the
-full node-based pipeline graph. State files from previous versions of Tomviz
-are loaded via a legacy compatibility layer and automatically converted to the
-new format.
+Since Tomviz 3.0, state files (schema version 2) store the full node-based
+pipeline graph. State files from earlier versions are converted
+automatically when loaded.
 
 ## Recover and load state
 
 ### Recover state
 
-Tomviz saves the pipeline every five minutes, users can recover the previous
-states by simply allowing Tomviz to load them.
+Tomviz saves the pipeline every five minutes. If it did not close normally,
+it offers to load that autosave the next time it starts.
 
 ![Recover state](img/tomviz_recover.png)
 
 ### Load state
 
-When there is no prompt, users can manually load and recover previous states
-by selecting `Load State` from `File`.
+To load a saved state, choose `File` -> `Load State`.
 
 ![Load state](img/tomviz_load_state.png)
 
-Both full state files and light state files may be loaded from this menu.
-Once a state file has been loaded, it may be overwritten via
-`Save State`. For more information about the types of state files,
-see [above](#state-files).
+It loads both full and light [state files](#state-files).
 
 ## Exporting Data
 
-Resulting data can be exported by saving to standard formats, or by taking
-screenshots or animations of the render view.
-
-For details on exporting visualizations (screenshots and movies), see the
-[Exporting Visualizations](visualization.md#exporting-visualizations) section.
+Besides saving data in standard formats, you can export images and movies
+of the render view. For screenshots, see
+[Exporting Visualizations](visualization.md#exporting-visualizations); for
+movies, see [Animation](animation.md).
