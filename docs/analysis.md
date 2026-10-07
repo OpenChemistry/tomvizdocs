@@ -307,6 +307,19 @@ bins; keep it above zero, since a hard cut rings in real space.
 **Invert Mask** removes the selected regions instead, for example to strip a
 periodic artifact out of an image.
 
+![A mask made on the FFT branch with Binary Threshold, Connected Components and Remove Labels keeps 22 Bragg peaks, shown as a Label Map (left), and Fourier Mask applies it to the original data (right)](img/fourier_mask_workflow.png)
+
+Above, `Binary Threshold` (0.6 to 1) selects the bright regions of the
+spectrum, `Connected Components` with a **Minimum Size** of 5 clears the
+specks, and `Remove Labels` drops the zero-frequency peak at the center,
+leaving 22 Bragg peaks for the mask.
+
+:::{note}
+Data from A. Michelson et al., *Science* **376**, 203-207 (2022),
+[doi:10.1126/science.abk0463](https://doi.org/10.1126/science.abk0463), shown
+with the authors' permission; please cite that paper for any use of the data.
+:::
+
 ### Combine Datasets
 
 `Combine Datasets` (Data Management) adds the active array of the dataset
